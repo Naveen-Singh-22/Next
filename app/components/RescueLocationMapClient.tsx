@@ -5,10 +5,7 @@ import L from "leaflet";
 import type { LatLngBoundsExpression, LatLngTuple } from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from "react-leaflet";
 
-const INDIA_VIEW_BOUNDS: LatLngBoundsExpression = [
-  [6.0, 67.0],
-  [38.8, 97.8],
-];
+const CENTRAL_INDIA_VIEW: LatLngTuple = [22.7, 79.2];
 
 const INDIA_MAX_BOUNDS: LatLngBoundsExpression = [
   [0.0, 60.0],
@@ -30,7 +27,7 @@ function MapClickHandler({ onPick }: MapClickHandlerProps) {
 }
 
 export default function RescueLocationMapClient() {
-  const [marker, setMarker] = useState<LatLngTuple>([28.6139, 77.209]);
+  const [marker, setMarker] = useState<LatLngTuple>(CENTRAL_INDIA_VIEW);
 
   useEffect(() => {
     L.Icon.Default.mergeOptions({
@@ -44,12 +41,12 @@ export default function RescueLocationMapClient() {
     <div className="map-box" aria-label="India map picker">
       <MapContainer
         className="rescue-map"
-        bounds={INDIA_VIEW_BOUNDS}
-        boundsOptions={{ padding: [12, 12] }}
+        center={CENTRAL_INDIA_VIEW}
         minZoom={2}
         maxZoom={18}
         maxBounds={INDIA_MAX_BOUNDS}
         maxBoundsViscosity={0.2}
+        zoom={5}
         zoomSnap={0.25}
         zoomControl
         scrollWheelZoom

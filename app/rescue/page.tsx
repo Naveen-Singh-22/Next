@@ -1,4 +1,5 @@
 import Link from "next/link";
+import RescueImageUpload from "../components/RescueImageUpload";
 import RescueLocationMap from "../components/RescueLocationMap";
 import SiteNav from "../components/SiteNav";
 
@@ -80,11 +81,7 @@ export default function RescuePage() {
                 </label>
               </div>
 
-              <button className="upload-box" type="button">
-                <span className="upload-icon">📷</span>
-                Photo Upload (Optional)
-                <small>Drag and drop or click to upload</small>
-              </button>
+              <RescueImageUpload />
             </article>
 
             <article className="panel">
