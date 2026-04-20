@@ -1,4 +1,4 @@
-import SiteNav from "../components/SiteNav";
+import SiteNav from "@/components/SiteNav";
 
 const reports = [
   {
@@ -133,3 +133,4 @@ export default function ImpactPage() {
     </div>
   );
 }
+

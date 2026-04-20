@@ -1,4 +1,4 @@
-import SiteNav from "../components/SiteNav";
+import SiteNav from "@/components/SiteNav";
 
 const roles = [
   {
@@ -180,3 +180,4 @@ export default function VolunteerPage() {
     </div>
   );
 }
+

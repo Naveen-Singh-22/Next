@@ -1,5 +1,5 @@
 import Link from "next/link";
-import SiteNav from "./components/SiteNav";
+import SiteNav from "@/components/SiteNav";
 
 export default function Home() {
   const stats = [
@@ -139,3 +139,4 @@ export default function Home() {
     </div>
   );
 }
+

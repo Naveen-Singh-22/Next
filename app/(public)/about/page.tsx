@@ -1,4 +1,4 @@
-import SiteNav from "../components/SiteNav";
+import SiteNav from "@/components/SiteNav";
 
 const timeline = [
   {
@@ -185,3 +185,4 @@ export default function AboutPage() {
     </div>
   );
 }
+

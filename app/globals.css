@@ -26,6 +26,17 @@ body {
   margin: 0;
 }
 
+img {
+  transition: transform 0.35s ease;
+  transform-origin: center;
+}
+
+@media (hover: hover) {
+  img:hover {
+    transform: scale(1.1);
+  }
+}
+
 .home-page {
   min-height: 100vh;
   background:

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Outfit, Syne } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
-import SiteFooter from "./components/SiteFooter";
+import SiteFooter from "@/components/SiteFooter";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -43,3 +43,4 @@ export default function RootLayout({
     </html>
   );
 }
+

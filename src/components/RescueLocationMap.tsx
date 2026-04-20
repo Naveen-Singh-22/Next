@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-const RescueLocationMapClient = dynamic(() => import("@/app/components/RescueLocationMapClient"), {
+const RescueLocationMapClient = dynamic(() => import("@/components/RescueLocationMapClient"), {
   ssr: false,
   loading: () => (
     <div className="map-box" aria-label="India map loading state">

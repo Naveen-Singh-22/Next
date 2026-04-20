@@ -1,6 +1,6 @@
-import RescueImageUpload from "../components/RescueImageUpload";
-import RescueLocationMap from "../components/RescueLocationMap";
-import SiteNav from "../components/SiteNav";
+import RescueImageUpload from "@/components/RescueImageUpload";
+import RescueLocationMap from "@/components/RescueLocationMap";
+import SiteNav from "@/components/SiteNav";
 
 export default function RescuePage() {
   return (
@@ -154,3 +154,4 @@ export default function RescuePage() {
     </div>
   );
 }
+

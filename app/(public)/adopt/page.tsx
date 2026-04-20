@@ -1,5 +1,5 @@
 import Link from "next/link";
-import SiteNav from "../components/SiteNav";
+import SiteNav from "@/components/SiteNav";
 
 type AdoptCard = {
   name: string;
@@ -150,3 +150,4 @@ export default function AdoptPage() {
     </div>
   );
 }
+
