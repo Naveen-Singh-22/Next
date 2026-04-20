@@ -134,7 +134,7 @@ export default function ImpactPage() {
       <footer className="footer section-wrap impact-footer">
         <div>
           <p className="brand">thecaninehelp</p>
-          <p>© 2024 thecaninehelp Animal NGO.</p>
+          <p>© 2026 thecaninehelp Animal NGO.</p>
           <p>Dedicated to advocacy and rescue.</p>
         </div>
         <div className="footer-links one-line">

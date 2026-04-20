@@ -1,4 +1,5 @@
 import Link from "next/link";
+import RescueLocationMap from "../components/RescueLocationMap";
 import SiteNav from "../components/SiteNav";
 
 export default function RescuePage() {
@@ -106,7 +107,7 @@ export default function RescuePage() {
                 <span className="panel-dot">📍</span>
                 Location
               </h2>
-              <div className="map-box" aria-label="Map preview" />
+              <RescueLocationMap />
 
               <label>
                 Last Seen Address

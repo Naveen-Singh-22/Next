@@ -211,7 +211,7 @@ export default function AboutPage() {
       </footer>
 
       <div className="section-wrap about-copyright">
-        <p>© 2024 thecaninehelp Animal NGO. Dedicated to advocacy and rescue.</p>
+        <p>© 2026 thecaninehelp Animal NGO. Dedicated to advocacy and rescue.</p>
       </div>
     </div>
   );

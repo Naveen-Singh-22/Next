@@ -813,16 +813,28 @@ textarea {
 }
 
 .map-box {
-  height: 200px;
+  height: 300px;
   border-radius: 12px;
-  background:
-    radial-gradient(circle at 68% 35%, #e64545 0 26px, transparent 29px),
-    radial-gradient(circle at 68% 35%, #f7b7b7 0 13px, transparent 14px),
-    linear-gradient(42deg, #e8e2d6 15%, transparent 17%),
-    linear-gradient(-38deg, #e8e2d6 15%, transparent 17%),
-    linear-gradient(120deg, #c8dcb7, #a7c3a0 70%);
-  border: 1px solid #e0d9cc;
+  border: 1px solid #d8e2dd;
   margin-bottom: 0.95rem;
+  overflow: hidden;
+  background: #dde8e0;
+}
+
+.rescue-map {
+  width: 100%;
+  height: calc(100% - 28px);
+}
+
+.map-hint {
+  margin: 0;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 0 0.65rem;
+  font-size: 0.74rem;
+  color: #5b6868;
+  background: #eef3f1;
 }
 
 .urgency-list {
@@ -1735,16 +1747,20 @@ textarea {
 
 .about-timeline-row {
   display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 0.8rem;
+  grid-template-columns: 120px 1fr;
+  gap: 1rem;
+  align-items: flex-start;
 }
 
 .about-timeline-row span {
   color: #d5d7d6;
   font-family: var(--font-syne), "Trebuchet MS", sans-serif;
-  font-size: 2.9rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1;
+  display: block;
+  text-align: right;
+  padding-top: 0.05rem;
 }
 
 .about-timeline-row h3 {
@@ -5231,11 +5247,13 @@ th {
   }
 
   .about-timeline-row {
-    grid-template-columns: 82px 1fr;
+    grid-template-columns: 90px 1fr;
+    gap: 2rem;
   }
 
   .about-timeline-row span {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    text-align: left;
   }
 
   .about-team-head {
