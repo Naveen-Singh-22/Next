@@ -4979,7 +4979,7 @@ th {
     border-bottom: 1px solid #e5e5e5;
   }
 
-  .admin-dashboard-page .admin-mobile-sidebar {
+  .admin-mobile-shell .admin-mobile-sidebar {
     position: fixed;
     left: 0;
     top: 0;
@@ -4994,11 +4994,11 @@ th {
     box-shadow: 18px 0 36px -32px rgba(0, 0, 0, 0.9);
   }
 
-  .admin-dashboard-page .admin-mobile-sidebar.open {
+  .admin-mobile-shell .admin-mobile-sidebar.open {
     transform: translateX(0);
   }
 
-  .admin-dashboard-page .admin-sidebar-backdrop {
+  .admin-mobile-shell .admin-sidebar-backdrop {
     position: fixed;
     inset: 0;
     background: rgba(5, 17, 16, 0.42);
@@ -5009,13 +5009,13 @@ th {
     display: block;
   }
 
-  .admin-dashboard-page .admin-sidebar-backdrop.show {
+  .admin-mobile-shell .admin-sidebar-backdrop.show {
     opacity: 1;
     pointer-events: auto;
   }
 
-  .admin-dashboard-page .admin-menu-btn,
-  .admin-dashboard-page .admin-sidebar-close {
+  .admin-mobile-shell .admin-menu-btn,
+  .admin-mobile-shell .admin-sidebar-close {
     display: inline-flex;
   }
 
@@ -5292,7 +5292,7 @@ th {
     padding: 0.7rem 0;
   }
 
-  .admin-dashboard-page .admin-topbar-start {
+  .admin-mobile-shell .admin-topbar-start {
     width: 100%;
   }
 

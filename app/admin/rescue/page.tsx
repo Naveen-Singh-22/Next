@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 type RescueCase = {
   id: string;
@@ -58,13 +61,24 @@ const operationsLog = [
 ];
 
 export default function RescueManagementPage() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
-    <div className="admin-page rescue-management-page">
-      <aside className="admin-sidebar">
+    <div className="admin-page admin-mobile-shell rescue-management-page">
+      <aside className={`admin-sidebar admin-mobile-sidebar ${isSidebarOpen ? "open" : ""}`.trim()}>
         <div className="admin-brand">
           <Link href="/">thecaninehelp</Link>
           <small>Shelter Operations</small>
         </div>
+
+        <button
+          className="admin-sidebar-close"
+          type="button"
+          onClick={() => setIsSidebarOpen(false)}
+          aria-label="Close admin menu"
+        >
+          Close
+        </button>
 
         <nav>
           <ul className="admin-nav">
@@ -105,9 +119,28 @@ export default function RescueManagementPage() {
         </div>
       </aside>
 
+      <div
+        className={`admin-sidebar-backdrop ${isSidebarOpen ? "show" : ""}`.trim()}
+        onClick={() => setIsSidebarOpen(false)}
+        aria-hidden={!isSidebarOpen}
+      />
+
       <main className="admin-main rescue-management-main">
         <header className="admin-topbar">
-          <input aria-label="Search" placeholder="Search rescue cases..." type="text" />
+          <div className="admin-topbar-start">
+            <button
+              className="admin-menu-btn"
+              type="button"
+              onClick={() => setIsSidebarOpen(true)}
+              aria-label="Open admin menu"
+              aria-expanded={isSidebarOpen}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+            <input aria-label="Search" placeholder="Search rescue cases..." type="text" />
+          </div>
           <div className="admin-top-icons">
             <span>🔔</span>
             <span>⚙️</span>
