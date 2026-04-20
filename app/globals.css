@@ -2089,6 +2089,50 @@ textarea {
   padding: 0 1.2rem 1.2rem;
 }
 
+.admin-topbar-start {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex: 1;
+}
+
+.admin-menu-btn {
+  display: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid #d7dede;
+  border-radius: 10px;
+  background: #ffffff;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.24rem;
+  cursor: pointer;
+}
+
+.admin-menu-btn span {
+  width: 1.1rem;
+  height: 2px;
+  border-radius: 10px;
+  background: #274242;
+}
+
+.admin-sidebar-close,
+.admin-sidebar-backdrop {
+  display: none;
+}
+
+.admin-sidebar-close {
+  border: 0;
+  border-radius: 8px;
+  background: #e7f1ef;
+  color: #1d3f3c;
+  padding: 0.45rem 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+}
+
 .admin-topbar {
   height: 56px;
   border-bottom: 1px solid #e6e6e6;
@@ -4935,6 +4979,46 @@ th {
     border-bottom: 1px solid #e5e5e5;
   }
 
+  .admin-dashboard-page .admin-mobile-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: min(86vw, 300px);
+    height: 100vh;
+    border-right: 1px solid #e5e5e5;
+    border-bottom: 0;
+    background: #f8f8f8;
+    z-index: 60;
+    transform: translateX(-105%);
+    transition: transform 0.24s ease;
+    box-shadow: 18px 0 36px -32px rgba(0, 0, 0, 0.9);
+  }
+
+  .admin-dashboard-page .admin-mobile-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .admin-dashboard-page .admin-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 17, 16, 0.42);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.24s ease;
+    z-index: 55;
+    display: block;
+  }
+
+  .admin-dashboard-page .admin-sidebar-backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .admin-dashboard-page .admin-menu-btn,
+  .admin-dashboard-page .admin-sidebar-close {
+    display: inline-flex;
+  }
+
   .admin-grid {
     grid-template-columns: 1fr;
   }
@@ -5206,6 +5290,10 @@ th {
     height: auto;
     align-items: stretch;
     padding: 0.7rem 0;
+  }
+
+  .admin-dashboard-page .admin-topbar-start {
+    width: 100%;
   }
 
   .admin-topbar input {
