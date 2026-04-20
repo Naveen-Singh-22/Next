@@ -1,4 +1,3 @@
-import Link from "next/link";
 import SiteNav from "../components/SiteNav";
 
 const reports = [
@@ -131,19 +130,6 @@ export default function ImpactPage() {
         </section>
       </main>
 
-      <footer className="footer section-wrap impact-footer">
-        <div>
-          <p className="brand">thecaninehelp</p>
-          <p>© 2026 thecaninehelp Animal NGO.</p>
-          <p>Dedicated to advocacy and rescue.</p>
-        </div>
-        <div className="footer-links one-line">
-          <a href="#">Terms of Service</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Contact Us</a>
-          <a href="#">Careers</a>
-        </div>
-      </footer>
     </div>
   );
 }

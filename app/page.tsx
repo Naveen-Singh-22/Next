@@ -136,18 +136,6 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="footer section-wrap">
-        <div>
-          <p className="brand">thecaninehelp</p>
-          <p>Dedicated to rescue and rehabilitation of animals worldwide.</p>
-        </div>
-        <div className="footer-links">
-          <a href="#">Contact Us</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Social Media</a>
-        </div>
-      </footer>
     </div>
   );
 }

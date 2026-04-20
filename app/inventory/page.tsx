@@ -324,15 +324,6 @@ export default function InventoryPage() {
           </table>
         </section>
 
-        <footer className="admin-footer">
-          <p>thecaninehelp</p>
-          <small>© 2026 thecaninehelp NGO. All rights reserved.</small>
-          <div>
-            <Link href="/">Main Site</Link>
-            <a href="#">Contact Us</a>
-            <a href="#">Privacy Policy</a>
-          </div>
-        </footer>
       </main>
     </div>
   );

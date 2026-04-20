@@ -1,4 +1,3 @@
-import Link from "next/link";
 import SiteNav from "../components/SiteNav";
 
 const roles = [
@@ -178,19 +177,6 @@ export default function VolunteerPage() {
         </section>
       </main>
 
-      <footer className="footer section-wrap volunteer-footer">
-        <div>
-          <p className="brand">thecaninehelp</p>
-          <p>© 2026 thecaninehelp Animal NGO.</p>
-          <p>Dedicated to advocacy and rescue.</p>
-        </div>
-        <div className="footer-links one-line">
-          <a href="#">Terms of Service</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Contact Us</a>
-          <a href="#">Careers</a>
-        </div>
-      </footer>
     </div>
   );
 }

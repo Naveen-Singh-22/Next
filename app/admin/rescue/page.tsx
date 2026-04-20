@@ -236,15 +236,6 @@ export default function RescueManagementPage() {
           </aside>
         </section>
 
-        <footer className="admin-footer">
-          <p>thecaninehelp</p>
-          <small>© 2026 thecaninehelp NGO. All rights reserved.</small>
-          <div>
-            <a href="#">Contact Us</a>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Social Media</a>
-          </div>
-        </footer>
       </main>
     </div>
   );

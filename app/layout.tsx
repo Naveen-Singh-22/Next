@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Outfit, Syne } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
+import SiteFooter from "./components/SiteFooter";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -35,7 +36,10 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${outfit.variable} ${syne.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col" id="top">
+        {children}
+        <SiteFooter />
+      </body>
     </html>
   );
 }

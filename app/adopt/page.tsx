@@ -147,18 +147,6 @@ export default function AdoptPage() {
         </div>
       </main>
 
-      <footer className="footer section-wrap">
-        <div>
-          <p className="brand">thecaninehelp</p>
-          <p>Dedicated to finding permanent, loving homes for every rescued soul.</p>
-        </div>
-        <div className="footer-links">
-          <a href="#">Contact Us</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Adoption Fees</a>
-        </div>
-      </footer>
     </div>
   );
 }

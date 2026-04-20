@@ -214,15 +214,6 @@ export default function AdminPage() {
           </article>
         </section>
 
-        <footer className="admin-footer">
-          <p>thecaninehelp</p>
-          <small>© 2026 thecaninehelp NGO. All rights reserved.</small>
-          <div>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">System Status</a>
-          </div>
-        </footer>
       </main>
     </div>
   );

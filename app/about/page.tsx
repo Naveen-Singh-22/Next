@@ -1,4 +1,3 @@
-import Link from "next/link";
 import SiteNav from "../components/SiteNav";
 
 const timeline = [
@@ -183,36 +182,6 @@ export default function AboutPage() {
         </section>
       </main>
 
-      <footer className="section-wrap about-footer">
-        <div>
-          <p className="brand">thecaninehelp</p>
-          <p>A sanctuary for the overlooked. A voice for the voiceless. A partner in the journey of rescue.</p>
-        </div>
-
-        <div className="about-footer-links">
-          <div>
-            <p>Explore</p>
-            <a href="#">Our Programs</a>
-            <a href="#">Impact Reports</a>
-            <a href="#">Rescue Stories</a>
-          </div>
-          <div>
-            <p>Kindred Hearth</p>
-            <a href="#">About Us</a>
-            <a href="#">Contact Us</a>
-            <a href="#">Careers</a>
-          </div>
-          <div>
-            <p>Legal</p>
-            <a href="#">Terms of Service</a>
-            <a href="#">Privacy Policy</a>
-          </div>
-        </div>
-      </footer>
-
-      <div className="section-wrap about-copyright">
-        <p>© 2026 thecaninehelp Animal NGO. Dedicated to advocacy and rescue.</p>
-      </div>
     </div>
   );
 }

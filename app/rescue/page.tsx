@@ -1,4 +1,3 @@
-import Link from "next/link";
 import RescueImageUpload from "../components/RescueImageUpload";
 import RescueLocationMap from "../components/RescueLocationMap";
 import SiteNav from "../components/SiteNav";
@@ -152,17 +151,6 @@ export default function RescuePage() {
         </section>
       </main>
 
-      <footer className="footer section-wrap rescue-footer">
-        <p className="brand">thecaninehelp</p>
-        <div className="footer-links one-line">
-          <a href="#">Contact Us</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Social Media</a>
-          <Link href="/admin">Admin Portal</Link>
-        </div>
-        <p>© 2026 thecaninehelp NGO. All rights reserved.</p>
-      </footer>
     </div>
   );
 }
