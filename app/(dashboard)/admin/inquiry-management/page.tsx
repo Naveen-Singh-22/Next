@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import AdminThemeToggle from "@/components/AdminThemeToggle";
 
 const inboxItems = [
   {
@@ -49,13 +50,11 @@ const inboxItems = [
 
 const evidence = [
   {
-    image:
-      "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=500&q=80",
+    image: "/images/unsplash/photo-1517849845537-4d257902454a.jpg",
     label: "Field photo",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=500&q=80",
+    image: "/images/unsplash/photo-1507146426996-ef05306b995a.jpg",
     label: "Park entrance",
   },
 ];
@@ -142,6 +141,7 @@ export default function InquiryManagementPage() {
             <input aria-label="Search" placeholder="Search inquiries..." type="text" />
           </div>
           <div className="admin-top-icons">
+            <AdminThemeToggle />
             <span>🔔</span>
             <span>⚙️</span>
             <div className="inq-user-chip">

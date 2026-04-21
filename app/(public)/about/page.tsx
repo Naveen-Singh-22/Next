@@ -45,26 +45,22 @@ const team = [
   {
     name: "Dr. Elena Vance",
     role: "Executive Director",
-    image:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=700&q=80",
+    image: "/images/unsplash/photo-1580489944761-15a19d654956.jpg",
   },
   {
     name: "Marcus Thorne",
     role: "Chief Medical Officer",
-    image:
-      "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=700&q=80",
+    image: "/images/unsplash/photo-1612349317150-e413f6a5b16d.jpg",
   },
   {
     name: "Sarah Jenkins",
     role: "Creative Director",
-    image:
-      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=700&q=80",
+    image: "/images/unsplash/photo-1524504388940-b1c1722653e1.jpg",
   },
   {
     name: "David Chen",
     role: "Head of Operations",
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=80",
+    image: "/images/unsplash/photo-1500648767791-00dcc994a43e.jpg",
   },
 ];
 

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import AdminThemeToggle from "@/components/AdminThemeToggle";
 
 type VaccineRow = {
   animal: string;
@@ -25,8 +26,7 @@ const vaccineRows: VaccineRow[] = [
     dueDate: "Oct 22, 2023",
     dueNote: "5 days overdue",
     status: "overdue",
-    image:
-      "https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=160&q=80",
+    image: "/images/unsplash/photo-1507146426996-ef05306b995a.jpg",
   },
   {
     animal: "Luna",
@@ -37,8 +37,7 @@ const vaccineRows: VaccineRow[] = [
     dueDate: "Oct 27, 2023",
     dueNote: "Today",
     status: "today",
-    image:
-      "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?auto=format&fit=crop&w=160&q=80",
+    image: "/images/unsplash/photo-1519052537078-e6302a4968d4.jpg",
   },
   {
     animal: "Barnaby",
@@ -49,8 +48,7 @@ const vaccineRows: VaccineRow[] = [
     dueDate: "Nov 02, 2023",
     dueNote: "in 6 days",
     status: "upcoming",
-    image:
-      "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=160&q=80",
+    image: "/images/unsplash/photo-1543466835-00a7907e9de1.jpg",
   },
   {
     animal: "Sasha",
@@ -61,8 +59,7 @@ const vaccineRows: VaccineRow[] = [
     dueDate: "Nov 05, 2023",
     dueNote: "in 9 days",
     status: "upcoming",
-    image:
-      "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=160&q=80",
+    image: "/images/unsplash/photo-1517849845537-4d257902454a.jpg",
   },
 ];
 
@@ -163,6 +160,7 @@ export default function VaccinationsPage() {
             <input aria-label="Search" placeholder="Search animal records..." type="text" />
           </div>
           <div className="admin-top-icons">
+            <AdminThemeToggle />
             <span>🔔</span>
             <span>⚙️</span>
             <span className="avatar">AD</span>

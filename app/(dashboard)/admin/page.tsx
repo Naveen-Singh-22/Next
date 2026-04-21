@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import AdminThemeToggle from "@/components/AdminThemeToggle";
 
 const metrics = [
   { label: "Total Animals", value: "85", note: "+4%", accent: "up" },
@@ -110,6 +111,7 @@ export default function AdminPage() {
             />
           </div>
           <div className="admin-top-icons">
+            <AdminThemeToggle />
             <span>🔔</span>
             <span>⚙️</span>
             <span>?</span>

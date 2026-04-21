@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import AdminThemeToggle from "@/components/AdminThemeToggle";
 
 type RescueCase = {
   id: string;
@@ -25,8 +26,7 @@ const rescueCases: RescueCase[] = [
     status: "Reported",
     actionPrimary: "Assign Staff",
     actionSecondary: "Update Status",
-    image:
-      "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=300&q=80",
+    image: "/images/unsplash/photo-1517849845537-4d257902454a.jpg",
   },
   {
     id: "#RES-2098",
@@ -37,8 +37,7 @@ const rescueCases: RescueCase[] = [
     status: "Assigned",
     actionPrimary: "Admit to Shelter",
     actionSecondary: "Update Status",
-    image:
-      "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?auto=format&fit=crop&w=300&q=80",
+    image: "/images/unsplash/photo-1519052537078-e6302a4968d4.jpg",
   },
   {
     id: "#RES-2103",
@@ -49,8 +48,7 @@ const rescueCases: RescueCase[] = [
     status: "Admitted",
     actionPrimary: "View Health Log",
     actionSecondary: "Case Details",
-    image:
-      "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=300&q=80",
+    image: "/images/unsplash/photo-1543466835-00a7907e9de1.jpg",
   },
 ];
 
@@ -142,6 +140,7 @@ export default function RescueManagementPage() {
             <input aria-label="Search" placeholder="Search rescue cases..." type="text" />
           </div>
           <div className="admin-top-icons">
+            <AdminThemeToggle />
             <span>🔔</span>
             <span>⚙️</span>
             <span>?</span>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import SiteNav from "@/components/SiteNav";
 
 const reports = [
@@ -120,12 +121,12 @@ export default function ImpactPage() {
             metrics.
           </p>
           <div className="impact-cta-actions">
-            <button className="pill-btn solid" type="button">
+            <Link className="pill-btn solid pill-link" href="/donate">
               Become a Monthly Guardian
-            </button>
-            <button className="pill-btn impact-alt" type="button">
+            </Link>
+            <Link className="pill-btn impact-alt pill-link" href="/donate">
               One-Time Impact Gift
-            </button>
+            </Link>
           </div>
         </section>
       </main>

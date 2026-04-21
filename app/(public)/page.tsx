@@ -60,9 +60,9 @@ export default function Home() {
               We are the voice for those who cannot speak.
             </p>
             <div className="button-row">
-              <button className="pill-btn solid" type="button">
+              <Link className="pill-btn solid pill-link" href="/donate">
                 Donate Now
-              </button>
+              </Link>
               <Link className="pill-btn subtle pill-link" href="/rescue">
                 Report Rescue
               </Link>
@@ -96,6 +96,7 @@ export default function Home() {
 
         <section className="section-wrap">
           <h2 className="section-title center">Transformed Lives</h2>
+          <div className="section-divider" aria-hidden="true" />
           <p className="section-sub center">
             See the difference your support makes. Meet Luna.
           </p>
@@ -123,9 +124,9 @@ export default function Home() {
             animals who have nowhere else to go.
           </p>
           <div className="button-row center-row">
-            <button className="pill-btn subtle light" type="button">
+            <Link className="pill-btn subtle light pill-link" href="/donate">
               Give Now
-            </button>
+            </Link>
             <Link className="pill-btn ghost pill-link" href="/admin">
               Admin Portal
             </Link>

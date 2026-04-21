@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import AdminThemeToggle from "@/components/AdminThemeToggle";
 
 const locationFilters = [
   { label: "All Wings", count: 48, active: true },
@@ -20,8 +21,7 @@ const careLogRows = [
     notes: "High energy today, enjoyed outdoor time but slight limp in rear left paw.",
     staff: "S. Miller",
     badge: "alert",
-    image:
-      "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=120&q=80",
+    image: "/images/unsplash/photo-1517849845537-4d257902454a.jpg",
   },
   {
     name: "Luna",
@@ -31,8 +31,7 @@ const careLogRows = [
     notes: "No unusual behavior noted.",
     staff: "J. Doe",
     badge: "calm",
-    image:
-      "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?auto=format&fit=crop&w=120&q=80",
+    image: "/images/unsplash/photo-1519052537078-e6302a4968d4.jpg",
   },
   {
     name: "Pippin",
@@ -42,8 +41,7 @@ const careLogRows = [
     notes: "Appetite is improving. Still cautious with new staff members.",
     staff: "S. Miller",
     badge: "good",
-    image:
-      "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=120&q=80",
+    image: "/images/unsplash/photo-1548199973-03cce0bbc87b.jpg",
   },
 ];
 
@@ -135,6 +133,7 @@ export default function ShelterCareLogsPage() {
             <input aria-label="Search" placeholder="Search logs..." type="text" />
           </div>
           <div className="admin-top-icons">
+            <AdminThemeToggle />
             <span>🔔</span>
             <span>⚙️</span>
             <span className="avatar">AD</span>

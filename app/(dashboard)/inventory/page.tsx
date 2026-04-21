@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import AdminThemeToggle from "@/components/AdminThemeToggle";
 
 const animalCards = [
   {
@@ -14,8 +15,7 @@ const animalCards = [
     medication: "Apoquel 10mg",
     notes:
       "Slightly lethargic this morning. Avoided hard kibble, preferred wet food topper.",
-    image:
-      "https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=1000&q=80",
+    image: "/images/unsplash/photo-1507146426996-ef05306b995a.jpg",
     chip: "Log Completed",
     chipTone: "ok",
   },
@@ -29,8 +29,7 @@ const animalCards = [
     medication: "Insulin due 10:00 AM",
     notes:
       "Extremely affectionate. Purring loudly during morning check. Weight stable at 4.2kg.",
-    image:
-      "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?auto=format&fit=crop&w=1000&q=80",
+    image: "/images/unsplash/photo-1519052537078-e6302a4968d4.jpg",
     chip: "Meds Pending",
     chipTone: "warn",
   },
@@ -159,6 +158,7 @@ export default function InventoryPage() {
             />
           </div>
           <div className="admin-top-icons">
+            <AdminThemeToggle />
             <span>🔔</span>
             <span>⚙️</span>
             <span>?</span>

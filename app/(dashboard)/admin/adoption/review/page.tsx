@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import AdminThemeToggle from "@/components/AdminThemeToggle";
 
 type BoardCard = {
   applicant: string;
@@ -25,16 +26,14 @@ const boardColumns: BoardColumn[] = [
         applicant: "Marcus Thorne",
         pet: "Bella (Golden)",
         note: "Submitted 3h ago",
-        image:
-          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=180&q=80",
+        image: "/images/unsplash/photo-1544005313-94ddf0286df2.jpg",
         urgent: true,
       },
       {
         applicant: "Elena Rodriguez",
         pet: "Socks (Tabby)",
         note: "Submitted 5h ago",
-        image:
-          "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=180&q=80",
+        image: "/images/unsplash/photo-1524504388940-b1c1722653e1.jpg",
       },
     ],
   },
@@ -45,8 +44,7 @@ const boardColumns: BoardColumn[] = [
         applicant: "David & Claire Ames",
         pet: "Duke (Labrador)",
         note: "Last updated 24m ago",
-        image:
-          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=180&q=80",
+        image: "/images/unsplash/photo-1500648767791-00dcc994a43e.jpg",
         selected: true,
       },
     ],
@@ -58,8 +56,7 @@ const boardColumns: BoardColumn[] = [
         applicant: "Sarah Miller",
         pet: "Apollo",
         note: "Tomorrow, 10:30 AM",
-        image:
-          "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=180&q=80",
+        image: "/images/unsplash/photo-1580489944761-15a19d654956.jpg",
       },
     ],
   },
@@ -158,6 +155,7 @@ export default function AdoptionReviewPage() {
             <input aria-label="Search" placeholder="Search applications or animals..." type="text" />
           </div>
           <div className="admin-top-icons">
+            <AdminThemeToggle />
             <span>🔔</span>
             <span>⚙️</span>
             <span>?</span>
@@ -211,7 +209,7 @@ export default function AdoptionReviewPage() {
 
             <article className="ar-profile">
               <img
-                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=220&q=80"
+                src="/images/unsplash/photo-1560250097-0b93528c311a.jpg"
                 alt="David and Claire"
               />
               <div>

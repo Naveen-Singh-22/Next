@@ -36,6 +36,13 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${outfit.variable} ${syne.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("theme");var d=(t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches))?"dark":"light";var r=document.documentElement;r.setAttribute("data-theme",d);r.classList.toggle("dark",d==="dark");r.style.colorScheme=d;}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col" id="top">
         {children}
         <SiteFooter />

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import AdminThemeToggle from "@/components/AdminThemeToggle";
 
 type PipelineCard = {
   applicant: string;
@@ -29,16 +30,14 @@ const lanes: PipelineLane[] = [
         pet: "Cooper",
         date: "Oct 12, 2023",
         tone: "warm",
-        image:
-          "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=180&q=80",
+        image: "/images/unsplash/photo-1544723795-3fb6469f5b39.jpg",
       },
       {
         applicant: "Michael Chen",
         pet: "Luna",
         date: "Oct 14, 2023",
         tone: "neutral",
-        image:
-          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=180&q=80",
+        image: "/images/unsplash/photo-1500648767791-00dcc994a43e.jpg",
       },
     ],
   },
@@ -52,8 +51,7 @@ const lanes: PipelineLane[] = [
         date: "Oct 08, 2023",
         tag: "Background Check OK",
         tone: "mint",
-        image:
-          "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=180&q=80",
+        image: "/images/unsplash/photo-1524504388940-b1c1722653e1.jpg",
       },
     ],
   },
@@ -68,8 +66,7 @@ const lanes: PipelineLane[] = [
         location: "Brooklyn, NY",
         tag: "Scheduled",
         tone: "blue",
-        image:
-          "https://images.unsplash.com/photo-1542204625-de293a38bda2?auto=format&fit=crop&w=180&q=80",
+        image: "/images/unsplash/photo-1542204625-de293a38bda2.jpg",
       },
     ],
   },
@@ -82,8 +79,7 @@ const lanes: PipelineLane[] = [
         pet: "Milo",
         date: "Awaiting Director Sign-Off",
         tone: "neutral",
-        image:
-          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=180&q=80",
+        image: "/images/unsplash/photo-1472099645785-5658abf4ff4e.jpg",
       },
     ],
   },
@@ -96,16 +92,14 @@ const lanes: PipelineLane[] = [
         pet: "Snowball",
         date: "Completed",
         tone: "mint",
-        image:
-          "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=180&q=80",
+        image: "/images/unsplash/photo-1560250097-0b93528c311a.jpg",
       },
       {
         applicant: "Sarah Thompson",
         pet: "Rocket",
         date: "Completed",
         tone: "mint",
-        image:
-          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=180&q=80",
+        image: "/images/unsplash/photo-1544005313-94ddf0286df2.jpg",
       },
     ],
   },
@@ -197,6 +191,7 @@ export default function AdoptionPipelinePage() {
             />
           </div>
           <div className="admin-top-icons">
+            <AdminThemeToggle />
             <span>🔔</span>
             <span>⚙️</span>
             <span className="avatar">AR</span>
