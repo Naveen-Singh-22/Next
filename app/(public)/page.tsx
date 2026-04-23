@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import SiteNav from "@/components/SiteNav";
 import HeroCarousel from "@/components/HeroCarousel";
+import ScrollReveal from "@/components/ScrollReveal";
 
 export default function Home() {
   const heroSlides = [
@@ -158,36 +159,41 @@ export default function Home() {
           secondaryCta={{ href: "/volunteer", label: "Volunteer" }}
         />
 
-        <section className="section-wrap homev2-stats" aria-label="Impact statistics">
+        <ScrollReveal
+          as="section"
+          className="section-wrap homev2-stats"
+          aria-label="Impact statistics"
+          delayMs={40}
+        >
           {stats.map((item) => (
-            <article key={item.label} className="homev2-stat-card">
+            <article key={item.label} className="homev2-stat-card reveal-item">
               <h3>{item.value}</h3>
               <p>{item.label}</p>
             </article>
           ))}
-        </section>
+        </ScrollReveal>
 
-        <section className="homev2-process section-wrap">
+        <ScrollReveal as="section" className="homev2-process section-wrap" delayMs={80}>
           <p className="homev2-kicker">Our process</p>
           <h2>How We Save Lives</h2>
           <p>Every rescue follows a dedicated path from risk to comfort.</p>
           <div className="homev2-process-grid">
             {processItems.map((item) => (
-              <article key={item.title} className="homev2-process-card">
+              <article key={item.title} className="homev2-process-card reveal-item">
                 <span aria-hidden="true">✦</span>
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>
               </article>
             ))}
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="section-wrap homev2-programs">
+        <ScrollReveal as="section" className="section-wrap homev2-programs" delayMs={120}>
           <p className="homev2-kicker">Our mission in action</p>
           <h2>Comprehensive Care Programs</h2>
           <div className="homev2-program-grid">
             {programs.map((program, index) => (
-              <article key={program.title} className="homev2-program-card">
+              <article key={program.title} className="homev2-program-card reveal-item">
                 <span className="homev2-program-icon" aria-hidden="true">
                   {index === 0 ? "✳" : index === 1 ? "⌂" : "☒"}
                 </span>
@@ -197,9 +203,9 @@ export default function Home() {
               </article>
             ))}
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="section-wrap homev2-adopt">
+        <ScrollReveal as="section" className="section-wrap homev2-adopt" delayMs={160}>
           <div className="homev2-adopt-head">
             <div>
               <h2>Adoptable Friends</h2>
@@ -212,7 +218,7 @@ export default function Home() {
 
           <div className="homev2-animal-grid">
             {featuredAnimals.map((animal) => (
-              <article key={animal.name} className="homev2-animal-card">
+              <article key={animal.name} className="homev2-animal-card reveal-item">
                 <Image
                   src={animal.image}
                   alt={`${animal.name} for adoption`}
@@ -227,9 +233,9 @@ export default function Home() {
               </article>
             ))}
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="section-wrap homev2-story">
+        <ScrollReveal as="section" className="section-wrap homev2-story" delayMs={200}>
           <div>
             <p className="homev2-kicker">Transformation storyline</p>
             <h2>From the Streets to the Sofa</h2>
@@ -260,27 +266,27 @@ export default function Home() {
               />
             </div>
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="section-wrap homev2-faq">
+        <ScrollReveal as="section" className="section-wrap homev2-faq" delayMs={240}>
           <p className="homev2-kicker">Information</p>
           <h2>Common Questions</h2>
           <div className="homev2-faq-list">
-            <details>
+            <details className="reveal-item">
               <summary>What is the adoption process like?</summary>
               <p>
                 We start with your application, conduct a short screening call,
                 and arrange a supervised meet-and-greet before final placement.
               </p>
             </details>
-            <details>
+            <details className="reveal-item">
               <summary>How much are the adoption fees?</summary>
               <p>
                 Fees vary by animal profile and medical needs, and they help
                 cover vaccinations, deworming, and early recovery costs.
               </p>
             </details>
-            <details>
+            <details className="reveal-item">
               <summary>How can I become a volunteer?</summary>
               <p>
                 You can register through our volunteer form. We run orientation
@@ -288,9 +294,9 @@ export default function Home() {
               </p>
             </details>
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="section-wrap homev2-support">
+        <ScrollReveal as="section" className="section-wrap homev2-support" delayMs={280}>
           <h2>Ways to Support</h2>
           <p>
             Your generosity fuels our mission. Choose the way that works best
@@ -298,14 +304,14 @@ export default function Home() {
           </p>
           <div className="homev2-support-grid">
             {supportWays.map((way) => (
-              <article key={way.title} className="homev2-support-card">
+              <article key={way.title} className="homev2-support-card reveal-item">
                 <h3>{way.title}</h3>
                 <p>{way.description}</p>
                 <Link href={way.href}>{way.cta}</Link>
               </article>
             ))}
           </div>
-        </section>
+        </ScrollReveal>
 
         <section className="homev2-newsletter-wrap">
           <div className="section-wrap homev2-newsletter">

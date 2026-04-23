@@ -102,7 +102,7 @@ export default function HeroCarousel({
 
   return (
     <section
-      className={`relative isolate min-h-[100svh] w-full overflow-hidden ${className}`.trim()}
+      className={`relative isolate mb-10 min-h-[100svh] w-full overflow-hidden sm:mb-12 lg:mb-16 ${className}`.trim()}
       role="region"
       aria-roledescription="carousel"
       aria-label={ariaLabel}
