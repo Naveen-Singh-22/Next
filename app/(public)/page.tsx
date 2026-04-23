@@ -3,6 +3,7 @@ import Image from "next/image";
 import SiteNav from "@/components/SiteNav";
 import HeroCarousel from "@/components/HeroCarousel";
 import ScrollReveal from "@/components/ScrollReveal";
+import NewsletterSignupForm from "@/components/NewsletterSignupForm";
 
 export default function Home() {
   const heroSlides = [
@@ -79,7 +80,7 @@ export default function Home() {
       title: "Medical & Shelter Care",
       description:
         "From surgeries to complete recovery plans, care is delivered with consistency and dignity.",
-      href: "/admin/shelter-care-logs",
+      href: "/impact",
     },
   ];
 
@@ -127,13 +128,13 @@ export default function Home() {
       title: "Corporate Matching",
       description: "Amplify your impact through workplace and partner matching programs.",
       cta: "Get Started",
-      href: "/donate",
+      href: "/volunteer",
     },
     {
       title: "In-Kind Donations",
       description: "Donate supplies, food, or medical resources needed by the shelter.",
       cta: "View Wishlist",
-      href: "/impact",
+      href: "/donate",
     },
   ];
 
@@ -251,16 +252,16 @@ export default function Home() {
           <div className="homev2-story-images">
             <div className="homev2-story-image">
               <Image
-                src="/images/unsplash/photo-1517849845537-4d257902454a.jpg"
-                alt="Puppy before adoption"
+                src="/images/unsplash/photo-1519052537078-e6302a4968d4.jpg"
+                alt="Cat before adoption"
                 fill
                 sizes="(max-width: 920px) 50vw, 24vw"
               />
             </div>
             <div className="homev2-story-image">
               <Image
-                src="/images/unsplash/photo-1601758228041-f3b2795255f1.jpg"
-                alt="Dog after adoption"
+                src="/images/unsplash/04.jpg"
+                alt="Cat after adoption"
                 fill
                 sizes="(max-width: 920px) 50vw, 24vw"
               />
@@ -322,10 +323,7 @@ export default function Home() {
                 upcoming events delivered to your inbox.
               </p>
             </div>
-            <form>
-              <input type="email" placeholder="Enter your email address" aria-label="Email address" />
-              <button type="button">Subscribe</button>
-            </form>
+            <NewsletterSignupForm />
           </div>
         </section>
       </main>
