@@ -1,8 +1,36 @@
 import Link from "next/link";
 import Image from "next/image";
 import SiteNav from "@/components/SiteNav";
+import HeroCarousel from "@/components/HeroCarousel";
 
 export default function Home() {
+  const heroSlides = [
+    {
+      src: "/images/unsplash/liam-8XbWqqz7ukE-unsplash.jpg",
+      alt: "Three rescue puppies standing together on a road",
+    },
+    {
+      src: "/images/unsplash/08.jpg",
+      alt: "A volunteer gently comforting a rescue dog",
+    },
+    {
+      src: "/images/unsplash/09.jpg",
+      alt: "A rescued cat resting safely in soft bedding",
+    },
+    {
+      src: "/images/unsplash/02.jpg",
+      alt: "A close-up of a kitten looking out from a bowl",
+    },
+    {
+      src: "/images/unsplash/01.jpg",
+      alt: "A rescue dog sleeping peacefully on the ground",
+    },
+    {
+      src: "/images/unsplash/06.jpg",
+      alt: "A rescue dog sleeping peacefully on the ground",
+    },
+  ];
+
   const stats = [
     { value: "2,400+", label: "Animals Rescued" },
     { value: "1,850+", label: "Adoptions" },
@@ -113,40 +141,22 @@ export default function Home() {
       <SiteNav />
 
       <main className="homev2-main">
-        <section className="homev2-hero">
-          <Image
-            className="homev2-hero-image"
-            src="/images/unsplash/photo-1552053831-71594a27632d.jpg"
-            alt="Golden retriever in rescue care"
-            fill
-            priority
-            sizes="100vw"
-          />
-          <div className="homev2-hero-overlay" />
-          <div className="homev2-hero-content section-wrap">
-            <p className="eyebrow">Rescue mission 2026</p>
-            <h1>
+        <HeroCarousel
+          slides={heroSlides}
+          eyebrow="Rescue mission 2026"
+          heading={
+            <>
               Every Life
               <br />
               Deserves a
               <br />
-              <span>Second Chance</span>
-            </h1>
-            <p>
-              Compassion is more than our mission. It is our promise to every
-              abandoned animal. We rescue, rehabilitate, and rehome with
-              long-term care.
-            </p>
-            <div className="homev2-hero-actions">
-              <Link href="/donate" className="pill-btn solid pill-link">
-                Donate Now
-              </Link>
-              <Link href="/volunteer" className="pill-btn subtle light pill-link">
-                Volunteer
-              </Link>
-            </div>
-          </div>
-        </section>
+              Second Chance
+            </>
+          }
+          subheading="Compassion is more than our mission. It is our promise to every abandoned animal. We rescue, rehabilitate, and rehome with long-term care."
+          primaryCta={{ href: "/donate", label: "Donate Now" }}
+          secondaryCta={{ href: "/volunteer", label: "Volunteer" }}
+        />
 
         <section className="section-wrap homev2-stats" aria-label="Impact statistics">
           {stats.map((item) => (
