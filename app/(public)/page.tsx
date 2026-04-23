@@ -260,8 +260,8 @@ export default function Home() {
             </div>
             <div className="homev2-story-image">
               <Image
-                src="/images/unsplash/04.jpg"
-                alt="Cat after adoption"
+                src="/images/unsplash/05.jpg"
+                alt="Cat resting comfortably after adoption"
                 fill
                 sizes="(max-width: 920px) 50vw, 24vw"
               />

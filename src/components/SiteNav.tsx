@@ -16,7 +16,6 @@ const NAV_LINKS = [
   { href: "/adopt", label: "Adopt" },
   { href: "/volunteer", label: "Volunteer" },
   { href: "/rescue", label: "Rescue Form" },
-  { href: "/admin", label: "Admin" },
 ];
 
 function MoonIcon() {
