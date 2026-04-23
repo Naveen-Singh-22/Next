@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Outfit, Syne } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
-import SiteFooter from "@/components/SiteFooter";
+import AppFooter from "@/components/AppFooter";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -39,13 +39,13 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("theme");var d=(t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches))?"dark":"light";var r=document.documentElement;r.setAttribute("data-theme",d);r.classList.toggle("dark",d==="dark");r.style.colorScheme=d;}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem("theme");var d=(t==="dark"||t==="light")?t:"light";var r=document.documentElement;r.setAttribute("data-theme",d);r.classList.toggle("dark",d==="dark");r.style.colorScheme=d;}catch(e){}})();`,
           }}
         />
       </head>
       <body className="min-h-full flex flex-col" id="top">
         {children}
-        <SiteFooter />
+        <AppFooter />
       </body>
     </html>
   );
