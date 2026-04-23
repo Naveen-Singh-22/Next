@@ -1,138 +1,315 @@
 import Link from "next/link";
+import Image from "next/image";
 import SiteNav from "@/components/SiteNav";
 
 export default function Home() {
   const stats = [
     { value: "2,400+", label: "Animals Rescued" },
     { value: "1,850+", label: "Adoptions" },
-    { value: "450", label: "Active Volunteers" },
-    { value: "3,200+", label: "Treatments" },
+    { value: "450+", label: "Active Volunteers" },
+    { value: "3,200+", label: "Medical Treatments" },
+  ];
+
+  const processItems = [
+    {
+      title: "Report",
+      description:
+        "Emergency cases are triaged in minutes using location and urgency details.",
+    },
+    {
+      title: "Rescue",
+      description:
+        "Our rescue team moves quickly and safely to bring animals to care.",
+    },
+    {
+      title: "Rehabilitate",
+      description:
+        "Compassionate veterinary care, nutrition, and behavioral support follow.",
+    },
+    {
+      title: "Rehome",
+      description:
+        "Thoughtful matching helps every animal find a safe, loving home.",
+    },
   ];
 
   const programs = [
     {
-      title: "Emergency Rescue",
+      title: "Rescue & Emergency Response",
       description:
-        "24/7 rapid response for animals in critical danger, from roadside injuries to flood zones.",
-      tone: "program-card rescue",
+        "Our 24/7 rapid response team coordinates high-risk rescues and immediate stabilization.",
       href: "/rescue",
-      link: "Report Now",
     },
     {
-      title: "Specialized Medical Care",
+      title: "Adoption & Rehoming",
       description:
-        "In-house surgery and trauma rehabilitation with custom recovery plans for each rescued animal.",
-      tone: "program-card medical",
-      href: "#",
-      link: "Learn more",
-    },
-    {
-      title: "Adoption Program",
-      description:
-        "Careful matching, home checks, and post-adoption support to build lifelong bonds.",
-      tone: "program-card adoption",
+        "A careful adopter screening process ensures long-term placements and happy transitions.",
       href: "/adopt",
-      link: "View gallery",
     },
     {
-      title: "Education & Advocacy",
+      title: "Medical & Shelter Care",
       description:
-        "Community outreach in schools and neighborhoods to prevent cruelty and promote empathy.",
-      tone: "program-card advocacy",
-      href: "#",
-      link: "Learn more",
+        "From surgeries to complete recovery plans, care is delivered with consistency and dignity.",
+      href: "/admin/shelter-care-logs",
+    },
+  ];
+
+  const featuredAnimals = [
+    {
+      name: "Cooper",
+      detail: "5 years • Golden Retriever",
+      image: "/images/unsplash/photo-1543466835-00a7907e9de1.jpg",
+      badge: "Adoptable",
+    },
+    {
+      name: "Luna",
+      detail: "8 months • Domestic Shorthair",
+      image: "/images/unsplash/photo-1519052537078-e6302a4968d4.jpg",
+      badge: "Adoptable",
+    },
+    {
+      name: "Buster",
+      detail: "4 years • Indie Mix",
+      image: "/images/unsplash/photo-1507146426996-ef05306b995a.jpg",
+      badge: "Adoptable",
+    },
+    {
+      name: "Shadow",
+      detail: "6 years • Labrador",
+      image: "/images/unsplash/photo-1548199973-03cce0bbc87b.jpg",
+      badge: "Foster",
+    },
+  ];
+
+  const supportWays = [
+    {
+      title: "Monthly Giving",
+      description: "Predictable contributions support rescue operations year-round.",
+      cta: "Sign Up",
+      href: "/donate",
+    },
+    {
+      title: "Sponsor a Recovery",
+      description: "Help fund treatment and safe rehabilitation for one rescued animal.",
+      cta: "Donate Now",
+      href: "/donate",
+    },
+    {
+      title: "Corporate Matching",
+      description: "Amplify your impact through workplace and partner matching programs.",
+      cta: "Get Started",
+      href: "/donate",
+    },
+    {
+      title: "In-Kind Donations",
+      description: "Donate supplies, food, or medical resources needed by the shelter.",
+      cta: "View Wishlist",
+      href: "/impact",
     },
   ];
 
   return (
-    <div className="home-page">
+    <div className="homev2-page">
       <SiteNav />
 
-      <main>
-        <section className="hero section-wrap">
-          <div className="hero-copy">
-            <p className="eyebrow">Rescue Mission 2026</p>
+      <main className="homev2-main">
+        <section className="homev2-hero">
+          <Image
+            className="homev2-hero-image"
+            src="/images/unsplash/photo-1552053831-71594a27632d.jpg"
+            alt="Golden retriever in rescue care"
+            fill
+            priority
+            sizes="100vw"
+          />
+          <div className="homev2-hero-overlay" />
+          <div className="homev2-hero-content section-wrap">
+            <p className="eyebrow">Rescue mission 2026</p>
             <h1>
-              Every Life <span>Deserves</span> a Second Chance
+              Every Life
+              <br />
+              Deserves a
+              <br />
+              <span>Second Chance</span>
             </h1>
             <p>
-              Join us in our mission to rescue, heal, and rehome animals in need.
-              We are the voice for those who cannot speak.
+              Compassion is more than our mission. It is our promise to every
+              abandoned animal. We rescue, rehabilitate, and rehome with
+              long-term care.
             </p>
-            <div className="button-row">
-              <Link className="pill-btn solid pill-link" href="/donate">
+            <div className="homev2-hero-actions">
+              <Link href="/donate" className="pill-btn solid pill-link">
                 Donate Now
               </Link>
-              <Link className="pill-btn subtle pill-link" href="/rescue">
-                Report Rescue
+              <Link href="/volunteer" className="pill-btn subtle light pill-link">
+                Volunteer
               </Link>
             </div>
           </div>
-
-          <div className="hero-art" role="img" aria-label="Rescued golden retriever" />
         </section>
 
-        <section className="section-wrap stat-grid" aria-label="Impact statistics">
+        <section className="section-wrap homev2-stats" aria-label="Impact statistics">
           {stats.map((item) => (
-            <article key={item.label} className="stat-card">
+            <article key={item.label} className="homev2-stat-card">
               <h3>{item.value}</h3>
               <p>{item.label}</p>
             </article>
           ))}
         </section>
 
-        <section className="section-wrap">
-          <h2 className="section-title">Our Core Programs</h2>
-          <div className="program-grid">
-            {programs.map((program) => (
-              <article key={program.title} className={program.tone}>
-                <h3>{program.title}</h3>
-                <p>{program.description}</p>
-                <Link href={program.href}>{program.link}</Link>
+        <section className="homev2-process section-wrap">
+          <p className="homev2-kicker">Our process</p>
+          <h2>How We Save Lives</h2>
+          <p>Every rescue follows a dedicated path from risk to comfort.</p>
+          <div className="homev2-process-grid">
+            {processItems.map((item) => (
+              <article key={item.title} className="homev2-process-card">
+                <span aria-hidden="true">✦</span>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
               </article>
             ))}
           </div>
         </section>
 
-        <section className="section-wrap">
-          <h2 className="section-title center">Transformed Lives</h2>
-          <div className="section-divider" aria-hidden="true" />
-          <p className="section-sub center">
-            See the difference your support makes. Meet Luna.
-          </p>
-          <div className="story-pair">
-            <article className="story-card before">
-              <span>Before</span>
-              <h3>Found: January 12</h3>
-              <p>Severely malnourished, wandering in an industrial park.</p>
-            </article>
-            <article className="story-card after">
-              <span>After</span>
-              <h3>Today: Happy &amp; Loved</h3>
-              <p>
-                Luna now lives with a caring family and spends weekends at the
-                beach.
-              </p>
-            </article>
+        <section className="section-wrap homev2-programs">
+          <p className="homev2-kicker">Our mission in action</p>
+          <h2>Comprehensive Care Programs</h2>
+          <div className="homev2-program-grid">
+            {programs.map((program, index) => (
+              <article key={program.title} className="homev2-program-card">
+                <span className="homev2-program-icon" aria-hidden="true">
+                  {index === 0 ? "✳" : index === 1 ? "⌂" : "☒"}
+                </span>
+                <h3>{program.title}</h3>
+                <p>{program.description}</p>
+                <Link href={program.href}>Learn More →</Link>
+              </article>
+            ))}
           </div>
         </section>
 
-        <section className="section-wrap cta-wrap">
-          <h2>Ready to make a difference?</h2>
+        <section className="section-wrap homev2-adopt">
+          <div className="homev2-adopt-head">
+            <div>
+              <h2>Adoptable Friends</h2>
+              <p>Waiting for a place to call home.</p>
+            </div>
+            <Link href="/adopt" className="pill-btn solid pill-link">
+              View All Animals
+            </Link>
+          </div>
+
+          <div className="homev2-animal-grid">
+            {featuredAnimals.map((animal) => (
+              <article key={animal.name} className="homev2-animal-card">
+                <Image
+                  src={animal.image}
+                  alt={`${animal.name} for adoption`}
+                  fill
+                  sizes="(max-width: 920px) 50vw, 25vw"
+                />
+                <span className="homev2-animal-badge">{animal.badge}</span>
+                <div className="homev2-animal-meta">
+                  <h3>{animal.name}</h3>
+                  <p>{animal.detail}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section-wrap homev2-story">
+          <div>
+            <p className="homev2-kicker">Transformation storyline</p>
+            <h2>From the Streets to the Sofa</h2>
+            <p>
+              &quot;Seeing Max go from a frightened, shivering pup to a joyous member
+              of our family has been the most rewarding journey of our lives.&quot;
+            </p>
+            <small>The McKinley Family</small>
+            <Link href="/impact" className="pill-btn subtle pill-link">
+              Read More Stories
+            </Link>
+          </div>
+          <div className="homev2-story-images">
+            <div className="homev2-story-image">
+              <Image
+                src="/images/unsplash/photo-1517849845537-4d257902454a.jpg"
+                alt="Puppy before adoption"
+                fill
+                sizes="(max-width: 920px) 50vw, 24vw"
+              />
+            </div>
+            <div className="homev2-story-image">
+              <Image
+                src="/images/unsplash/photo-1601758228041-f3b2795255f1.jpg"
+                alt="Dog after adoption"
+                fill
+                sizes="(max-width: 920px) 50vw, 24vw"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="section-wrap homev2-faq">
+          <p className="homev2-kicker">Information</p>
+          <h2>Common Questions</h2>
+          <div className="homev2-faq-list">
+            <details>
+              <summary>What is the adoption process like?</summary>
+              <p>
+                We start with your application, conduct a short screening call,
+                and arrange a supervised meet-and-greet before final placement.
+              </p>
+            </details>
+            <details>
+              <summary>How much are the adoption fees?</summary>
+              <p>
+                Fees vary by animal profile and medical needs, and they help
+                cover vaccinations, deworming, and early recovery costs.
+              </p>
+            </details>
+            <details>
+              <summary>How can I become a volunteer?</summary>
+              <p>
+                You can register through our volunteer form. We run orientation
+                sessions each week for rescue, shelter, and event support.
+              </p>
+            </details>
+          </div>
+        </section>
+
+        <section className="section-wrap homev2-support">
+          <h2>Ways to Support</h2>
           <p>
-            Your donation provides food, medical care, and safe shelter for
-            animals who have nowhere else to go.
+            Your generosity fuels our mission. Choose the way that works best
+            for you to help us save lives.
           </p>
-          <div className="button-row center-row">
-            <Link className="pill-btn subtle light pill-link" href="/donate">
-              Give Now
-            </Link>
-            <Link className="pill-btn ghost pill-link" href="/admin">
-              Admin Portal
-            </Link>
-            <Link className="pill-btn subtle pill-link" href="/inventory">
-              Animal Inventory
-            </Link>
+          <div className="homev2-support-grid">
+            {supportWays.map((way) => (
+              <article key={way.title} className="homev2-support-card">
+                <h3>{way.title}</h3>
+                <p>{way.description}</p>
+                <Link href={way.href}>{way.cta}</Link>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="homev2-newsletter-wrap">
+          <div className="section-wrap homev2-newsletter">
+            <div>
+              <h2>Stay Informed</h2>
+              <p>
+                Join our community and get rescue updates, adoption stories, and
+                upcoming events delivered to your inbox.
+              </p>
+            </div>
+            <form>
+              <input type="email" placeholder="Enter your email address" aria-label="Email address" />
+              <button type="button">Subscribe</button>
+            </form>
           </div>
         </section>
       </main>

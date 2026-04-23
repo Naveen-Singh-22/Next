@@ -81,6 +81,9 @@ export default function AdminPage() {
             <p>Admin Portal</p>
             <small>Shelter Operations</small>
           </div>
+          <Link href="/api/admin/logout" className="admin-logout-link">
+            Sign out
+          </Link>
         </div>
       </aside>
 
@@ -207,7 +210,7 @@ export default function AdminPage() {
 
           <article className="story-banner">
             <p>Success Story</p>
-            <h3>"Ollie found a forever home in Bristol today."</h3>
+            <h3>&quot;Ollie found a forever home in Bristol today.&quot;</h3>
             <small>
               Through our streamlined adoption pipeline, Ollie transitioned from
               rescue to family in just 14 days.
