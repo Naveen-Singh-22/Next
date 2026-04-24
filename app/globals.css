@@ -2893,6 +2893,10 @@ body.page-at-top .site-footer-fab-top {
   gap: 1.5rem;
 }
 
+.rescue-layout-wrap {
+  will-change: transform, opacity;
+}
+
 .rescue-left,
 .rescue-right {
   display: grid;
@@ -2905,6 +2909,15 @@ body.page-at-top .site-footer-fab-top {
   border: 1px solid #e6e6e6;
   border-radius: 14px;
   padding: 1.2rem;
+}
+
+.rescue-panel-anim {
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.rescue-panel-anim:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 26px -24px rgba(0, 0, 0, 0.85);
 }
 
 .panel h2 {
@@ -3112,6 +3125,7 @@ textarea {
   padding: 0.7rem;
   border: 1px solid #e4e4e4;
   background: #f5f5f5;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .urgency-item strong {
@@ -3128,6 +3142,7 @@ textarea {
 .urgency-item.selected {
   border-color: #98d5cb;
   background: #d8efea;
+  transform: translateX(2px);
 }
 
 .urgency-item.selected strong {
@@ -3148,6 +3163,44 @@ textarea {
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 14px 22px -20px #000;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.map-status {
+  margin: 0.5rem 0 0;
+  color: #5b6666;
+  font-size: 0.78rem;
+}
+
+.rescue-submit-status {
+  margin: -0.5rem 0 0;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.rescue-submit-status-success {
+  color: #0f6d62;
+  background: #dbf2ed;
+  border-color: #9dd7cc;
+}
+
+.rescue-submit-status-error {
+  color: #aa3737;
+  background: #f9e2e2;
+  border-color: #e7b8b8;
 }
 
 .post-note {
@@ -8016,6 +8069,18 @@ html.dark .admin-footer a,
   .vol-role:hover {
     transform: none;
     box-shadow: none;
+  }
+
+  .rescue-panel-anim,
+  .submit-btn,
+  .urgency-item {
+    transition: none;
+  }
+
+  .rescue-panel-anim:hover,
+  .submit-btn:hover,
+  .urgency-item.selected {
+    transform: none;
   }
 }
 

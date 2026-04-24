@@ -1,6 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { LatLngTuple } from "leaflet";
+
+type RescueLocationMapProps = {
+  marker: LatLngTuple;
+  onMarkerChange: (point: LatLngTuple) => void;
+};
 
 const RescueLocationMapClient = dynamic(() => import("@/components/RescueLocationMapClient"), {
   ssr: false,
@@ -11,6 +17,6 @@ const RescueLocationMapClient = dynamic(() => import("@/components/RescueLocatio
   ),
 });
 
-export default function RescueLocationMap() {
-  return <RescueLocationMapClient />;
+export default function RescueLocationMap({ marker, onMarkerChange }: RescueLocationMapProps) {
+  return <RescueLocationMapClient marker={marker} onMarkerChange={onMarkerChange} />;
 }
