@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, Suspense, useMemo, useState } from "react";
 
 function ShieldIcon() {
   return (
@@ -44,7 +44,7 @@ function sanitizeNextPath(nextPath: string | null): string {
   return nextPath;
 }
 
-export default function AdminLoginPage() {
+function AdminLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const safeNextPath = useMemo(
@@ -230,5 +230,13 @@ export default function AdminLoginPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminLoginContent />
+    </Suspense>
   );
 }
