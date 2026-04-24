@@ -3289,6 +3289,10 @@ textarea {
   box-shadow: 0 28px 42px -34px rgba(0, 0, 0, 0.6);
 }
 
+.vol-float {
+  animation: volunteerFloat 5.5s ease-in-out infinite;
+}
+
 .quote-float {
   position: absolute;
   left: 1.1rem;
@@ -3299,6 +3303,10 @@ textarea {
   box-shadow: 0 20px 26px -24px rgba(0, 0, 0, 0.8);
   max-width: 260px;
   padding: 0.85rem;
+}
+
+.vol-bob {
+  animation: volunteerBob 4.2s ease-in-out infinite;
 }
 
 .quote-float strong {
@@ -3329,6 +3337,12 @@ textarea {
   padding: 1.1rem;
   border: 1px solid #eaeaea;
   background: #f9f9f9;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.vol-role:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 28px -26px rgba(0, 0, 0, 0.85);
 }
 
 .role-a {
@@ -3532,6 +3546,26 @@ textarea {
 
 .volunteer-form-wrap .submit-btn {
   margin-top: 0.1rem;
+}
+
+.volunteer-form .submit-btn:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.volunteer-form-status {
+  margin: 0.65rem 0 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.volunteer-form-status-success {
+  color: #0d7065;
+}
+
+.volunteer-form-status-error {
+  color: #b03c3c;
 }
 
 .volunteer-form-wrap>small {
@@ -3828,7 +3862,7 @@ html.dark .volunteer-form textarea::placeholder,
   color: #fff;
 }
 
-.impact-story-copy p {
+.impact-story-copy > p {
   margin: 0;
   width: fit-content;
   font-size: 0.56rem;
@@ -3836,7 +3870,7 @@ html.dark .volunteer-form textarea::placeholder,
   letter-spacing: 0.14em;
   border-radius: 999px;
   padding: 0.18rem 0.55rem;
-  background: #0a786d;
+
 }
 
 .impact-story-copy h2 {
@@ -3932,7 +3966,12 @@ html.dark .volunteer-form textarea::placeholder,
   color: #d4e0de;
   font-size: 0.8rem;
   line-height: 1.52;
-  letter-spacing: 0.01em;
+  letter-spacing: normal;
+  width: auto;
+  text-transform: none;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
 }
 
 .impact-transparency {
@@ -7939,6 +7978,44 @@ html.dark .admin-footer a,
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes volunteerFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes volunteerBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vol-float,
+  .vol-bob {
+    animation: none;
+  }
+
+  .vol-role {
+    transition: none;
+  }
+
+  .vol-role:hover {
+    transform: none;
+    box-shadow: none;
   }
 }
 

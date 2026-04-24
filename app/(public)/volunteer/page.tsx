@@ -1,4 +1,6 @@
 import SiteNav from "@/components/SiteNav";
+import ScrollReveal from "@/components/ScrollReveal";
+import VolunteerApplicationForm from "@/components/VolunteerApplicationForm";
 
 const roles = [
   {
@@ -45,16 +47,16 @@ export default function VolunteerPage() {
       <SiteNav className="volunteer-nav" />
 
       <main>
-        <section className="section-wrap volunteer-hero">
+        <ScrollReveal as="section" className="section-wrap volunteer-hero">
           <div className="volunteer-copy">
-            <h1>
+            <h1 className="reveal-item">
               Be the <span>Voice</span> for the Voiceless.
             </h1>
-            <p>
+            <p className="reveal-item">
               Join Kindred Hearth. Your time is not just a contribution; it is a
               lifeline for animals waiting for their second chance at happiness.
             </p>
-            <div className="volunteer-avatars" aria-label="Active volunteers in your area">
+            <div className="volunteer-avatars reveal-item" aria-label="Active volunteers in your area">
               <span className="avatar-dot one" />
               <span className="avatar-dot two" />
               <span className="avatar-dot three" />
@@ -63,24 +65,24 @@ export default function VolunteerPage() {
             </div>
           </div>
 
-          <div className="hero-photo-wrap">
-            <div className="hero-photo" role="img" aria-label="Volunteers walking rescue dogs" />
-            <article className="quote-float">
+          <div className="hero-photo-wrap reveal-item">
+            <div className="hero-photo vol-float" role="img" aria-label="Volunteers walking rescue dogs" />
+            <article className="quote-float vol-bob">
               <strong>Community Spirit</strong>
               <p>
-                "Volunteering at Kindred Hearth changed my life as much as it
-                changed theirs."
+                &quot;Volunteering at Kindred Hearth changed my life as much as it
+                changed theirs.&quot;
               </p>
             </article>
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="section-wrap purpose-section">
-          <h2 className="section-title">Find Your Purpose</h2>
-          <p className="section-sub">Diverse roles tailored to your unique skills and passion.</p>
+        <ScrollReveal as="section" className="section-wrap purpose-section" delayMs={80}>
+          <h2 className="section-title reveal-item">Find Your Purpose</h2>
+          <p className="section-sub reveal-item">Diverse roles tailored to your unique skills and passion.</p>
           <div className="role-grid">
             {roles.map((role) => (
-              <article key={role.title} className={role.tone}>
+              <article key={role.title} className={`${role.tone} reveal-item`}>
                 <span className="role-icon" aria-hidden="true" />
                 <h3>{role.title}</h3>
                 <p>{role.description}</p>
@@ -92,14 +94,14 @@ export default function VolunteerPage() {
               </article>
             ))}
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="section-wrap volunteer-main-grid">
+        <ScrollReveal as="section" className="section-wrap volunteer-main-grid" delayMs={120}>
           <aside className="volunteer-left-col">
-            <h2 className="section-title">Why Volunteer?</h2>
+            <h2 className="section-title reveal-item">Why Volunteer?</h2>
             <div className="why-list">
               {reasons.map((reason) => (
-                <article key={reason.title} className="why-item">
+                <article key={reason.title} className="why-item reveal-item">
                   <span className="why-glyph" aria-hidden="true" />
                   <div>
                     <h3>{reason.title}</h3>
@@ -109,7 +111,7 @@ export default function VolunteerPage() {
               ))}
             </div>
 
-            <article className="process-card">
+            <article className="process-card reveal-item">
               <p>THE PROCESS</p>
               <h3>Joining is Simple</h3>
               <ol>
@@ -120,61 +122,18 @@ export default function VolunteerPage() {
             </article>
           </aside>
 
-          <section className="volunteer-form-wrap" aria-label="Volunteer registration">
-            <h2>Volunteer Registration</h2>
-            <p>Ready to start? Let us get some basic information.</p>
+          <section className="volunteer-form-wrap reveal-item" aria-label="Volunteer registration">
+            <h2 className="reveal-item">Volunteer Registration</h2>
+            <p className="reveal-item">Ready to start? Let us get some basic information.</p>
 
-            <form className="volunteer-form" action="#" method="post">
-              <div className="field-grid">
-                <label>
-                  Full Name
-                  <input placeholder="John Doe" type="text" />
-                </label>
-                <label>
-                  Email Address
-                  <input placeholder="john@example.com" type="email" />
-                </label>
-              </div>
-
-              <div className="field-grid">
-                <label>
-                  Phone Number
-                  <input placeholder="+1 (555) 000-0000" type="tel" />
-                </label>
-                <label>
-                  City
-                  <input placeholder="San Francisco" type="text" />
-                </label>
-              </div>
-
-              <label>
-                Interest Area
-                <select defaultValue="Shelter Assistant">
-                  <option>Shelter Assistant</option>
-                  <option>Rescue Dispatcher</option>
-                  <option>Event Support</option>
-                </select>
-              </label>
-
-              <label>
-                Availability
-                <textarea
-                  rows={4}
-                  placeholder="Tell us which days and times work best for you..."
-                />
-              </label>
-
-              <button className="submit-btn" type="submit">
-                Submit Application
-              </button>
-            </form>
+            <VolunteerApplicationForm />
 
             <small>
               By submitting, you agree to our privacy policy and consent to a
               preliminary background check for animal safety.
             </small>
           </section>
-        </section>
+        </ScrollReveal>
       </main>
 
     </div>
