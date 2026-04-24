@@ -43,7 +43,7 @@ export default function DonatePage() {
 
             <figure className="donate-photo-card">
               <img
-                src="/images/unsplash/photo-1601758228041-f3b2795255f1.jpg"
+                src="/images/unsplash/05.jpg"
                 alt="Two rescued dogs"
                 loading="lazy"
               />

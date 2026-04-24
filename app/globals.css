@@ -242,7 +242,17 @@ img {
 .homev2-faq.reveal-block-hidden,
 .homev2-faq.reveal-block-visible,
 .homev2-support.reveal-block-hidden,
-.homev2-support.reveal-block-visible {
+.homev2-support.reveal-block-visible,
+.impact-hero.reveal-block-hidden,
+.impact-hero.reveal-block-visible,
+.impact-stats-grid.reveal-block-hidden,
+.impact-stats-grid.reveal-block-visible,
+.impact-story.reveal-block-hidden,
+.impact-story.reveal-block-visible,
+.impact-transparency.reveal-block-hidden,
+.impact-transparency.reveal-block-visible,
+.impact-cta.reveal-block-hidden,
+.impact-cta.reveal-block-visible {
   transition-property: opacity, transform;
 }
 
@@ -3851,6 +3861,73 @@ html.dark .volunteer-form textarea::placeholder,
   margin-top: 0.2rem;
 }
 
+.impact-journal-trigger {
+  margin-top: 0.2rem;
+  border: 0;
+  background: transparent;
+  color: #8ef2e1;
+  text-decoration: none;
+  font-weight: 700;
+  font: inherit;
+  padding: 0;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.impact-journal-trigger:hover {
+  color: #c7fff5;
+}
+
+.impact-journal-panel {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  margin-top: 0;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: rgba(11, 20, 22, 0.74);
+  transition:
+    max-height 620ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 420ms ease,
+    margin-top 420ms ease,
+    border-color 420ms ease;
+}
+
+.impact-journal-panel-open {
+  max-height: 520px;
+  opacity: 1;
+  margin-top: 0.2rem;
+  border-color: rgba(129, 164, 159, 0.5);
+}
+
+.impact-journal-content {
+  padding: 0.95rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.impact-journal-entry {
+  border-radius: 10px;
+  border: 1px solid rgba(144, 172, 167, 0.38);
+  background: rgba(18, 32, 34, 0.72);
+  padding: 0.7rem 0.75rem;
+}
+
+.impact-journal-entry h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #9cf3e5;
+  font-family: var(--font-syne), "Trebuchet MS", sans-serif;
+}
+
+.impact-journal-entry p {
+  margin: 0.42rem 0 0;
+  color: #d4e0de;
+  font-size: 0.8rem;
+  line-height: 1.52;
+  letter-spacing: 0.01em;
+}
+
 .impact-transparency {
   margin-top: 2.2rem;
   background: #e8e8e8;
@@ -3915,6 +3992,17 @@ html.dark .impact-report-card h3,
 html.dark .impact-report-card p,
 :root[data-theme="dark"] .impact-report-card p {
   color: #a2b6b3 !important;
+}
+
+html.dark .impact-journal-panel,
+:root[data-theme="dark"] .impact-journal-panel {
+  background: rgba(8, 18, 19, 0.78);
+}
+
+html.dark .impact-journal-entry,
+:root[data-theme="dark"] .impact-journal-entry {
+  background: rgba(12, 24, 25, 0.72);
+  border-color: rgba(98, 128, 123, 0.52);
 }
 
 .impact-cta {
@@ -8189,6 +8277,10 @@ html.dark .admin-footer a,
 
   .impact-story-copy {
     padding: 1.25rem;
+  }
+
+  .impact-journal-panel-open {
+    max-height: 700px;
   }
 
   .impact-cta-actions {
