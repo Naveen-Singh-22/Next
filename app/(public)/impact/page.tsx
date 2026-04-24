@@ -71,7 +71,7 @@ export default function ImpactPage() {
               Found malnourished and scared, Luna completed treatment,
               regained confidence, and is now ready for a permanent family.
             </small>
-            <Link href="/adopt/luna">View Luna&apos;s Profile →</Link>
+            <Link href="/adopt/luna"><button type="button" className="impact-journal-trigger" aria-expanded="false" aria-controls="animal-journal">Read Luna's Full Journal →</button></Link>
           </article>
         </ScrollReveal>
 
