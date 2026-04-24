@@ -4479,6 +4479,27 @@ html.dark .impact-journal-entry,
 
 .animal-profile-page {
   background: #f1f2f1;
+  --ap-surface: #f8f9f8;
+  --ap-surface-soft: #ffffff;
+  --ap-border: #dce3e2;
+  --ap-text: #1a2929;
+  --ap-text-muted: #5f6c6c;
+  --ap-timeline-dot: #0a7b6f;
+  --ap-kicker: #8a4d31;
+  --ap-card-shadow: 0 24px 36px -34px rgba(8, 21, 20, 0.42);
+}
+
+html.dark .animal-profile-page,
+:root[data-theme="dark"] .animal-profile-page {
+  background: #0f1616;
+  --ap-surface: #1b2424;
+  --ap-surface-soft: #202b2b;
+  --ap-border: #2e3a39;
+  --ap-text: #e4f0ee;
+  --ap-text-muted: #a8bab8;
+  --ap-timeline-dot: #40c7b4;
+  --ap-kicker: #ecac8f;
+  --ap-card-shadow: 0 26px 42px -36px rgba(0, 0, 0, 0.75);
 }
 
 .animal-profile-hero {
@@ -4571,9 +4592,9 @@ html.dark .impact-journal-entry,
 .animal-profile-readiness,
 .animal-profile-journal {
   border-radius: 18px;
-  border: 1px solid #dce3e2;
-  background: #f8f9f8;
-  box-shadow: 0 24px 36px -34px rgba(8, 21, 20, 0.42);
+  border: 1px solid var(--ap-border);
+  background: var(--ap-surface);
+  box-shadow: var(--ap-card-shadow);
   transition:
     transform 260ms ease,
     box-shadow 260ms ease,
@@ -4597,7 +4618,7 @@ html.dark .impact-journal-entry,
   text-transform: uppercase;
   letter-spacing: 0.16em;
   font-size: 0.58rem;
-  color: #8a4d31;
+  color: var(--ap-kicker);
   font-weight: 700;
 }
 
@@ -4610,22 +4631,74 @@ html.dark .impact-journal-entry,
   font-family: var(--font-outfit), "Segoe UI", sans-serif;
   font-size: clamp(1.55rem, 3vw, 2.6rem);
   line-height: 1.17;
+  color: var(--ap-text);
 }
 
 .animal-profile-narrative > p {
   margin: 0.85rem 0 0;
-  color: #5f6c6c;
+  color: var(--ap-text-muted);
   line-height: 1.66;
+}
+
+.animal-profile-page .animal-profile-narrative,
+.animal-profile-page .animal-profile-glance-card,
+.animal-profile-page .animal-profile-timeline,
+.animal-profile-page .animal-profile-health-card,
+.animal-profile-page .animal-profile-support-card,
+.animal-profile-page .animal-profile-readiness,
+.animal-profile-page .animal-profile-journal,
+.animal-profile-page .animal-profile-detail-card,
+.animal-profile-page .animal-profile-tracking-list article,
+.animal-profile-page .animal-profile-readiness-grid article,
+.animal-profile-page .animal-profile-readiness blockquote,
+.animal-profile-page .animal-profile-journal .impact-journal-panel,
+.animal-profile-page .animal-profile-journal .impact-journal-entry {
+  background-color: var(--ap-surface-soft) !important;
+  border-color: var(--ap-border) !important;
+}
+
+.animal-profile-page .animal-profile-glance-card,
+.animal-profile-page .animal-profile-timeline,
+.animal-profile-page .animal-profile-health-card {
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--ap-surface-soft) 90%, #0b8378 10%), var(--ap-surface)) !important;
+}
+
+.animal-profile-page h2,
+.animal-profile-page h3,
+.animal-profile-page h4,
+.animal-profile-page strong,
+.animal-profile-page blockquote,
+.animal-profile-page p,
+.animal-profile-page small,
+.animal-profile-page span,
+.animal-profile-page label {
+  color: var(--ap-text);
+}
+
+.animal-profile-page .animal-profile-kicker,
+.animal-profile-page .animal-profile-fee-row span,
+.animal-profile-page .animal-profile-timeline li span,
+.animal-profile-page .animal-profile-readiness-grid p,
+.animal-profile-page .animal-profile-tracking-list p,
+.animal-profile-page .animal-profile-health-card > p,
+.animal-profile-page .animal-profile-health-card > small,
+.animal-profile-page .animal-profile-detail-card span,
+.animal-profile-page .animal-profile-narrative > p,
+.animal-profile-page .animal-profile-timeline li p {
+  color: var(--ap-text-muted);
 }
 
 .animal-profile-glance-card {
   padding: 1.1rem;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ap-surface-soft) 94%, #0f776b 6%), var(--ap-surface));
 }
 
 .animal-profile-glance-card h3 {
   margin: 0;
   font-size: 1.38rem;
   font-family: var(--font-syne), "Trebuchet MS", sans-serif;
+  color: var(--ap-text);
 }
 
 .animal-profile-detail-grid {
@@ -4637,9 +4710,9 @@ html.dark .impact-journal-entry,
 
 .animal-profile-detail-card {
   border-radius: 12px;
-  border: 1px solid #e4e8e7;
+  border: 1px solid var(--ap-border);
   padding: 0.55rem 0.62rem;
-  background: #ffffff;
+  background: var(--ap-surface-soft);
   transition: transform 220ms ease;
 }
 
@@ -4659,7 +4732,7 @@ html.dark .impact-journal-entry,
 .animal-profile-detail-card strong {
   margin-top: 0.26rem;
   display: block;
-  color: #162b2a;
+  color: var(--ap-text);
   font-size: 0.84rem;
 }
 
@@ -4668,13 +4741,13 @@ html.dark .impact-journal-entry,
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid #e4e8e7;
+  border-top: 1px solid var(--ap-border);
   padding-top: 0.72rem;
 }
 
 .animal-profile-fee-row span {
   font-size: 0.72rem;
-  color: #6b7777;
+  color: var(--ap-text-muted);
 }
 
 .animal-profile-fee-row strong {
@@ -4684,6 +4757,8 @@ html.dark .impact-journal-entry,
 
 .animal-profile-timeline {
   padding: 1.1rem;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ap-surface-soft) 96%, #2f63dd 4%), var(--ap-surface));
 }
 
 .animal-profile-timeline ul {
@@ -4696,7 +4771,7 @@ html.dark .impact-journal-entry,
 
 .animal-profile-timeline li {
   position: relative;
-  border-left: 2px solid #d2dcda;
+  border-left: 2px solid var(--ap-border);
   padding-left: 0.8rem;
 }
 
@@ -4708,8 +4783,8 @@ html.dark .impact-journal-entry,
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  background: #0a7b6f;
-  box-shadow: 0 0 0 4px #deece9;
+  background: var(--ap-timeline-dot);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ap-surface-soft) 78%, transparent 22%);
 }
 
 .animal-profile-timeline li span {
@@ -4723,11 +4798,12 @@ html.dark .impact-journal-entry,
 .animal-profile-timeline li h4 {
   margin: 0.3rem 0 0;
   font-size: 1rem;
+  color: var(--ap-text);
 }
 
 .animal-profile-timeline li p {
   margin: 0.32rem 0 0;
-  color: #617070;
+  color: var(--ap-text-muted);
   font-size: 0.8rem;
   line-height: 1.5;
 }
@@ -4740,23 +4816,26 @@ html.dark .impact-journal-entry,
 
 .animal-profile-health-card {
   padding: 1rem;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ap-surface-soft) 95%, #0b8579 5%), var(--ap-surface));
 }
 
 .animal-profile-health-card h3 {
   margin: 0;
   font-size: 1.2rem;
+  color: var(--ap-text);
 }
 
 .animal-profile-health-card > p {
   margin: 0.42rem 0 0;
-  color: #586565;
+  color: var(--ap-text-muted);
 }
 
 .animal-profile-progress {
   margin-top: 0.85rem;
   height: 7px;
   border-radius: 999px;
-  background: #d8e2e1;
+  background: color-mix(in srgb, var(--ap-border) 82%, #ffffff 18%);
   overflow: hidden;
 }
 
@@ -4772,7 +4851,7 @@ html.dark .impact-journal-entry,
   font-size: 0.58rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #6d7a79;
+  color: var(--ap-text-muted);
 }
 
 .animal-profile-tracking-list {
@@ -4783,8 +4862,8 @@ html.dark .impact-journal-entry,
 
 .animal-profile-tracking-list article {
   border-radius: 10px;
-  border: 1px solid #deebea;
-  background: #ffffff;
+  border: 1px solid var(--ap-border);
+  background: var(--ap-surface-soft);
   padding: 0.6rem;
 }
 
@@ -4798,6 +4877,7 @@ html.dark .impact-journal-entry,
 .animal-profile-tracking-list h4 {
   margin: 0;
   font-size: 0.83rem;
+  color: var(--ap-text);
 }
 
 .animal-profile-tracking-list header span {
@@ -4814,7 +4894,7 @@ html.dark .impact-journal-entry,
 .animal-profile-tracking-list p {
   margin: 0.28rem 0 0;
   font-size: 0.74rem;
-  color: #667474;
+  color: var(--ap-text-muted);
 }
 
 .animal-profile-support-card {
@@ -4823,10 +4903,21 @@ html.dark .impact-journal-entry,
   background: #f8e3db;
 }
 
+html.dark .animal-profile-support-card,
+:root[data-theme="dark"] .animal-profile-support-card {
+  border-color: #5f3d2f;
+  background: #3d2a23;
+}
+
 .animal-profile-support-card h4 {
   margin: 0;
   color: #7f3d28;
   font-size: 0.92rem;
+}
+
+html.dark .animal-profile-support-card h4,
+:root[data-theme="dark"] .animal-profile-support-card h4 {
+  color: #f2b298;
 }
 
 .animal-profile-support-card p {
@@ -4834,6 +4925,11 @@ html.dark .impact-journal-entry,
   color: #895542;
   font-size: 0.78rem;
   line-height: 1.5;
+}
+
+html.dark .animal-profile-support-card p,
+:root[data-theme="dark"] .animal-profile-support-card p {
+  color: #e7c4b4;
 }
 
 .animal-profile-lower-grid {
@@ -4857,30 +4953,31 @@ html.dark .impact-journal-entry,
 
 .animal-profile-readiness-grid article {
   border-radius: 12px;
-  border: 1px solid #dee4e3;
-  background: #fff;
+  border: 1px solid var(--ap-border);
+  background: var(--ap-surface-soft);
   padding: 0.72rem;
 }
 
 .animal-profile-readiness-grid h3 {
   margin: 0;
   font-size: 0.92rem;
+  color: var(--ap-text);
 }
 
 .animal-profile-readiness-grid p {
   margin: 0.35rem 0 0;
-  color: #62706f;
+  color: var(--ap-text-muted);
   font-size: 0.78rem;
   line-height: 1.5;
 }
 
 .animal-profile-readiness blockquote {
   margin: 0.82rem 0 0;
-  border: 1px solid #e1e5e4;
+  border: 1px solid var(--ap-border);
   border-radius: 10px;
-  background: #fff;
+  background: var(--ap-surface-soft);
   padding: 0.6rem;
-  color: #6d7878;
+  color: var(--ap-text-muted);
   font-size: 0.72rem;
   font-style: italic;
 }
@@ -4890,21 +4987,26 @@ html.dark .impact-journal-entry,
 }
 
 .animal-profile-journal .impact-journal-panel {
-  border-color: #d8e2e0;
-  background: #eef4f3;
+  border-color: var(--ap-border);
+  background: color-mix(in srgb, var(--ap-surface-soft) 76%, #0b8478 24%);
 }
 
 .animal-profile-journal .impact-journal-entry {
-  background: #f9fbfb;
-  border-color: #dce7e5;
+  background: var(--ap-surface-soft);
+  border-color: var(--ap-border);
 }
 
 .animal-profile-journal .impact-journal-entry h3 {
-  color: #11524b;
+  color: color-mix(in srgb, var(--ap-text) 78%, #0b8478 22%);
 }
 
 .animal-profile-journal .impact-journal-entry p {
-  color: #546363;
+  color: var(--ap-text-muted);
+}
+
+html.dark .animal-profile-journal .impact-journal-trigger,
+:root[data-theme="dark"] .animal-profile-journal .impact-journal-trigger {
+  color: #70dccb;
 }
 
 .animal-profile-gallery-wrap {
@@ -5006,6 +5108,157 @@ html.dark .impact-journal-entry,
     grid-column: span 1;
     min-height: 220px;
   }
+}
+
+.animal-adopt-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.animal-adopt-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 21, 20, 0.62);
+}
+
+.animal-adopt-modal-card {
+  position: relative;
+  width: min(760px, 100%);
+  border-radius: 18px;
+  border: 1px solid #d7e4e2;
+  background: #f8fbfa;
+  box-shadow: 0 32px 56px -38px rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+}
+
+.animal-adopt-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.animal-adopt-modal-head h3 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.animal-adopt-modal-close {
+  border: 1px solid #c8d8d5;
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 0.38rem 0.7rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.animal-adopt-form {
+  margin-top: 0.8rem;
+}
+
+.animal-adopt-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.animal-adopt-form-grid label {
+  display: grid;
+  gap: 0.32rem;
+  color: #425352;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.animal-adopt-form-grid .full-width {
+  grid-column: span 2;
+}
+
+.animal-adopt-form-grid input,
+.animal-adopt-form-grid select,
+.animal-adopt-form-grid textarea {
+  width: 100%;
+  border: 1px solid #d3dfdd;
+  border-radius: 10px;
+  background: #fff;
+  color: #203534;
+  padding: 0.52rem 0.62rem;
+  font: inherit;
+}
+
+.animal-adopt-form-message {
+  margin: 0.7rem 0 0;
+  border-radius: 9px;
+  padding: 0.55rem 0.6rem;
+  font-size: 0.82rem;
+  border: 1px solid transparent;
+}
+
+.animal-adopt-form-message.success {
+  border-color: #b8e5d4;
+  background: #eaf8f2;
+  color: #0a6657;
+}
+
+.animal-adopt-form-message.error {
+  border-color: #efc1c1;
+  background: #fff0f0;
+  color: #a03e3e;
+}
+
+.animal-adopt-form-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+html.dark .animal-adopt-modal-card,
+:root[data-theme="dark"] .animal-adopt-modal-card {
+  border-color: #31403f;
+  background: #1a2525;
+}
+
+html.dark .animal-adopt-modal-close,
+:root[data-theme="dark"] .animal-adopt-modal-close {
+  border-color: #3a4c4a;
+  background: #1f2d2c;
+  color: #dcebea;
+}
+
+html.dark .animal-adopt-form-grid label,
+:root[data-theme="dark"] .animal-adopt-form-grid label {
+  color: #b7cac8;
+}
+
+html.dark .animal-adopt-form-grid input,
+html.dark .animal-adopt-form-grid select,
+html.dark .animal-adopt-form-grid textarea,
+:root[data-theme="dark"] .animal-adopt-form-grid input,
+:root[data-theme="dark"] .animal-adopt-form-grid select,
+:root[data-theme="dark"] .animal-adopt-form-grid textarea {
+  border-color: #334241;
+  background: #111b1b;
+  color: #dcebea;
+}
+
+@media (max-width: 720px) {
+  .animal-adopt-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .animal-adopt-form-grid .full-width {
+    grid-column: span 1;
+  }
+}
+
+.pipeline-empty-note {
+  margin: 0.45rem 0 0;
+  color: #6d7777;
+  font-size: 0.74rem;
 }
 
 html.dark .impact-alt,
@@ -8171,6 +8424,40 @@ html.dark .admin-footer a,
   color: #096e63;
 }
 
+@keyframes adoption-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes adoption-fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.motion-rise {
+  animation: adoption-rise 0.55s ease both;
+  animation-delay: calc(var(--stagger-index, 0) * 70ms);
+}
+
+.motion-fade {
+  animation: adoption-fade 0.45s ease both;
+  animation-delay: calc(var(--stagger-index, 0) * 55ms);
+}
+
 .pipeline-board {
   margin-top: 1rem;
   display: grid;
@@ -8293,6 +8580,13 @@ html.dark .admin-footer a,
   text-decoration: none;
   font-weight: 700;
   font-size: 0.72rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-rise,
+  .motion-fade {
+    animation: none;
+  }
 }
 
 .adoption-review-main {
@@ -10932,4 +11226,9 @@ html.dark .admin-access-auth .admin-login-error,
 html.dark .admin-access-auth .admin-login-secondary-link,
 :root[data-theme="dark"] .admin-access-auth .admin-login-secondary-link {
   color: #c6d8d5;
+}
+
+html.dark .animal-profile-gallery-card,
+:root[data-theme="dark"] .animal-profile-gallery-card {
+  box-shadow: 0 20px 30px -20px rgba(0, 0, 0, 0.9);
 }
