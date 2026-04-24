@@ -981,12 +981,41 @@ html.dark .homev2-newsletter-status-error,
 }
 
 .adopt-page {
+  position: relative;
   min-height: 100vh;
   background:
     radial-gradient(circle at 95% 14%, #e3efec 0, transparent 24%),
     radial-gradient(circle at 8% 86%, #ede4dd 0, transparent 18%),
     #f1f1f1;
   animation: reveal 0.6s ease;
+  overflow: hidden;
+}
+
+.adopt-page::before,
+.adopt-page::after {
+  content: "";
+  position: absolute;
+  width: 48vmax;
+  height: 48vmax;
+  border-radius: 999px;
+  pointer-events: none;
+  filter: blur(56px);
+  opacity: 0.24;
+  z-index: 0;
+}
+
+.adopt-page::before {
+  top: -22vmax;
+  right: -14vmax;
+  background: radial-gradient(circle, #59c6b5 0%, transparent 66%);
+  animation: adoptAuraDrift 13s ease-in-out infinite;
+}
+
+.adopt-page::after {
+  bottom: -20vmax;
+  left: -16vmax;
+  background: radial-gradient(circle, #edb79f 0%, transparent 67%);
+  animation: adoptAuraDrift 15s ease-in-out infinite reverse;
 }
 
 .home-main {
@@ -1497,6 +1526,8 @@ html.dark .home-cta-strip .pill-btn.subtle.light,
 }
 
 .adopt-main {
+  position: relative;
+  z-index: 1;
   padding-bottom: 3rem;
 }
 
@@ -1509,6 +1540,7 @@ html.dark .home-cta-strip .pill-btn.subtle.light,
   font-family: var(--font-syne), "Trebuchet MS", sans-serif;
   font-size: clamp(2.1rem, 5vw, 3.8rem);
   line-height: 1.04;
+  animation: adoptHeadlinePulse 2.9s ease-in-out infinite;
 }
 
 .adopt-hero h1 span {
@@ -1532,6 +1564,22 @@ html.dark .home-cta-strip .pill-btn.subtle.light,
   display: grid;
   grid-template-columns: 1.2fr repeat(4, minmax(0, 1fr));
   gap: 0.7rem;
+  box-shadow: 0 24px 36px -34px rgba(4, 31, 29, 0.82);
+}
+
+.adopt-filters-dramatic {
+  position: relative;
+  overflow: hidden;
+}
+
+.adopt-filters-dramatic::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(112deg, transparent 12%, rgba(255, 255, 255, 0.55) 48%, transparent 76%);
+  transform: translateX(-120%);
+  animation: adoptFilterSweep 4.8s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .adopt-filters label {
@@ -1550,6 +1598,15 @@ html.dark .home-cta-strip .pill-btn.subtle.light,
   border-radius: 8px;
   padding: 0.6rem;
   color: #364242;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+}
+
+.adopt-filters input:focus,
+.adopt-filters select:focus {
+  outline: none;
+  border-color: #0f8274;
+  box-shadow: 0 0 0 3px rgba(15, 130, 116, 0.16);
+  transform: translateY(-1px);
 }
 
 .adopt-grid {
@@ -1565,6 +1622,17 @@ html.dark .home-cta-strip .pill-btn.subtle.light,
   overflow: hidden;
   background: #f8f8f8;
   box-shadow: 0 14px 24px -24px rgba(0, 0, 0, 0.95);
+}
+
+.adopt-card-dramatic {
+  animation: adoptCardEntrance 620ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+  transform-origin: center;
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.adopt-card-dramatic:hover {
+  transform: translateY(-8px) rotateX(2deg);
+  box-shadow: 0 30px 36px -30px rgba(0, 0, 0, 0.9);
 }
 
 .adopt-image {
@@ -1660,11 +1728,37 @@ html.dark .home-cta-strip .pill-btn.subtle.light,
   font-weight: 700;
   padding: 0.78rem 1.7rem;
   cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.adopt-load-btn:hover {
+  transform: translateY(-2px);
+  background: #0a776b;
+  color: #e8fcf7;
 }
 
 .adopt-load-btn:disabled {
   opacity: 0.62;
   cursor: not-allowed;
+}
+
+.adopt-empty-state {
+  grid-column: 1 / -1;
+  border: 1px dashed #cfdad8;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.62);
+  padding: 1.3rem;
+  text-align: center;
+}
+
+.adopt-empty-state h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.adopt-empty-state p {
+  margin: 0.45rem 0 0;
+  color: #607170;
 }
 
 .section-wrap {
@@ -8113,6 +8207,53 @@ html.dark .admin-footer a,
   }
 }
 
+@keyframes adoptAuraDrift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(2.4vmax, -2.2vmax) scale(1.1);
+  }
+}
+
+@keyframes adoptHeadlinePulse {
+  0%,
+  100% {
+    text-shadow: 0 0 0 rgba(10, 122, 109, 0);
+  }
+
+  50% {
+    text-shadow: 0 10px 24px rgba(10, 122, 109, 0.24);
+  }
+}
+
+@keyframes adoptCardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    filter: blur(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes adoptFilterSweep {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  48%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
 @keyframes volunteerFloat {
   0%,
   100% {
@@ -8144,7 +8285,12 @@ html.dark .admin-footer a,
   .rescue-page::before,
   .rescue-page::after,
   .rescue-head h1,
-  .map-box {
+  .map-box,
+  .adopt-page::before,
+  .adopt-page::after,
+  .adopt-hero h1,
+  .adopt-filters-dramatic::after,
+  .adopt-card-dramatic {
     animation: none;
   }
 
@@ -8159,13 +8305,21 @@ html.dark .admin-footer a,
 
   .rescue-panel-anim,
   .submit-btn,
-  .urgency-item {
+  .urgency-item,
+  .adopt-card-dramatic,
+  .adopt-load-btn,
+  .adopt-filters input,
+  .adopt-filters select {
     transition: none;
   }
 
   .rescue-panel-anim:hover,
   .submit-btn:hover,
-  .urgency-item.selected {
+  .urgency-item.selected,
+  .adopt-card-dramatic:hover,
+  .adopt-load-btn:hover,
+  .adopt-filters input:focus,
+  .adopt-filters select:focus {
     transform: none;
   }
 }
@@ -8808,6 +8962,10 @@ html.dark .admin-footer a,
   padding-bottom: 3rem;
 }
 
+.donate-fade-in {
+  animation: donateFadeIn 0.7s ease both;
+}
+
 .donate-hero h1 {
   margin: 0;
   font-family: var(--font-syne), "Trebuchet MS", sans-serif;
@@ -8837,6 +8995,13 @@ html.dark .admin-footer a,
   background: #f8f8f7;
   padding: 1.2rem;
   box-shadow: 0 24px 36px -40px rgba(0, 0, 0, 0.8);
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
+}
+
+.donate-info-card:hover,
+.donate-form-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 28px 44px -40px rgba(0, 0, 0, 0.86);
 }
 
 .donate-info-card h2,
@@ -8913,6 +9078,14 @@ html.dark .admin-footer a,
   background: #efefef;
   color: #263131;
   padding: 0.68rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.donate-form input:focus {
+  outline: none;
+  border-color: #08917f;
+  box-shadow: 0 0 0 3px rgba(8, 145, 127, 0.16);
+  background: #fff;
 }
 
 .donate-form-grid {
@@ -8950,6 +9123,20 @@ html.dark .admin-footer a,
   border-color: transparent;
 }
 
+.donate-amount-row button.donate-amount-selected {
+  animation: selectedPulse 0.42s ease;
+}
+
+.donate-live-amount {
+  margin: 0;
+  border: 1px solid #dbe8e6;
+  background: #f2faf9;
+  color: #355554;
+  border-radius: 10px;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.78rem;
+}
+
 .donate-check {
   grid-template-columns: auto 1fr;
   align-items: flex-start;
@@ -8979,10 +9166,27 @@ html.dark .admin-footer a,
   box-shadow: 0 18px 24px -20px #067569;
 }
 
+.donate-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  transform: none;
+  box-shadow: none;
+}
+
 .donate-note {
   margin: 0.05rem 0 0;
   color: #6a7675;
   font-size: 0.68rem;
+}
+
+.donate-status {
+  margin: 0;
+  padding: 0.62rem 0.75rem;
+  border-radius: 11px;
+  border: 1px solid #cde3df;
+  background: #ebf8f4;
+  color: #175a53;
+  font-size: 0.76rem;
 }
 
 html.dark .donate-info-card,
@@ -9002,6 +9206,13 @@ html.dark .donate-amount-row button,
   color: #dce9e7;
 }
 
+html.dark .donate-live-amount,
+:root[data-theme="dark"] .donate-live-amount {
+  background: #172726;
+  border-color: #2e4441;
+  color: #c8ddda;
+}
+
 html.dark .donate-hero p,
 html.dark .donate-note,
 html.dark .donate-reason-list p,
@@ -9011,6 +9222,13 @@ html.dark .donate-photo-card figcaption,
 :root[data-theme="dark"] .donate-reason-list p,
 :root[data-theme="dark"] .donate-photo-card figcaption {
   color: #a9b8b5;
+}
+
+html.dark .donate-status,
+:root[data-theme="dark"] .donate-status {
+  border-color: #2f4e49;
+  background: #193532;
+  color: #b4dfd7;
 }
 
 html.dark .donate-amount-row button.active,
@@ -9042,6 +9260,46 @@ html.dark .donate-submit,
 
   .donate-amount-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@keyframes donateFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes selectedPulse {
+  0% {
+    transform: scale(0.96);
+  }
+
+  70% {
+    transform: scale(1.03);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .donate-fade-in,
+  .donate-amount-row button.donate-amount-selected {
+    animation: none;
+  }
+
+  .donate-info-card,
+  .donate-form-card,
+  .donate-amount-row button,
+  .donate-submit {
+    transition: none;
   }
 }
 

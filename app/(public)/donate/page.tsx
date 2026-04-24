@@ -1,4 +1,8 @@
+"use client";
+
+import { FormEvent, useMemo, useState } from "react";
 import SiteNav from "@/components/SiteNav";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const reasons = [
   {
@@ -15,13 +19,66 @@ const reasons = [
   },
 ];
 
+const suggestedAmounts = [499, 999, 1999, 4999];
+
+const formatInr = (amount: number) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount);
+
 export default function DonatePage() {
+  const [selectedAmount, setSelectedAmount] = useState<number>(suggestedAmounts[1]);
+  const [customAmount, setCustomAmount] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
+
+  const finalAmount = useMemo(() => {
+    if (customAmount.trim()) {
+      const parsed = Number(customAmount);
+
+      if (Number.isFinite(parsed) && parsed > 0) {
+        return Math.round(parsed);
+      }
+    }
+
+    return selectedAmount;
+  }, [customAmount, selectedAmount]);
+
+  async function handleDonate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!Number.isFinite(finalAmount) || finalAmount <= 0) {
+      setStatusMessage("Please select a valid donation amount in rupees.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatusMessage("");
+
+    try {
+      await new Promise((resolve) => {
+        window.setTimeout(resolve, 900);
+      });
+
+      setStatusMessage(
+        `Thank you for your donation of ${formatInr(finalAmount)}. Your support helps rescued animals receive care quickly.`,
+      );
+      setCustomAmount("");
+    } catch {
+      setStatusMessage("We could not process your donation right now. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <div className="donate-page">
       <SiteNav />
 
       <main className="section-wrap donate-main">
-        <header className="donate-hero">
+        <header className="donate-hero donate-fade-in">
           <h1>Support Our Mission</h1>
           <p>
             Your generosity helps us rescue, heal, and rehome animals in need.
@@ -29,8 +86,8 @@ export default function DonatePage() {
           </p>
         </header>
 
-        <section className="donate-grid" aria-label="Donation details">
-          <article className="donate-info-card">
+        <section className="donate-grid donate-fade-in" aria-label="Donation details">
+          <ScrollReveal as="article" className="donate-info-card" delayMs={40}>
             <h2>Why Donate?</h2>
             <ul className="donate-reason-list">
               {reasons.map((reason) => (
@@ -49,11 +106,11 @@ export default function DonatePage() {
               />
               <figcaption>Over 1,200 animals successfully rehomed last year.</figcaption>
             </figure>
-          </article>
+          </ScrollReveal>
 
-          <article className="donate-form-card">
+          <ScrollReveal as="article" className="donate-form-card" delayMs={120}>
             <h2>Make a Donation</h2>
-            <form className="donate-form" action="/donate" method="get">
+            <form className="donate-form" onSubmit={handleDonate}>
               <div className="donate-form-grid">
                 <label>
                   Full Name
@@ -67,32 +124,66 @@ export default function DonatePage() {
 
               <label>
                 Phone Number
-                <input type="tel" name="phone" placeholder="+1 (555) 000-0000" />
+                <input type="tel" name="phone" placeholder="+91 98765 43210" />
               </label>
 
               <div className="donate-amount-row" role="group" aria-label="Suggested donation amounts">
-                <button type="button">$10</button>
-                <button type="button" className="active">
-                  $25
-                </button>
-                <button type="button">$50</button>
-                <button type="button">$100</button>
+                {suggestedAmounts.map((amount) => {
+                  const isActive = !customAmount && selectedAmount === amount;
+
+                  return (
+                    <button
+                      type="button"
+                      key={amount}
+                      className={isActive ? "active donate-amount-selected" : undefined}
+                      aria-pressed={isActive}
+                      onClick={() => {
+                        setSelectedAmount(amount);
+                        setCustomAmount("");
+                      }}
+                    >
+                      {formatInr(amount)}
+                    </button>
+                  );
+                })}
               </div>
 
-              <input type="number" name="amount" min="1" step="1" placeholder="Enter custom amount" required />
+              <label>
+                Custom Amount (Optional)
+                <input
+                  type="number"
+                  name="amount"
+                  min="1"
+                  step="1"
+                  value={customAmount}
+                  onChange={(event) => setCustomAmount(event.target.value)}
+                  placeholder="Enter amount in INR"
+                  inputMode="numeric"
+                />
+              </label>
+
+              <p className="donate-live-amount" aria-live="polite">
+                Selected Amount: <strong>{formatInr(finalAmount)}</strong>
+              </p>
 
               <label className="donate-check">
                 <input type="checkbox" defaultChecked />
                 I&apos;d like to cover processing fees so more goes to animal care.
               </label>
 
-              <button className="donate-submit" type="submit">
-                Donate Now
+              <button className="donate-submit" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Processing..." : `Donate ${formatInr(finalAmount)}`}
               </button>
+
+              {statusMessage ? (
+                <p className="donate-status" role="status" aria-live="polite">
+                  {statusMessage}
+                </p>
+              ) : null}
 
               <p className="donate-note">Secure SSL encrypted. Donation records available for tax reporting.</p>
             </form>
-          </article>
+          </ScrollReveal>
         </section>
       </main>
     </div>
