@@ -5,155 +5,7 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import ScrollReveal from "@/components/ScrollReveal";
 import SiteNav from "@/components/SiteNav";
-
-type AdoptCard = {
-  name: string;
-  breed: string;
-  age: string;
-  ageYears: number;
-  species: "Dog" | "Cat" | "Bird";
-  size: "Small" | "Medium" | "Large";
-  gender: "Female" | "Male";
-  image: string;
-  status: string;
-  pair?: string;
-};
-
-const adoptCards: AdoptCard[] = [
-  {
-    name: "Murphy",
-    breed: "Golden Retriever",
-    age: "2 Years",
-    ageYears: 2,
-    species: "Dog",
-    size: "Large",
-    gender: "Male",
-    status: "Newly Rescued",
-    image: "/images/unsplash/photo-1543466835-00a7907e9de1.jpg",
-  },
-  {
-    name: "Luna",
-    breed: "Domestic Shorthair",
-    age: "4 Years",
-    ageYears: 4,
-    species: "Cat",
-    size: "Small",
-    gender: "Female",
-    status: "Foster Home",
-    image: "/images/unsplash/photo-1517849845537-4d257902454a.jpg",
-  },
-  {
-    name: "Scout & Jem",
-    breed: "Border Collie Mix",
-    age: "6 Months",
-    ageYears: 0.5,
-    species: "Dog",
-    size: "Medium",
-    gender: "Male",
-    status: "Active",
-    pair: "Bonded Pair",
-    image: "/images/unsplash/photo-1601758228041-f3b2795255f1.jpg",
-  },
-  {
-    name: "Balthazar",
-    breed: "Great Dane",
-    age: "5 Years",
-    ageYears: 5,
-    species: "Dog",
-    size: "Large",
-    gender: "Male",
-    status: "Ready",
-    image: "/images/unsplash/photo-1548199973-03cce0bbc87b.jpg",
-  },
-  {
-    name: "Rio",
-    breed: "Macaw",
-    age: "12 Years",
-    ageYears: 12,
-    species: "Bird",
-    size: "Large",
-    gender: "Male",
-    status: "Expert Required",
-    image: "/images/unsplash/photo-1530281700549-e82e7bf110d6.jpg",
-  },
-  {
-    name: "Oliver",
-    breed: "Tabby Mix",
-    age: "3 Months",
-    ageYears: 0.25,
-    species: "Cat",
-    size: "Small",
-    gender: "Male",
-    status: "Newly Rescued",
-    image: "/images/unsplash/photo-1552053831-71594a27632d.jpg",
-  },
-  {
-    name: "Hazel",
-    breed: "Labrador Mix",
-    age: "1 Year",
-    ageYears: 1,
-    species: "Dog",
-    size: "Large",
-    gender: "Female",
-    status: "Ready",
-    image: "/images/unsplash/photo-1507146426996-ef05306b995a.jpg",
-  },
-  {
-    name: "Milo",
-    breed: "Indie Dog",
-    age: "2 Years",
-    ageYears: 2,
-    species: "Dog",
-    size: "Medium",
-    gender: "Male",
-    status: "Foster Home",
-    image: "/images/unsplash/photo-1548199973-03cce0bbc87b.jpg",
-  },
-  {
-    name: "Pepper",
-    breed: "Domestic Shorthair",
-    age: "8 Months",
-    ageYears: 0.67,
-    species: "Cat",
-    size: "Small",
-    gender: "Female",
-    status: "Newly Rescued",
-    image: "/images/unsplash/photo-1519052537078-e6302a4968d4.jpg",
-  },
-  {
-    name: "Koda",
-    breed: "Husky Mix",
-    age: "3 Years",
-    ageYears: 3,
-    species: "Dog",
-    size: "Large",
-    gender: "Male",
-    status: "Active",
-    image: "/images/unsplash/photo-1560250097-0b93528c311a.jpg",
-  },
-  {
-    name: "Nori",
-    breed: "Parakeet",
-    age: "2 Years",
-    ageYears: 2,
-    species: "Bird",
-    size: "Small",
-    gender: "Female",
-    status: "Expert Required",
-    image: "/images/unsplash/photo-1623387641168-d9803ddd3f35.jpg",
-  },
-  {
-    name: "Coco",
-    breed: "Calico Cat",
-    age: "1 Year",
-    ageYears: 1,
-    species: "Cat",
-    size: "Small",
-    gender: "Female",
-    status: "Ready",
-    image: "/images/unsplash/photo-1542204625-de293a38bda2.jpg",
-  },
-];
+import { adoptAnimals } from "@/lib/adoptAnimals";
 
 const INITIAL_VISIBLE_COUNT = 6;
 const LOAD_MORE_STEP = 3;
@@ -169,7 +21,7 @@ export default function AdoptPage() {
   const filteredCards = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    return adoptCards.filter((card) => {
+    return adoptAnimals.filter((card) => {
       const matchesQuery =
         normalizedQuery.length === 0 ||
         card.name.toLowerCase().includes(normalizedQuery) ||
@@ -193,7 +45,7 @@ export default function AdoptPage() {
   const hasMoreCards = visibleCount < filteredCards.length;
 
   const handleLoadMore = () => {
-    setVisibleCount((current) => Math.min(current + LOAD_MORE_STEP, adoptCards.length));
+    setVisibleCount((current) => Math.min(current + LOAD_MORE_STEP, filteredCards.length));
   };
 
   return (
@@ -325,7 +177,7 @@ export default function AdoptPage() {
                 <p className="adopt-breed">
                   {item.breed} • {item.age} • {item.gender}
                 </p>
-                <Link href="/rescue" className="adopt-btn">
+                <Link href={`/adopt/${item.slug}`} className="adopt-btn">
                   View Profile
                 </Link>
               </div>

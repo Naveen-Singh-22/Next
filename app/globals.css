@@ -1761,6 +1761,208 @@ html.dark .home-cta-strip .pill-btn.subtle.light,
   color: #607170;
 }
 
+.adopt-profile-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 94% 10%, #dcefe8 0, transparent 28%),
+    radial-gradient(circle at 4% 90%, #eee2d8 0, transparent 24%),
+    #f3f4f3;
+}
+
+.adopt-profile-main {
+  padding-top: 1.8rem;
+  padding-bottom: 3.2rem;
+}
+
+.adopt-profile-back-row {
+  margin-bottom: 0.9rem;
+}
+
+.adopt-profile-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #0e7468;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.adopt-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.adopt-profile-image-card,
+.adopt-profile-info-card {
+  border: 1px solid #e1e8e6;
+  border-radius: 16px;
+  background: #f9f9f8;
+  padding: 1rem;
+  box-shadow: 0 22px 34px -36px rgba(0, 0, 0, 0.92);
+}
+
+.adopt-profile-image-wrap {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 460px;
+}
+
+.adopt-profile-chip-row {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.adopt-profile-chip {
+  border-radius: 999px;
+  padding: 0.26rem 0.6rem;
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  background: #dcf2ee;
+  color: #0f5e55;
+}
+
+.adopt-profile-info-card h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-family: var(--font-syne), "Trebuchet MS", sans-serif;
+}
+
+.adopt-profile-subtitle {
+  margin: 0.35rem 0 0;
+  color: #3f4c4c;
+  font-weight: 700;
+}
+
+.adopt-profile-summary {
+  margin: 0.8rem 0 0;
+  color: #536060;
+  line-height: 1.6;
+}
+
+.adopt-profile-facts {
+  margin: 1rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.adopt-profile-facts div {
+  border: 1px solid #e4ecea;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 0.55rem 0.65rem;
+}
+
+.adopt-profile-facts dt {
+  font-size: 0.68rem;
+  color: #778483;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.adopt-profile-facts dd {
+  margin: 0.25rem 0 0;
+  color: #1e3030;
+  font-weight: 700;
+}
+
+.adopt-profile-section {
+  margin-top: 1rem;
+}
+
+.adopt-profile-section h2 {
+  margin: 0;
+  font-size: 1.08rem;
+}
+
+.adopt-profile-section p {
+  margin: 0.45rem 0 0;
+  color: #4f5d5c;
+  line-height: 1.6;
+}
+
+.adopt-profile-temperament-list {
+  margin: 0.45rem 0 0;
+  padding-left: 1.1rem;
+  color: #435252;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.adopt-profile-actions {
+  margin-top: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.adopt-profile-action-primary,
+.adopt-profile-action-secondary {
+  min-height: 2.7rem;
+  border-radius: 999px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  padding: 0.62rem;
+}
+
+.adopt-profile-action-primary {
+  background: linear-gradient(120deg, #0b8778, #07695f);
+  color: #f5fffd;
+}
+
+.adopt-profile-action-secondary {
+  border: 1px solid #1a7b71;
+  color: #136f64;
+  background: transparent;
+}
+
+html.dark .adopt-profile-image-card,
+html.dark .adopt-profile-info-card,
+html.dark .adopt-profile-facts div,
+:root[data-theme="dark"] .adopt-profile-image-card,
+:root[data-theme="dark"] .adopt-profile-info-card,
+:root[data-theme="dark"] .adopt-profile-facts div {
+  background: #162120;
+  border-color: #2d3a38;
+  color: #dbe8e6;
+}
+
+html.dark .adopt-profile-summary,
+html.dark .adopt-profile-section p,
+html.dark .adopt-profile-temperament-list,
+:root[data-theme="dark"] .adopt-profile-summary,
+:root[data-theme="dark"] .adopt-profile-section p,
+:root[data-theme="dark"] .adopt-profile-temperament-list {
+  color: #a8b8b5;
+}
+
+@media (max-width: 980px) {
+  .adopt-profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .adopt-profile-image-wrap {
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 560px) {
+  .adopt-profile-facts,
+  .adopt-profile-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
 .section-wrap {
   width: min(1120px, calc(100% - 2rem));
   margin: 0 auto;
