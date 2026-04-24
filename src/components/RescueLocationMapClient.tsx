@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import L from "leaflet";
 import type { LatLngBoundsExpression, LatLngTuple } from "leaflet";
-import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 
 const CENTRAL_INDIA_VIEW: LatLngTuple = [22.7, 79.2];
 
@@ -16,6 +16,15 @@ type MapClickHandlerProps = {
   onPick: (point: LatLngTuple) => void;
 };
 
+type MapRecenterProps = {
+  marker: LatLngTuple;
+};
+
+type RescueLocationMapClientProps = {
+  marker: LatLngTuple;
+  onMarkerChange: (point: LatLngTuple) => void;
+};
+
 function MapClickHandler({ onPick }: MapClickHandlerProps) {
   useMapEvents({
     click(event) {
@@ -26,9 +35,20 @@ function MapClickHandler({ onPick }: MapClickHandlerProps) {
   return null;
 }
 
-export default function RescueLocationMapClient() {
-  const [marker, setMarker] = useState<LatLngTuple>(CENTRAL_INDIA_VIEW);
+function MapRecenter({ marker }: MapRecenterProps) {
+  const map = useMap();
 
+  useEffect(() => {
+    map.flyTo(marker, map.getZoom(), {
+      animate: true,
+      duration: 0.6,
+    });
+  }, [map, marker]);
+
+  return null;
+}
+
+export default function RescueLocationMapClient({ marker, onMarkerChange }: RescueLocationMapClientProps) {
   useEffect(() => {
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
@@ -55,7 +75,8 @@ export default function RescueLocationMapClient() {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        <MapClickHandler onPick={setMarker} />
+        <MapClickHandler onPick={onMarkerChange} />
+        <MapRecenter marker={marker} />
         <Marker position={marker}>
           <Popup>
             Selected location

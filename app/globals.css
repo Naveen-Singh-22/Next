@@ -2856,14 +2856,45 @@ body.page-at-top .site-footer-fab-top {
 }
 
 .rescue-page {
+  position: relative;
   min-height: 100vh;
   background:
     radial-gradient(circle at 93% 8%, #e4f4f1 0, transparent 24%),
     #f2f2f2;
   animation: reveal 0.6s ease;
+  overflow: hidden;
+}
+
+.rescue-page::before,
+.rescue-page::after {
+  content: "";
+  position: absolute;
+  width: 52vmax;
+  height: 52vmax;
+  border-radius: 999px;
+  filter: blur(62px);
+  opacity: 0.26;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.rescue-page::before {
+  top: -20vmax;
+  right: -16vmax;
+  background: radial-gradient(circle, #62c8b8 0%, transparent 66%);
+  animation: rescueAuraDrift 14s ease-in-out infinite;
+}
+
+.rescue-page::after {
+  bottom: -24vmax;
+  left: -18vmax;
+  background: radial-gradient(circle, #f4b9a2 0%, transparent 66%);
+  animation: rescueAuraDrift 16s ease-in-out infinite reverse;
 }
 
 .rescue-main {
+  position: relative;
+  z-index: 1;
   padding-bottom: 3.2rem;
 }
 
@@ -2878,6 +2909,7 @@ body.page-at-top .site-footer-fab-top {
   font-size: clamp(2.5rem, 5.7vw, 4.2rem);
   line-height: 1;
   max-width: 12ch;
+  animation: rescueHeadlinePulse 2.6s ease-in-out infinite;
 }
 
 .rescue-head p {
@@ -2984,7 +3016,7 @@ textarea {
   gap: 0.65rem;
 }
 
-.chip-check {
+.panel label.chip-check {
   display: flex;
   gap: 0.48rem;
   align-items: center;
@@ -2992,6 +3024,18 @@ textarea {
   border: 1px solid #e5e5e5;
   padding: 0.72rem;
   background: #f2f2f2;
+  min-height: 2.7rem;
+}
+
+.chip-check input {
+  margin: 0;
+  align-self: center;
+}
+
+.chip-check span {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.15;
 }
 
 .chip-check input,
@@ -3093,6 +3137,8 @@ textarea {
   margin-bottom: 0.95rem;
   overflow: hidden;
   background: #dde8e0;
+  box-shadow: 0 20px 30px -28px rgba(4, 31, 29, 0.62);
+  animation: rescueMapGlow 3.2s ease-in-out infinite;
 }
 
 .rescue-map {
@@ -8034,6 +8080,39 @@ html.dark .admin-footer a,
   }
 }
 
+@keyframes rescueAuraDrift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(2.2vmax, -1.8vmax) scale(1.08);
+  }
+}
+
+@keyframes rescueHeadlinePulse {
+  0%,
+  100% {
+    text-shadow: 0 0 0 rgba(6, 125, 112, 0);
+  }
+
+  50% {
+    text-shadow: 0 10px 24px rgba(6, 125, 112, 0.2);
+  }
+}
+
+@keyframes rescueMapGlow {
+  0%,
+  100% {
+    box-shadow: 0 20px 30px -28px rgba(4, 31, 29, 0.62);
+  }
+
+  50% {
+    box-shadow: 0 24px 34px -24px rgba(6, 113, 102, 0.72);
+  }
+}
+
 @keyframes volunteerFloat {
   0%,
   100% {
@@ -8059,6 +8138,13 @@ html.dark .admin-footer a,
 @media (prefers-reduced-motion: reduce) {
   .vol-float,
   .vol-bob {
+    animation: none;
+  }
+
+  .rescue-page::before,
+  .rescue-page::after,
+  .rescue-head h1,
+  .map-box {
     animation: none;
   }
 
