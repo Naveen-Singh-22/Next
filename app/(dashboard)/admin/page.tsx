@@ -393,7 +393,7 @@ export default function AdminPage() {
               Through our streamlined adoption pipeline, Ollie transitioned from
               rescue to family in just 14 days.
             </small>
-            <Link href="/">Read the Impact Report →</Link>
+            <Link href="/impact">Read the Impact Report →</Link>
           </article>
         </section>
 

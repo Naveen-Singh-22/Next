@@ -4477,6 +4477,537 @@ html.dark .impact-journal-entry,
   box-shadow: 0 10px 18px -10px #2e74f0;
 }
 
+.animal-profile-page {
+  background: #f1f2f1;
+}
+
+.animal-profile-hero {
+  position: relative;
+  padding: 0;
+  max-width: 100%;
+}
+
+.animal-profile-hero-image {
+  position: relative;
+  min-height: 620px;
+  overflow: hidden;
+}
+
+.animal-profile-hero-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 18, 20, 0.18), rgba(10, 18, 20, 0.62));
+  z-index: 1;
+}
+
+.animal-profile-hero-image img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.animal-profile-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  align-content: end;
+  gap: 1rem;
+  padding-bottom: 2.6rem;
+}
+
+.animal-profile-top-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.animal-profile-top-tags span {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.22);
+  color: #f8fbfb;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+}
+
+.animal-profile-hero-content {
+  max-width: 48ch;
+  color: #eef5f4;
+}
+
+.animal-profile-hero-content h1 {
+  margin: 0;
+  font-family: var(--font-syne), "Trebuchet MS", sans-serif;
+  font-size: clamp(2.8rem, 9vw, 5.4rem);
+  line-height: 0.95;
+}
+
+.animal-profile-hero-content p {
+  margin: 0.75rem 0 0;
+  color: #d7e6e4;
+  line-height: 1.52;
+}
+
+.animal-profile-hero-actions .pill-btn {
+  box-shadow: 0 16px 32px -18px rgba(0, 0, 0, 0.84);
+}
+
+.animal-profile-main-grid {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.95fr);
+  gap: 1.1rem;
+}
+
+.animal-profile-narrative,
+.animal-profile-glance-card,
+.animal-profile-timeline,
+.animal-profile-health-card,
+.animal-profile-support-card,
+.animal-profile-readiness,
+.animal-profile-journal {
+  border-radius: 18px;
+  border: 1px solid #dce3e2;
+  background: #f8f9f8;
+  box-shadow: 0 24px 36px -34px rgba(8, 21, 20, 0.42);
+  transition:
+    transform 260ms ease,
+    box-shadow 260ms ease,
+    border-color 260ms ease;
+}
+
+.animal-profile-narrative:hover,
+.animal-profile-glance-card:hover,
+.animal-profile-timeline:hover,
+.animal-profile-health-card:hover,
+.animal-profile-support-card:hover,
+.animal-profile-readiness:hover,
+.animal-profile-journal:hover {
+  transform: translateY(-3px);
+  border-color: #c6d9d6;
+  box-shadow: 0 28px 42px -30px rgba(8, 21, 20, 0.5);
+}
+
+.animal-profile-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.58rem;
+  color: #8a4d31;
+  font-weight: 700;
+}
+
+.animal-profile-narrative {
+  padding: 1.2rem;
+}
+
+.animal-profile-narrative h2 {
+  margin: 0.65rem 0 0;
+  font-family: var(--font-outfit), "Segoe UI", sans-serif;
+  font-size: clamp(1.55rem, 3vw, 2.6rem);
+  line-height: 1.17;
+}
+
+.animal-profile-narrative > p {
+  margin: 0.85rem 0 0;
+  color: #5f6c6c;
+  line-height: 1.66;
+}
+
+.animal-profile-glance-card {
+  padding: 1.1rem;
+}
+
+.animal-profile-glance-card h3 {
+  margin: 0;
+  font-size: 1.38rem;
+  font-family: var(--font-syne), "Trebuchet MS", sans-serif;
+}
+
+.animal-profile-detail-grid {
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.animal-profile-detail-card {
+  border-radius: 12px;
+  border: 1px solid #e4e8e7;
+  padding: 0.55rem 0.62rem;
+  background: #ffffff;
+  transition: transform 220ms ease;
+}
+
+.animal-profile-detail-card:hover {
+  transform: translateY(-1px);
+}
+
+.animal-profile-detail-card span {
+  display: block;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7f8c8b;
+  font-size: 0.58rem;
+}
+
+.animal-profile-detail-card strong {
+  margin-top: 0.26rem;
+  display: block;
+  color: #162b2a;
+  font-size: 0.84rem;
+}
+
+.animal-profile-fee-row {
+  margin-top: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #e4e8e7;
+  padding-top: 0.72rem;
+}
+
+.animal-profile-fee-row span {
+  font-size: 0.72rem;
+  color: #6b7777;
+}
+
+.animal-profile-fee-row strong {
+  color: #0a6f64;
+  font-family: var(--font-syne), "Trebuchet MS", sans-serif;
+}
+
+.animal-profile-timeline {
+  padding: 1.1rem;
+}
+
+.animal-profile-timeline ul {
+  margin: 0.8rem 0 0;
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.animal-profile-timeline li {
+  position: relative;
+  border-left: 2px solid #d2dcda;
+  padding-left: 0.8rem;
+}
+
+.animal-profile-timeline li::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 0.2rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #0a7b6f;
+  box-shadow: 0 0 0 4px #deece9;
+}
+
+.animal-profile-timeline li span {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #8f7a6f;
+  font-size: 0.56rem;
+  font-weight: 700;
+}
+
+.animal-profile-timeline li h4 {
+  margin: 0.3rem 0 0;
+  font-size: 1rem;
+}
+
+.animal-profile-timeline li p {
+  margin: 0.32rem 0 0;
+  color: #617070;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.animal-profile-side-stack {
+  display: grid;
+  gap: 0.9rem;
+  align-content: start;
+}
+
+.animal-profile-health-card {
+  padding: 1rem;
+}
+
+.animal-profile-health-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.animal-profile-health-card > p {
+  margin: 0.42rem 0 0;
+  color: #586565;
+}
+
+.animal-profile-progress {
+  margin-top: 0.85rem;
+  height: 7px;
+  border-radius: 999px;
+  background: #d8e2e1;
+  overflow: hidden;
+}
+
+.animal-profile-progress div {
+  height: 100%;
+  background: linear-gradient(120deg, #0b8579, #09695f);
+  transition: width 460ms ease;
+}
+
+.animal-profile-health-card > small {
+  margin-top: 0.36rem;
+  display: inline-block;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #6d7a79;
+}
+
+.animal-profile-tracking-list {
+  margin-top: 0.72rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.animal-profile-tracking-list article {
+  border-radius: 10px;
+  border: 1px solid #deebea;
+  background: #ffffff;
+  padding: 0.6rem;
+}
+
+.animal-profile-tracking-list header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.animal-profile-tracking-list h4 {
+  margin: 0;
+  font-size: 0.83rem;
+}
+
+.animal-profile-tracking-list header span {
+  border-radius: 999px;
+  background: #d5ece8;
+  color: #0a675d;
+  font-size: 0.56rem;
+  font-weight: 700;
+  padding: 0.13rem 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.animal-profile-tracking-list p {
+  margin: 0.28rem 0 0;
+  font-size: 0.74rem;
+  color: #667474;
+}
+
+.animal-profile-support-card {
+  padding: 0.85rem 1rem;
+  border-color: #eccdc2;
+  background: #f8e3db;
+}
+
+.animal-profile-support-card h4 {
+  margin: 0;
+  color: #7f3d28;
+  font-size: 0.92rem;
+}
+
+.animal-profile-support-card p {
+  margin: 0.34rem 0 0;
+  color: #895542;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.animal-profile-lower-grid {
+  margin-top: 1.2rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 0.95rem;
+}
+
+.animal-profile-readiness,
+.animal-profile-journal {
+  padding: 1rem;
+}
+
+.animal-profile-readiness-grid {
+  margin-top: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.68rem;
+}
+
+.animal-profile-readiness-grid article {
+  border-radius: 12px;
+  border: 1px solid #dee4e3;
+  background: #fff;
+  padding: 0.72rem;
+}
+
+.animal-profile-readiness-grid h3 {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.animal-profile-readiness-grid p {
+  margin: 0.35rem 0 0;
+  color: #62706f;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.animal-profile-readiness blockquote {
+  margin: 0.82rem 0 0;
+  border: 1px solid #e1e5e4;
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.6rem;
+  color: #6d7878;
+  font-size: 0.72rem;
+  font-style: italic;
+}
+
+.animal-profile-journal .impact-journal-trigger {
+  color: #0b7f73;
+}
+
+.animal-profile-journal .impact-journal-panel {
+  border-color: #d8e2e0;
+  background: #eef4f3;
+}
+
+.animal-profile-journal .impact-journal-entry {
+  background: #f9fbfb;
+  border-color: #dce7e5;
+}
+
+.animal-profile-journal .impact-journal-entry h3 {
+  color: #11524b;
+}
+
+.animal-profile-journal .impact-journal-entry p {
+  color: #546363;
+}
+
+.animal-profile-gallery-wrap {
+  margin-top: 1.2rem;
+}
+
+.animal-profile-gallery-grid {
+  margin-top: 0.72rem;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0.62rem;
+}
+
+.animal-profile-gallery-card {
+  position: relative;
+  min-height: 150px;
+  border-radius: 14px;
+  overflow: hidden;
+  grid-column: span 4;
+  box-shadow: 0 16px 26px -20px rgba(0, 0, 0, 0.72);
+  transition:
+    transform 280ms cubic-bezier(0.2, 0.9, 0.25, 1),
+    box-shadow 280ms ease;
+}
+
+.animal-profile-gallery-card.large {
+  grid-column: span 6;
+  min-height: 270px;
+}
+
+.animal-profile-gallery-card:hover {
+  transform: translateY(-4px) scale(1.012);
+  box-shadow: 0 26px 36px -26px rgba(0, 0, 0, 0.86);
+}
+
+.animal-profile-gallery-card img {
+  object-fit: cover;
+}
+
+.animal-profile-cta {
+  margin-top: 2.2rem;
+  background: linear-gradient(160deg, #0a6d63, #0a7f73);
+  text-align: center;
+  color: #eef8f6;
+  padding: 3rem 1rem;
+}
+
+.animal-profile-cta h2 {
+  margin: 0;
+  font-family: var(--font-syne), "Trebuchet MS", sans-serif;
+  font-size: clamp(2rem, 5.3vw, 3.6rem);
+}
+
+.animal-profile-cta .impact-cta-actions {
+  margin-top: 1rem;
+}
+
+.animal-profile-cta .impact-alt {
+  background: transparent;
+  border: 1px solid #e5f4f1;
+}
+
+@media (max-width: 960px) {
+  .animal-profile-main-grid,
+  .animal-profile-lower-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .animal-profile-readiness-grid,
+  .animal-profile-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .animal-profile-gallery-card,
+  .animal-profile-gallery-card.large {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 720px) {
+  .animal-profile-hero-image {
+    min-height: 470px;
+  }
+
+  .animal-profile-hero-overlay {
+    padding-bottom: 1.55rem;
+  }
+
+  .animal-profile-hero-content h1 {
+    font-size: clamp(2.1rem, 13vw, 3.1rem);
+  }
+
+  .animal-profile-gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .animal-profile-gallery-card,
+  .animal-profile-gallery-card.large {
+    grid-column: span 1;
+    min-height: 220px;
+  }
+}
+
 html.dark .impact-alt,
 :root[data-theme="dark"] .impact-alt {
   background: linear-gradient(120deg, #3b82ff, #2f6fe7);
