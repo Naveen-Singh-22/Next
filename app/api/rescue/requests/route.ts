@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   const phone = body.phone?.trim() ?? "";
   const species = body.species?.trim() ?? "";
   const lastSeenAddress = body.lastSeenAddress?.trim() ?? "";
-  const urgency = body.urgency ?? "";
+  const urgency = body.urgency;
   const latitude = Number(body.location?.latitude);
   const longitude = Number(body.location?.longitude);
 
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Please provide the last seen address." }, { status: 400 });
   }
 
-  if (!VALID_URGENCY.has(urgency)) {
+  if (!urgency || !VALID_URGENCY.has(urgency)) {
     return NextResponse.json({ ok: false, message: "Please select a valid urgency level." }, { status: 400 });
   }
 
