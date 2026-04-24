@@ -17,14 +17,11 @@ const getInvolvedLinks = [
   { href: "#contact", label: "Contact" },
 ];
 
-const operationsLinks = [
-  { href: "/inventory", label: "Inventory" },
-  { href: "/admin", label: "Admin Dashboard" },
-  { href: "/admin/adoption/review", label: "Adoption Review" },
-  { href: "/admin/inquiry-management", label: "Inquiry Management" },
-  { href: "/admin/rescue", label: "Rescue Management" },
-  { href: "/admin/shelter-care-logs", label: "Shelter Care Logs" },
-  { href: "/admin/vaccinations", label: "Vaccinations" },
+const resourcesLinks = [
+  { href: "/impact", label: "Success Stories" },
+  { href: "/adopt", label: "Adoption Guide" },
+  { href: "/rescue", label: "Emergency Rescue Help" },
+  { href: "/impact", label: "Where Donations Go" },
 ];
 
 const socialLinks = [
@@ -167,7 +164,7 @@ export default function SiteFooter() {
 
           <FooterLinkGroup title="Explore" links={exploreLinks} />
           <FooterLinkGroup title="Get Involved" links={getInvolvedLinks} />
-          <FooterLinkGroup title="Operations" links={operationsLinks} />
+          <FooterLinkGroup title="Resources" links={resourcesLinks} />
         </div>
 
         <div className="site-footer-divider section-wrap" />

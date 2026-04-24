@@ -1,3 +1,24 @@
 {
-  "rescueReports": []
+  "rescueReports": [
+    {
+      "reportId": "RR-TDZZD7",
+      "fullName": "Ductile",
+      "email": "imailductilework@gmail.com",
+      "phone": "7509609532",
+      "species": "Dog",
+      "breed": "Street dog",
+      "healthConditions": [
+        "Injured",
+        "Malnourished"
+      ],
+      "notes": "Road accident by Car",
+      "lastSeenAddress": "Piplya Kumar, Indore, Juni Indore Tahsil, Indore, Madhya Pradesh, 452001, India",
+      "urgency": "urgent",
+      "location": {
+        "latitude": 22.770164790070364,
+        "longitude": 75.91056610384192
+      },
+      "createdAt": "2026-04-24T12:15:07.008Z"
+    }
+  ]
 }
