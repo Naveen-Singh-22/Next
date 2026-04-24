@@ -86,7 +86,7 @@ export async function POST(request: Request) {
     healthConditions: Array.isArray(body.healthConditions) ? body.healthConditions : [],
     notes: body.notes?.trim() ?? "",
     lastSeenAddress,
-    -,
+    urgency,
     location: {
       latitude,
       longitude,
