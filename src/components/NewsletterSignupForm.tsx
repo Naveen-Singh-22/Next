@@ -4,7 +4,23 @@ import { FormEvent, useState } from "react";
 
 type SubmitState = "idle" | "success" | "error";
 
-export default function NewsletterSignupForm() {
+type NewsletterSignupFormProps = {
+  wrapperClassName?: string;
+  formClassName?: string;
+  inputClassName?: string;
+  buttonClassName?: string;
+  inputPlaceholder?: string;
+  inputAriaLabel?: string;
+};
+
+export default function NewsletterSignupForm({
+  wrapperClassName = "homev2-newsletter-form-wrap",
+  formClassName,
+  inputClassName,
+  buttonClassName,
+  inputPlaceholder = "Enter your email address",
+  inputAriaLabel = "Email address",
+}: NewsletterSignupFormProps) {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
@@ -54,17 +70,18 @@ export default function NewsletterSignupForm() {
   }
 
   return (
-    <div className="homev2-newsletter-form-wrap">
-      <form onSubmit={handleSubmit}>
+    <div className={wrapperClassName}>
+      <form onSubmit={handleSubmit} className={formClassName}>
         <input
           type="email"
-          placeholder="Enter your email address"
-          aria-label="Email address"
+          placeholder={inputPlaceholder}
+          aria-label={inputAriaLabel}
           value={email}
           onChange={(event) => setEmail(event.target.value)}
+          className={inputClassName}
           required
         />
-        <button type="submit" disabled={isSubmitting}>
+        <button type="submit" disabled={isSubmitting} className={buttonClassName}>
           {isSubmitting ? "Subscribing..." : "Subscribe"}
         </button>
       </form>

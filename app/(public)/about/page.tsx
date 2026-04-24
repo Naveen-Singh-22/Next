@@ -1,4 +1,6 @@
 import SiteNav from "@/components/SiteNav";
+import ScrollReveal from "@/components/ScrollReveal";
+import NewsletterSignupForm from "@/components/NewsletterSignupForm";
 
 const timeline = [
   {
@@ -70,7 +72,7 @@ export default function AboutPage() {
       <SiteNav className="about-nav" />
 
       <main>
-        <section className="section-wrap about-hero">
+        <ScrollReveal as="section" className="section-wrap about-hero" delayMs={40}>
           <div className="about-copy">
             <p className="about-pill">OUR GENESIS</p>
             <h1>
@@ -84,15 +86,15 @@ export default function AboutPage() {
           </div>
 
           <div className="about-hero-media">
-            <div className="about-hero-image" role="img" aria-label="Golden dog by a window" />
-            <article className="about-hero-note">
+            <div className="about-hero-image reveal-item" role="img" aria-label="Golden dog by a window" />
+            <article className="about-hero-note reveal-item">
               <h3>12k+</h3>
               <p>Animals transitioned from crisis to comfort since our founding in 2014.</p>
             </article>
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="about-story-section">
+        <ScrollReveal as="section" className="about-story-section" delayMs={80}>
           <div className="section-wrap about-story-grid">
             <div className="about-story-copy">
               <h2>Our Story</h2>
@@ -106,7 +108,7 @@ export default function AboutPage() {
 
             <div className="about-timeline" aria-label="Organization timeline">
               {timeline.map((item) => (
-                <article key={item.title} className="about-timeline-row">
+                <article key={item.title} className="about-timeline-row reveal-item">
                   <span>{item.year}</span>
                   <div>
                     <h3>{item.title}</h3>
@@ -116,9 +118,9 @@ export default function AboutPage() {
               ))}
             </div>
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="section-wrap about-values">
+        <ScrollReveal as="section" className="section-wrap about-values" delayMs={120}>
           <h2 className="section-title center">Values that Guide Us</h2>
           <p className="section-sub center">
             Our methodology is built on four pillars of integrity, designed to
@@ -127,16 +129,16 @@ export default function AboutPage() {
 
           <div className="about-values-grid">
             {values.map((value) => (
-              <article key={value.title} className={value.tone}>
+              <article key={value.title} className={`${value.tone} reveal-item`}>
                 <span className="about-value-icon" aria-hidden="true" />
                 <h3>{value.title}</h3>
                 <p>{value.text}</p>
               </article>
             ))}
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="section-wrap about-team">
+        <ScrollReveal as="section" className="section-wrap about-team" delayMs={160}>
           <div className="about-team-head">
             <div>
               <h2 className="section-title">The Curators of Care</h2>
@@ -147,7 +149,7 @@ export default function AboutPage() {
 
           <div className="about-team-grid">
             {team.map((member) => (
-              <article key={member.name} className="about-person-card">
+              <article key={member.name} className="about-person-card reveal-item">
                 <div
                   className="about-person-photo"
                   style={{ backgroundImage: `url(${member.image})` }}
@@ -159,9 +161,9 @@ export default function AboutPage() {
               </article>
             ))}
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section className="section-wrap about-subscribe">
+        <ScrollReveal as="section" className="section-wrap about-subscribe" delayMs={200}>
           <div>
             <h2>Stay Connected to the Cause</h2>
             <p>
@@ -169,13 +171,14 @@ export default function AboutPage() {
               advocacy insights.
             </p>
           </div>
-          <form action="#" method="post" className="about-subscribe-form">
-            <input type="email" placeholder="Enter your email" aria-label="Enter your email" />
-            <button type="submit" className="pill-btn solid">
-              Subscribe
-            </button>
-          </form>
-        </section>
+          <NewsletterSignupForm
+            wrapperClassName=""
+            formClassName="about-subscribe-form"
+            buttonClassName="pill-btn solid"
+            inputPlaceholder="Enter your email"
+            inputAriaLabel="Enter your email"
+          />
+        </ScrollReveal>
       </main>
 
     </div>
