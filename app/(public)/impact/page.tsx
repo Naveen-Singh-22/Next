@@ -22,20 +22,44 @@ const reports = [
 
 const scoutJournalEntries = [
   {
-    day: "Day 1 - Intake",
-    text: "Scout arrived trembling, severely underweight, and covered in road dust. Our team stabilized him with fluids, warm bedding, and a slow-feeding protocol to avoid refeeding shock.",
+    day: "Day 1 - Emergency Intake",
+    text: "Scout arrived at 11:42 PM after a street outreach alert from an industrial zone. He was dehydrated, limping, and too fearful to make eye contact. The veterinary team administered warm IV fluids, pain management, and a staged nutrition plan to prevent refeeding shock.",
   },
   {
-    day: "Week 2 - Trust Building",
-    text: "He began accepting hand-fed meals and short leash walks in low-stimulus zones. Behavioral specialists introduced confidence games and gentle desensitization to human touch.",
+    day: "Day 3 - First Signs of Safety",
+    text: "For the first 48 hours, Scout remained curled in the back of his kennel. By Day 3, he accepted food from a volunteer's open palm and tolerated a brief shoulder touch. We logged this as his first measurable trust milestone.",
   },
   {
-    day: "Week 5 - Surgery and Recovery",
-    text: "Diagnostic imaging confirmed an old untreated fracture requiring corrective surgery. Donor-funded intervention covered the procedure, rehabilitation sessions, and post-operative medication.",
+    day: "Week 1 - Clinical Workup",
+    text: "Bloodwork, imaging, and orthopedic assessment revealed chronic malnutrition and an untreated fracture in his rear limb. A donor-funded care grant covered diagnostics, fracture correction planning, medication, and physiotherapy prep.",
   },
   {
-    day: "Week 10 - Purpose Found",
-    text: "Scout passed therapy temperament screening with remarkable social responsiveness. He now visits pediatric wards twice weekly, helping children regulate anxiety and feel safe.",
+    day: "Week 2 - Trust Conditioning",
+    text: "Scout began confidence sessions in low-stimulus rooms with soft sounds and predictable routines. He progressed from retreating at every movement to initiating contact for brief check-ins and accepting leash guidance.",
+  },
+  {
+    day: "Week 3 - Corrective Surgery",
+    text: "Orthopedic surgery was completed without complications. The next ten days focused on pain control, wound care, and assisted standing exercises. He showed exceptional resilience and maintained appetite through recovery.",
+  },
+  {
+    day: "Week 5 - Mobility Breakthrough",
+    text: "After progressive physiotherapy, Scout completed his first full corridor walk without collapse or panic. His gait improved steadily, and stress indicators dropped by 61% compared to intake week observations.",
+  },
+  {
+    day: "Week 7 - Social Reintegration",
+    text: "Scout participated in controlled social circles with calm dogs and trained handlers. He learned engagement cues, recovery cues, and touch consent signals, allowing him to transition from survival behavior to relational behavior.",
+  },
+  {
+    day: "Week 9 - Therapy Assessment",
+    text: "Our clinical behavior unit tested Scout for pediatric therapy suitability: startling recovery, sustained calm, and gentle approach behavior. He passed all three stages and began supervised hospital introductions.",
+  },
+  {
+    day: "Week 11 - First Pediatric Visit",
+    text: "Scout completed his first official pediatric wing visit, staying calm through medical equipment noise and rotating care teams. Children who had resisted interaction requested to sit with him during treatment intervals.",
+  },
+  {
+    day: "Today - Ongoing Impact",
+    text: "Scout now serves as a certified therapy companion twice weekly while remaining under preventive orthopedic monitoring. His journey from fear to service reflects exactly what donor-backed, trauma-informed care can achieve.",
   },
 ];
 
@@ -63,7 +87,7 @@ export default function ImpactPage() {
             <div className="impact-hero-image reveal-item" role="img" aria-label="Golden retriever portrait" />
             <article className="impact-hero-note reveal-item">
               <p>THE LIVING IMPACT</p>
-              <small>"The data is in the wagging tails."</small>
+              <small>&quot;The data is in the wagging tails.&quot;</small>
             </article>
           </div>
         </ScrollReveal>
