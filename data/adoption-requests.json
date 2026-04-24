@@ -1,0 +1,19 @@
+{
+  "adoptionRequests": [
+    {
+      "requestId": "AR-TE0JJ8",
+      "animalSlug": "luna",
+      "animalName": "Luna",
+      "animalSpecies": "Cat",
+      "animalImage": "/images/unsplash/photo-1517849845537-4d257902454a.jpg",
+      "applicantName": "Ductile",
+      "applicantEmail": "imailductilework@gmail.com",
+      "applicantPhone": "7415505727",
+      "city": "Satna",
+      "homeType": "house",
+      "message": "I am alone  in my house i need a pet",
+      "status": "pending",
+      "createdAt": "2026-04-24T19:30:44.491Z"
+    }
+  ]
+}
