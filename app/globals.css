@@ -8487,9 +8487,9 @@ html.dark .admin-footer a,
   border-radius: 10px;
   background: transparent;
   color: #566161;
-  padding: 0.58rem 0.62rem;
+  padding: 0.66rem 0.72rem;
   font-weight: 600;
-  font-size: 0.84rem;
+  font-size: 0.92rem;
   line-height: 1.2;
   text-align: center;
   white-space: normal;
@@ -8551,11 +8551,11 @@ html.dark .admin-footer a,
 }
 
 .pipeline-column {
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid #e8ebea;
   background: #f8f8f8;
-  min-height: 420px;
-  padding: 0.85rem;
+  min-height: 470px;
+  padding: 1rem;
 }
 
 .pipeline-column h2 {
@@ -8563,7 +8563,7 @@ html.dark .admin-footer a,
   color: #626d6d;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 0.73rem;
+  font-size: 0.79rem;
 }
 
 .pipeline-column h2 span {
@@ -8571,16 +8571,16 @@ html.dark .admin-footer a,
 }
 
 .pipeline-stack {
-  margin-top: 0.75rem;
+  margin-top: 0.88rem;
   display: grid;
-  gap: 0.75rem;
+  gap: 0.9rem;
 }
 
 .pipeline-card {
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid #ebebeb;
   background: #fff;
-  padding: 0.88rem;
+  padding: 1rem;
   box-shadow: 0 10px 16px -18px rgba(0, 0, 0, 0.75);
   overflow: hidden;
 }
@@ -8605,8 +8605,8 @@ html.dark .admin-footer a,
 }
 
 .pipeline-avatar {
-  width: 2.15rem;
-  height: 2.15rem;
+  width: 2.4rem;
+  height: 2.4rem;
   border-radius: 999px;
   object-fit: cover;
   border: 1px solid #e2e7e6;
@@ -8618,14 +8618,14 @@ html.dark .admin-footer a,
 }
 
 .pipeline-person strong {
-  font-size: 1.02rem;
+  font-size: 1.12rem;
   color: #273434;
   overflow-wrap: anywhere;
 }
 
 .pipeline-person small {
   color: #6f7b7b;
-  font-size: 0.84rem;
+  font-size: 0.92rem;
   overflow-wrap: anywhere;
 }
 
@@ -8635,40 +8635,40 @@ html.dark .admin-footer a,
 }
 
 .pipeline-tag {
-  margin: 0.62rem 0 0;
+  margin: 0.72rem 0 0;
   border-radius: 999px;
   display: inline-block;
   background: #d8f0ea;
   color: #0b7569;
-  padding: 0.24rem 0.56rem;
-  font-size: 0.7rem;
+  padding: 0.28rem 0.62rem;
+  font-size: 0.76rem;
   font-weight: 700;
 }
 
 .pipeline-date {
-  margin: 0.68rem 0 0;
+  margin: 0.76rem 0 0;
   color: #4a5555;
-  font-size: 0.84rem;
+  font-size: 0.93rem;
   font-weight: 600;
 }
 
 .pipeline-location {
-  margin-top: 0.3rem;
+  margin-top: 0.36rem;
   display: block;
   color: #818b8b;
-  font-size: 0.78rem;
+  font-size: 0.86rem;
   overflow-wrap: anywhere;
 }
 
 .adoption-board-scroll {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: visible;
 }
 
 .adoption-pipeline-board {
   min-width: 0;
-  grid-template-columns: repeat(6, minmax(280px, 1fr));
-  min-width: 1740px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  overflow-x: visible;
 }
 
 .adoption-list-board,
@@ -8741,17 +8741,17 @@ html.dark .admin-footer a,
   }
 
   .pipeline-card {
-    padding: 0.72rem;
+    padding: 0.82rem;
   }
 
   .pipeline-person strong {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   .pipeline-person small,
   .pipeline-date,
   .pipeline-location {
-    font-size: 0.78rem;
+    font-size: 0.82rem;
   }
 }
 
