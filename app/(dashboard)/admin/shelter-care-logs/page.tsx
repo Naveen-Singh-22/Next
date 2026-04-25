@@ -80,10 +80,10 @@ export default function ShelterCareLogsPage() {
               <Link href="/admin/rescue">Rescue Management</Link>
             </li>
             <li>
-              <Link href="/inventory">Animal Inventory</Link>
+              <Link href="/admin/adoption">Adoption Pipeline</Link>
             </li>
             <li>
-              <Link href="/admin/adoption">Adoption Pipeline</Link>
+              <Link href="/admin/inventory">Animal Inventory</Link>
             </li>
             <li>
               <Link href="/admin/vaccinations">Vaccinations</Link>
