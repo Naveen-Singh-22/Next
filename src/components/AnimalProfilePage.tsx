@@ -14,22 +14,21 @@ type AnimalProfilePageProps = {
 type AdoptionSubmitState = "idle" | "success" | "error";
 
 type AdoptionRequestPayload = {
-  animalSlug: string;
-  animalName: string;
-  animalSpecies: string;
-  animalImage: string;
   applicantName: string;
-  applicantEmail: string;
-  applicantPhone: string;
+  email: string;
+  phone: string;
   city: string;
-  homeType: "apartment" | "house" | "farm" | "other";
-  message: string;
+  housing: "apartment" | "house" | "farm" | "other";
+  petExperience: string;
+  whyAdopt: string;
+  animalId: number;
 };
 
 type AdoptionApiResponse = {
-  ok?: boolean;
   message?: string;
-  requestId?: string;
+  application?: {
+    id: number;
+  };
 };
 
 type TimelineEntry = {
@@ -190,10 +189,17 @@ export default function AnimalProfilePage({ animal }: AnimalProfilePageProps) {
   const [applicantPhone, setApplicantPhone] = useState("");
   const [city, setCity] = useState("");
   const [homeType, setHomeType] = useState<"apartment" | "house" | "farm" | "other">("apartment");
-  const [message, setMessage] = useState("");
+  const [whyAdopt, setWhyAdopt] = useState("");
+  const [petExperience, setPetExperience] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitState, setSubmitState] = useState<AdoptionSubmitState>("idle");
   const [submitMessage, setSubmitMessage] = useState("");
+
+  function getAnimalIdFromSlug(slug: string) {
+    const match = slug.match(/-(\d+)$/);
+    const parsedId = match ? Number(match[1]) : Number.NaN;
+    return Number.isInteger(parsedId) && parsedId > 0 ? parsedId : null;
+  }
 
   const journalEntries = useMemo(() => buildAnimalJournal(animal), [animal]);
   const timeline = useMemo(() => buildTimeline(animal), [animal]);
@@ -225,20 +231,33 @@ export default function AnimalProfilePage({ animal }: AnimalProfilePageProps) {
   async function handleAdoptionSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    const animalId = getAnimalIdFromSlug(animal.slug);
+
+    if (!animalId) {
+      setSubmitState("error");
+      setSubmitMessage("Unable to identify this animal record. Please refresh and try again.");
+      return;
+    }
+
     const payload: AdoptionRequestPayload = {
-      animalSlug: animal.slug,
-      animalName: animal.name,
-      animalSpecies: animal.species,
-      animalImage: animal.image,
       applicantName: applicantName.trim(),
-      applicantEmail: applicantEmail.trim(),
-      applicantPhone: applicantPhone.trim(),
+      email: applicantEmail.trim(),
+      phone: applicantPhone.trim(),
       city: city.trim(),
-      homeType,
-      message: message.trim(),
+      housing: homeType,
+      petExperience: petExperience.trim(),
+      whyAdopt: whyAdopt.trim(),
+      animalId,
     };
 
-    if (!payload.applicantName || !payload.applicantEmail || !payload.applicantPhone || !payload.city || !payload.message) {
+    if (
+      !payload.applicantName ||
+      !payload.email ||
+      !payload.phone ||
+      !payload.city ||
+      !payload.whyAdopt ||
+      !payload.petExperience
+    ) {
       setSubmitState("error");
       setSubmitMessage("Please fill all required fields before submitting.");
       return;
@@ -249,7 +268,7 @@ export default function AnimalProfilePage({ animal }: AnimalProfilePageProps) {
       setSubmitState("idle");
       setSubmitMessage("");
 
-      const response = await fetch("/api/adoption/requests", {
+      const response = await fetch("/api/adoptions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -259,20 +278,26 @@ export default function AnimalProfilePage({ animal }: AnimalProfilePageProps) {
 
       const result = (await response.json()) as AdoptionApiResponse;
 
-      if (!response.ok || !result.ok) {
+      if (!response.ok || !result.application) {
         setSubmitState("error");
         setSubmitMessage(result.message ?? "Unable to submit your adoption request. Please try again.");
         return;
       }
 
       setSubmitState("success");
-      setSubmitMessage(result.message ?? "Application submitted successfully.");
+      setSubmitMessage(`Application submitted successfully. Reference #${result.application.id}.`);
       setApplicantName("");
       setApplicantEmail("");
       setApplicantPhone("");
       setCity("");
       setHomeType("apartment");
-      setMessage("");
+      setWhyAdopt("");
+      setPetExperience("");
+      window.setTimeout(() => {
+        setIsFormOpen(false);
+        setSubmitState("idle");
+        setSubmitMessage("");
+      }, 1200);
     } catch {
       setSubmitState("error");
       setSubmitMessage("Network error. Please try again.");
@@ -536,9 +561,20 @@ export default function AnimalProfilePage({ animal }: AnimalProfilePageProps) {
                     Why are you a good match?
                     <textarea
                       rows={4}
-                      value={message}
-                      onChange={(event) => setMessage(event.target.value)}
+                      value={whyAdopt}
+                      onChange={(event) => setWhyAdopt(event.target.value)}
                       placeholder={`Share your routine and why ${animal.name} is a good fit for your home.`}
+                      required
+                    />
+                  </label>
+
+                  <label className="full-width">
+                    Pet Experience
+                    <textarea
+                      rows={3}
+                      value={petExperience}
+                      onChange={(event) => setPetExperience(event.target.value)}
+                      placeholder="Describe your experience caring for pets."
                       required
                     />
                   </label>
