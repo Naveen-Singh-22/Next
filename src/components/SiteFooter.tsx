@@ -176,11 +176,11 @@ export default function SiteFooter() {
             </span>
             <span>help@thecaninehelp.org</span>
           </a>
-          <a href="tel:+919663577758" aria-label="Call TheCanineHelp">
+          <a href="tel:+917460456575" aria-label="Call TheCanineHelp">
             <span className="site-footer-contact-icon" aria-hidden="true">
               <PhoneIcon />
             </span>
-            <span>+91-9663577758</span>
+            <span>+91-7460456575</span>
           </a>
         </div>
 
@@ -230,7 +230,7 @@ export default function SiteFooter() {
             <p className="whatsapp-popup-message">Hello, Welcome to TheCanineHelp</p>
             <a
               className="whatsapp-popup-open"
-              href="https://wa.me/919663577758?text=Hello%2C%20I%20would%20like%20to%20connect%20with%20TheCanineHelp"
+              href="https://wa.me/7415505727?text=Hello%2C%20I%20would%20like%20to%20connect%20with%20TheCanineHelp"
               target="_blank"
               rel="noreferrer"
             >
