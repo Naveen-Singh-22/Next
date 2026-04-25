@@ -4510,7 +4510,7 @@ html.dark .animal-profile-page,
 
 .animal-profile-hero-image {
   position: relative;
-  min-height: 620px;
+  min-height: 900px;
   overflow: hidden;
 }
 
@@ -5088,7 +5088,7 @@ html.dark .animal-profile-journal .impact-journal-trigger,
 
 @media (max-width: 720px) {
   .animal-profile-hero-image {
-    min-height: 470px;
+    min-height: 560px;
   }
 
   .animal-profile-hero-overlay {
