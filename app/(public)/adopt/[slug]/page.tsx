@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import AnimalProfileTemplate from "@/components/AnimalProfilePage";
-import { adoptAnimals, findAnimalBySlug } from "@/lib/adoptAnimals";
+import { listAnimals } from "@/lib/animalInventoryDb";
+import { buildAdoptProfileFromInventory, animalToAdoptAnimal, inventoryAnimalIsAdoptable } from "@/lib/publicAdoptAnimals";
 
 type AnimalProfilePageProps = {
   params: Promise<{
@@ -8,13 +9,16 @@ type AnimalProfilePageProps = {
   }>;
 };
 
-export function generateStaticParams() {
-  return adoptAnimals.map((animal) => ({ slug: animal.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function AnimalProfileRoute({ params }: AnimalProfilePageProps) {
   const { slug } = await params;
-  const animal = findAnimalBySlug(slug);
+  const { animals } = await listAnimals({ limit: 1000 });
+  const matchedInventoryAnimal = animals
+    .filter(inventoryAnimalIsAdoptable)
+    .find((item) => animalToAdoptAnimal(item).slug === slug);
+
+  const animal = matchedInventoryAnimal ? buildAdoptProfileFromInventory(matchedInventoryAnimal) : null;
 
   if (!animal) {
     notFound();

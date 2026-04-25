@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ScrollReveal from "@/components/ScrollReveal";
 import SiteNav from "@/components/SiteNav";
-import { adoptAnimals } from "@/lib/adoptAnimals";
+import { animalToAdoptAnimal, inventoryAnimalIsAdoptable } from "@/lib/publicAdoptAnimals";
+import type { Animal } from "@/lib/animalInventoryTypes";
+import type { AdoptAnimal } from "@/lib/adoptAnimals";
 
 const INITIAL_VISIBLE_COUNT = 6;
 const LOAD_MORE_STEP = 3;
@@ -17,11 +19,60 @@ export default function AdoptPage() {
   const [genderFilter, setGenderFilter] = useState("All Genders");
   const [ageFilter, setAgeFilter] = useState("All Ages");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
+  const [animals, setAnimals] = useState<AdoptAnimal[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadAnimals() {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch("/api/animals?limit=500&sort=newest", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+
+        const payload = (await response.json().catch(() => null)) as { animals?: unknown[]; message?: string } | null;
+
+        if (!response.ok) {
+          throw new Error(payload?.message ?? "Failed to load adoptable animals.");
+        }
+
+        const nextAnimals = Array.isArray(payload?.animals)
+          ? payload.animals
+              .filter((item): item is Animal => Boolean(item) && typeof item === "object" && "status" in item)
+              .filter(inventoryAnimalIsAdoptable)
+              .map(animalToAdoptAnimal)
+          : [];
+
+        setAnimals(nextAnimals);
+        setVisibleCount(INITIAL_VISIBLE_COUNT);
+      } catch (loadError) {
+        if (loadError instanceof DOMException && loadError.name === "AbortError") {
+          return;
+        }
+
+        setError(loadError instanceof Error ? loadError.message : "Failed to load adoptable animals.");
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void loadAnimals();
+
+    return () => controller.abort();
+  }, []);
 
   const filteredCards = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    return adoptAnimals.filter((card) => {
+    return animals.filter((card) => {
       const matchesQuery =
         normalizedQuery.length === 0 ||
         card.name.toLowerCase().includes(normalizedQuery) ||
@@ -39,7 +90,7 @@ export default function AdoptPage() {
 
       return matchesQuery && matchesSpecies && matchesSize && matchesGender && matchesAge;
     });
-  }, [ageFilter, genderFilter, query, sizeFilter, speciesFilter]);
+  }, [ageFilter, animals, genderFilter, query, sizeFilter, speciesFilter]);
 
   const visibleCards = filteredCards.slice(0, visibleCount);
   const hasMoreCards = visibleCount < filteredCards.length;
@@ -143,7 +194,17 @@ export default function AdoptPage() {
         </ScrollReveal>
 
         <section className="adopt-grid" aria-label="Adoptable animals gallery">
-          {visibleCards.length === 0 ? (
+          {isLoading ? (
+            <article className="adopt-empty-state" role="status" aria-live="polite">
+              <h2>Loading animals...</h2>
+              <p>We are syncing the latest inventory records into the adoption gallery.</p>
+            </article>
+          ) : error ? (
+            <article className="adopt-empty-state" role="status" aria-live="polite">
+              <h2>Unable to load adoptable animals.</h2>
+              <p>{error}</p>
+            </article>
+          ) : visibleCards.length === 0 ? (
             <article className="adopt-empty-state" role="status" aria-live="polite">
               <h2>No matching rescues found.</h2>
               <p>Try changing one or more filters to discover more animals.</p>
@@ -152,7 +213,7 @@ export default function AdoptPage() {
 
           {visibleCards.map((item, index) => (
             <article
-              key={item.name}
+              key={item.slug}
               className="adopt-card adopt-card-dramatic"
               style={{ animationDelay: `${index * 70}ms` }}
             >
