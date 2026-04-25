@@ -1,0 +1,66 @@
+import { NextResponse } from "next/server";
+import { createAdoption, listAdoptions } from "@/lib/adoptionsStore";
+
+type CreateAdoptionBody = {
+  applicantName?: string;
+  email?: string;
+  phone?: string;
+  city?: string;
+  housing?: string;
+  petExperience?: string;
+  whyAdopt?: string;
+  animalId?: number;
+};
+
+export const runtime = "nodejs";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export async function GET() {
+  return NextResponse.json({ applications: listAdoptions() });
+}
+
+export async function POST(request: Request) {
+  let body: CreateAdoptionBody;
+
+  try {
+    body = (await request.json()) as CreateAdoptionBody;
+  } catch {
+    return NextResponse.json({ message: "Invalid JSON payload." }, { status: 400 });
+  }
+
+  const applicantName = body.applicantName?.trim() ?? "";
+  const email = body.email?.trim() ?? "";
+  const phone = body.phone?.trim() ?? "";
+  const city = body.city?.trim() ?? "";
+  const housing = body.housing?.trim() ?? "";
+  const petExperience = body.petExperience?.trim() ?? "";
+  const whyAdopt = body.whyAdopt?.trim() ?? "";
+  const animalId = Number(body.animalId);
+
+  if (!applicantName || !email || !phone || !city || !housing || !petExperience || !whyAdopt) {
+    return NextResponse.json({ message: "Please complete all required fields." }, { status: 400 });
+  }
+
+  if (!EMAIL_REGEX.test(email)) {
+    return NextResponse.json({ message: "Please provide a valid email." }, { status: 400 });
+  }
+
+  if (!Number.isInteger(animalId) || animalId <= 0) {
+    return NextResponse.json({ message: "A valid animal ID is required." }, { status: 400 });
+  }
+
+  const application = createAdoption({
+    applicantName,
+    email,
+    phone,
+    city,
+    housing,
+    petExperience,
+    whyAdopt,
+    animalId,
+    adminNotes: "",
+  });
+
+  return NextResponse.json({ application }, { status: 201 });
+}
