@@ -100,7 +100,7 @@ export async function POST(request: Request) {
     age: body.age,
     gender: body.gender as AnimalGender | undefined,
     healthStatus: body.healthStatus as AnimalHealthStatus,
-    status: body.status as AnimalStatus | undefined,
+    status: (body.status as AnimalStatus) ?? "admitted",
     notes: body.notes,
     photoUrls: parsePhotoUrls(body.photoUrls),
     vaccinationStatus: body.vaccinationStatus as AnimalVaccinationStatus,
