@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdoption, listAdoptions } from "@/lib/adoptionsStore";
+import { createInquiry } from "@/lib/inquiryStore";
 
 type CreateAdoptionBody = {
   applicantName?: string;
@@ -70,6 +71,13 @@ export async function POST(request: Request) {
     animalName,
     animalCode: animalCode || undefined,
     adminNotes: "",
+  });
+
+  await createInquiry({
+    type: "adoption",
+    referenceId: application.id,
+    title: `Adoption application from ${application.applicantName}`,
+    preview: `${application.animalName} • ${application.city}`,
   });
 
   return NextResponse.json({ application }, { status: 201 });

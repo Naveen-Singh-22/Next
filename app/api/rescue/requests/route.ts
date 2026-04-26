@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createInquiry } from "@/lib/inquiryStore";
 import { sendRescueChecklistCompletionEmail } from "@/lib/rescueEmailNotifier";
 import {
   listRescueReports,
@@ -104,7 +105,7 @@ export async function POST(request: Request) {
 
   const reportId = `RR-${Math.floor(Date.now() / 1000).toString(36).toUpperCase()}`;
 
-  await saveRescueReport({
+  const report = await saveRescueReport({
     reportId,
     fullName,
     email,
@@ -129,6 +130,13 @@ export async function POST(request: Request) {
       reporterNotified: false,
     },
     createdAt: new Date().toISOString(),
+  });
+
+  await createInquiry({
+    type: "rescue",
+    referenceId: report.id,
+    title: `Rescue report from ${fullName}`,
+    preview: `${species} at ${lastSeenAddress}`,
   });
 
   return NextResponse.json({

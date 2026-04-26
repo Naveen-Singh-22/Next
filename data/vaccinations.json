@@ -215,7 +215,7 @@
       "vaccineName": "FVRCP Combination",
       "dose": "Booster",
       "dateGiven": "2025-09-25",
-      "nextDueDate": "2025-10-24",
+      "nextDueDate": "2026-04-26",
       "notes": "Auto-seeded from the current inventory record for Whiskers."
     },
     {
@@ -225,7 +225,7 @@
       "vaccineName": "FVRCP Combination",
       "dose": "Booster",
       "dateGiven": "2025-09-03",
-      "nextDueDate": "2025-10-04",
+      "nextDueDate": "2026-06-25",
       "notes": "Auto-seeded from the current inventory record for Mocha."
     },
     {
@@ -235,7 +235,7 @@
       "vaccineName": "FVRCP Combination",
       "dose": "Booster",
       "dateGiven": "2025-08-23",
-      "nextDueDate": "2025-09-24",
+      "nextDueDate": "2026-05-26",
       "notes": "Auto-seeded from the current inventory record for Cleo."
     }
   ]

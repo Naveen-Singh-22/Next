@@ -31,6 +31,10 @@ const formatInr = (amount: number) =>
 export default function DonatePage() {
   const [selectedAmount, setSelectedAmount] = useState<number>(suggestedAmounts[1]);
   const [customAmount, setCustomAmount] = useState("");
+  const [donorName, setDonorName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [coverFees, setCoverFees] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
@@ -58,14 +62,35 @@ export default function DonatePage() {
     setStatusMessage("");
 
     try {
-      await new Promise((resolve) => {
-        window.setTimeout(resolve, 900);
+      const response = await fetch("/api/donations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          donorName,
+          email,
+          phone,
+          amount: finalAmount,
+          coverFees,
+        }),
       });
 
+      const result = (await response.json()) as { message?: string; donation?: { donationId?: string } };
+
+      if (!response.ok || !result.donation) {
+        setStatusMessage(result.message ?? "We could not process your donation right now. Please try again.");
+        return;
+      }
+
       setStatusMessage(
-        `Thank you for your donation of ${formatInr(finalAmount)}. Your support helps rescued animals receive care quickly.`,
+        `Thank you for your donation of ${formatInr(finalAmount)}. Reference ${result.donation.donationId}.`,
       );
       setCustomAmount("");
+      setDonorName("");
+      setEmail("");
+      setPhone("");
+      setCoverFees(true);
     } catch {
       setStatusMessage("We could not process your donation right now. Please try again.");
     } finally {
@@ -114,17 +139,37 @@ export default function DonatePage() {
               <div className="donate-form-grid">
                 <label>
                   Full Name
-                  <input type="text" name="name" placeholder="Jane Doe" required />
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Jane Doe"
+                    value={donorName}
+                    onChange={(event) => setDonorName(event.target.value)}
+                    required
+                  />
                 </label>
                 <label>
                   Email Address
-                  <input type="email" name="email" placeholder="jane@example.com" required />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="jane@example.com"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    required
+                  />
                 </label>
               </div>
 
               <label>
                 Phone Number
-                <input type="tel" name="phone" placeholder="+91 98765 43210" />
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="+91 98765 43210"
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                />
               </label>
 
               <div className="donate-amount-row" role="group" aria-label="Suggested donation amounts">
@@ -167,7 +212,7 @@ export default function DonatePage() {
               </p>
 
               <label className="donate-check">
-                <input type="checkbox" defaultChecked />
+                <input type="checkbox" checked={coverFees} onChange={(event) => setCoverFees(event.target.checked)} />
                 I&apos;d like to cover processing fees so more goes to animal care.
               </label>
 

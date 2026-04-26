@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { listAdoptionRequests, saveAdoptionRequest } from "@/lib/adoptionRequestsDb";
+import { createInquiry } from "@/lib/inquiryStore";
 
 type AdoptionRequestBody = {
   animalSlug?: string;
@@ -74,7 +75,7 @@ export async function POST(request: Request) {
 
   const requestId = `AR-${Math.floor(Date.now() / 1000).toString(36).toUpperCase()}`;
 
-  await saveAdoptionRequest({
+  const savedRequest = await saveAdoptionRequest({
     requestId,
     animalSlug,
     animalName,
@@ -88,6 +89,13 @@ export async function POST(request: Request) {
     message,
     status: "pending",
     createdAt: new Date().toISOString(),
+  });
+
+  await createInquiry({
+    type: "adoption",
+    referenceId: savedRequest.id,
+    title: `Adoption request from ${savedRequest.applicantName}`,
+    preview: `${savedRequest.animalName} • ${savedRequest.city}`,
   });
 
   return NextResponse.json({

@@ -14,6 +14,7 @@ export type RescueAdminChecklist = {
 };
 
 export type StoredRescueReport = {
+  id: number;
   reportId: string;
   fullName: string;
   email: string;
@@ -38,6 +39,7 @@ export type StoredRescueReport = {
 
 type RescueDbSchema = {
   rescueReports: StoredRescueReport[];
+  nextId: number;
 };
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -51,10 +53,60 @@ async function getDb() {
       await mkdir(DATA_DIR, { recursive: true });
 
       const adapter = new JSONFile<RescueDbSchema>(DB_PATH);
-      const db = new Low<RescueDbSchema>(adapter, { rescueReports: [] });
+      const db = new Low<RescueDbSchema>(adapter, { rescueReports: [], nextId: 1 });
 
       await db.read();
-      db.data ||= { rescueReports: [] };
+      db.data ||= { rescueReports: [], nextId: 1 };
+
+      db.data.nextId = Math.max(
+        db.data.nextId,
+        db.data.rescueReports.reduce((maxId, report) => Math.max(maxId, report.id ?? 0), 0) + 1,
+      );
+
+      let shouldWrite = false;
+      const usedIds = new Set(db.data.rescueReports.map((report) => report.id).filter(Boolean));
+
+      db.data.rescueReports = db.data.rescueReports.map((report) => {
+        if (report.id) {
+          return {
+            ...report,
+            caseStatus: report.caseStatus ?? "reported",
+            adminChecklist: {
+              rescued: report.adminChecklist?.rescued ?? false,
+              monitored: report.adminChecklist?.monitored ?? false,
+              medicalCompleted: report.adminChecklist?.medicalCompleted ?? false,
+              shelterAssigned: report.adminChecklist?.shelterAssigned ?? false,
+              reporterNotified: report.adminChecklist?.reporterNotified ?? false,
+            },
+          };
+        }
+
+        let nextId = 1;
+
+        while (usedIds.has(nextId)) {
+          nextId += 1;
+        }
+
+        usedIds.add(nextId);
+        shouldWrite = true;
+
+        return {
+          ...report,
+          id: nextId,
+          caseStatus: report.caseStatus ?? "reported",
+          adminChecklist: {
+            rescued: report.adminChecklist?.rescued ?? false,
+            monitored: report.adminChecklist?.monitored ?? false,
+            medicalCompleted: report.adminChecklist?.medicalCompleted ?? false,
+            shelterAssigned: report.adminChecklist?.shelterAssigned ?? false,
+            reporterNotified: report.adminChecklist?.reporterNotified ?? false,
+          },
+        };
+      });
+
+      if (shouldWrite) {
+        await db.write();
+      }
 
       return db;
     })();
@@ -63,14 +115,19 @@ async function getDb() {
   return dbPromise;
 }
 
-export async function saveRescueReport(report: StoredRescueReport) {
+export async function saveRescueReport(report: Omit<StoredRescueReport, "id">) {
   const db = await getDb();
   await db.read();
 
-  db.data.rescueReports.unshift(report);
+  const saved: StoredRescueReport = {
+    ...report,
+    id: db.data.nextId++,
+  };
+
+  db.data.rescueReports.unshift(saved);
   await db.write();
 
-  return report;
+  return saved;
 }
 
 export async function listRescueReports() {
@@ -79,6 +136,7 @@ export async function listRescueReports() {
 
   return db.data.rescueReports.map((report) => ({
     ...report,
+    id: report.id ?? 0,
     caseStatus: report.caseStatus ?? "reported",
     adminChecklist: {
       rescued: report.adminChecklist?.rescued ?? false,

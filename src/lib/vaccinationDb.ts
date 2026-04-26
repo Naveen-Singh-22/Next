@@ -9,7 +9,6 @@ import type {
   Vaccination,
   VaccinationCreateInput,
   VaccinationUpdateInput,
-  VaccinationStatus,
 } from "@/lib/vaccinationTypes";
 
 type VaccinationDbSchema = {
@@ -116,9 +115,10 @@ async function syncAnimalVaccinationStatus(animalId: number) {
     (left, right) => new Date(right.nextDueDate).getTime() - new Date(left.nextDueDate).getTime(),
   )[0];
 
-  const vaccinationStatus = getVaccinationStatus(latestRecord.nextDueDate) === "overdue"
+  const computedStatus = getVaccinationStatus(latestRecord.nextDueDate);
+  const vaccinationStatus = computedStatus === "overdue"
     ? "overdue"
-    : getVaccinationStatus(latestRecord.nextDueDate) === "today"
+    : computedStatus === "today" || computedStatus === "upcoming"
       ? "due_soon"
       : "up_to_date";
 
@@ -181,6 +181,18 @@ export async function updateVaccination(id: number, updates: VaccinationUpdateIn
 
   if (!vaccination) {
     return null;
+  }
+
+  if (updates.vaccineName !== undefined) {
+    vaccination.vaccineName = updates.vaccineName.trim();
+  }
+
+  if (updates.dose !== undefined) {
+    vaccination.dose = updates.dose.trim();
+  }
+
+  if (updates.dateGiven !== undefined) {
+    vaccination.dateGiven = updates.dateGiven;
   }
 
   if (updates.nextDueDate !== undefined) {

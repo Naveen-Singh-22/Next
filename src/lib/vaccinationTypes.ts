@@ -1,4 +1,4 @@
-export type VaccinationStatus = "overdue" | "today" | "upcoming";
+export type VaccinationStatus = "overdue" | "today" | "upcoming" | "up_to_date";
 
 export type Vaccination = {
   id: number;
@@ -21,7 +21,7 @@ export type VaccinationCreateInput = {
   notes?: string;
 };
 
-export type VaccinationUpdateInput = Partial<Pick<Vaccination, "nextDueDate" | "notes">>;
+export type VaccinationUpdateInput = Partial<Pick<Vaccination, "vaccineName" | "dose" | "dateGiven" | "nextDueDate" | "notes">>;
 
 export function normalizeDate(value: string) {
   const date = new Date(value);
@@ -31,6 +31,8 @@ export function normalizeDate(value: string) {
 export function getVaccinationStatus(nextDueDate: string, referenceDate = new Date()) {
   const dueDate = normalizeDate(nextDueDate);
   const today = new Date(Date.UTC(referenceDate.getFullYear(), referenceDate.getMonth(), referenceDate.getDate()));
+  const upcomingWindowEnd = new Date(today);
+  upcomingWindowEnd.setUTCDate(upcomingWindowEnd.getUTCDate() + 30);
 
   if (dueDate.getTime() < today.getTime()) {
     return "overdue" as const;
@@ -40,7 +42,11 @@ export function getVaccinationStatus(nextDueDate: string, referenceDate = new Da
     return "today" as const;
   }
 
-  return "upcoming" as const;
+  if (dueDate.getTime() <= upcomingWindowEnd.getTime()) {
+    return "upcoming" as const;
+  }
+
+  return "up_to_date" as const;
 }
 
 export function formatVaccinationStatusLabel(status: VaccinationStatus) {
@@ -52,5 +58,9 @@ export function formatVaccinationStatusLabel(status: VaccinationStatus) {
     return "Today";
   }
 
-  return "Upcoming";
+  if (status === "upcoming") {
+    return "Upcoming";
+  }
+
+  return "Up to date";
 }

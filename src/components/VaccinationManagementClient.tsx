@@ -12,6 +12,7 @@ import type { Vaccination, VaccinationStatus } from "@/lib/vaccinationTypes";
 
 type AnimalOption = {
   id: number;
+  animalCode: string;
   name: string;
   species: string;
   photoUrls: string[];
@@ -21,6 +22,7 @@ type VaccinationRecord = Vaccination & {
   status: VaccinationStatus;
   photoUrl: string;
   species: string;
+  animalCode: string;
 };
 
 type ModalMode = "create" | "bulk" | "edit" | null;
@@ -45,15 +47,46 @@ const emptyFormState: FormState = {
   notes: "",
 };
 
+function toDateInputValue(value: Date) {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function statusToDate(status: VaccinationStatus) {
+  const today = new Date();
+
+  if (status === "overdue") {
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    return toDateInputValue(yesterday);
+  }
+
+  if (status === "today") {
+    return toDateInputValue(today);
+  }
+
+  if (status === "upcoming") {
+    const upcoming = new Date(today);
+    upcoming.setDate(upcoming.getDate() + 14);
+    return toDateInputValue(upcoming);
+  }
+
+  const upToDate = new Date(today);
+  upToDate.setDate(upToDate.getDate() + 60);
+  return toDateInputValue(upToDate);
+}
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(`${value}T00:00:00`));
 }
 
 function toCsv(records: VaccinationRecord[]) {
   const rows = [
-    ["Animal ID", "Animal Name", "Species", "Vaccine", "Dose", "Date Given", "Next Due Date", "Status", "Notes"],
+    ["Animal Code", "Animal Name", "Species", "Vaccine", "Dose", "Date Given", "Next Due Date", "Status", "Notes"],
     ...records.map((record) => [
-      String(record.animalId),
+      record.animalCode,
       record.animalName,
       record.species,
       record.vaccineName,
@@ -98,9 +131,13 @@ export default function VaccinationManagementClient() {
   const [deleteTarget, setDeleteTarget] = useState<VaccinationRecord | null>(null);
   const [createForm, setCreateForm] = useState<FormState>(emptyFormState);
   const [bulkForm, setBulkForm] = useState<FormState>({ ...emptyFormState, animalIds: [] });
-  const [editForm, setEditForm] = useState<Pick<FormState, "nextDueDate" | "notes">>({
+  const [editForm, setEditForm] = useState<Pick<FormState, "vaccineName" | "dose" | "dateGiven" | "nextDueDate" | "notes"> & { status: VaccinationStatus }>({
+    vaccineName: "",
+    dose: "",
+    dateGiven: emptyFormState.dateGiven,
     nextDueDate: emptyFormState.nextDueDate,
     notes: "",
+    status: "upcoming",
   });
   const [isSaving, setIsSaving] = useState(false);
 
@@ -165,6 +202,7 @@ export default function VaccinationManagementClient() {
           status,
           photoUrl: animal?.photoUrls[0] ?? "/images/unsplash/photo-1507146426996-ef05306b995a.jpg",
           species: animal?.species ?? "animal",
+          animalCode: animal?.animalCode ?? `AN-${record.animalId}`,
         };
       })
       .filter((record) => {
@@ -192,6 +230,7 @@ export default function VaccinationManagementClient() {
   const overdueCount = useMemo(() => records.filter((record) => record.status === "overdue").length, [records]);
   const todayCount = useMemo(() => records.filter((record) => record.status === "today").length, [records]);
   const upcomingCount = useMemo(() => records.filter((record) => record.status === "upcoming").length, [records]);
+  const upToDateCount = useMemo(() => records.filter((record) => record.status === "up_to_date").length, [records]);
 
   async function refreshVaccinations(nextAnimalId = animalFilter) {
     const response = await fetch(nextAnimalId ? `/api/vaccinations?animalId=${nextAnimalId}` : "/api/vaccinations");
@@ -220,7 +259,14 @@ export default function VaccinationManagementClient() {
 
   function openEditModal(record: VaccinationRecord) {
     setEditingRecord(record);
-    setEditForm({ nextDueDate: record.nextDueDate, notes: record.notes ?? "" });
+    setEditForm({
+      vaccineName: record.vaccineName,
+      dose: record.dose,
+      dateGiven: record.dateGiven,
+      nextDueDate: record.nextDueDate,
+      notes: record.notes ?? "",
+      status: getVaccinationStatus(record.nextDueDate),
+    });
     setMode("edit");
   }
 
@@ -319,6 +365,9 @@ export default function VaccinationManagementClient() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          vaccineName: editForm.vaccineName,
+          dose: editForm.dose,
+          dateGiven: editForm.dateGiven,
           nextDueDate: editForm.nextDueDate,
           notes: editForm.notes,
         }),
@@ -376,7 +425,7 @@ export default function VaccinationManagementClient() {
   }
 
   return (
-    <div className="admin-page admin-mobile-shell">
+    <div className="admin-page admin-mobile-shell vaccination-page">
       <AdminSidebar activeHref="/admin/vaccinations" isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <main className="admin-main">
@@ -409,11 +458,11 @@ export default function VaccinationManagementClient() {
           </div>
         </header>
 
-        <section className="grid gap-6 rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 p-6 text-white shadow-[0_30px_120px_rgba(15,23,42,0.24)] lg:grid-cols-[1.5fr_0.95fr]">
+        <section className="grid gap-5 rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 p-4 text-white shadow-[0_30px_120px_rgba(15,23,42,0.24)] sm:p-6 lg:grid-cols-[1.5fr_0.95fr]">
           <div className="space-y-4">
-            <p className="text-xs uppercase tracking-[0.45em] text-cyan-300">Clinical Operations</p>
-            <h1 className="max-w-3xl text-4xl font-semibold tracking-tight md:text-5xl">Vaccination management with live scheduling, filtering, and boosters.</h1>
-            <p className="max-w-3xl text-sm leading-7 text-slate-300 md:text-base">
+            <p className="text-[0.7rem] uppercase tracking-[0.22em] text-cyan-300 sm:text-xs sm:tracking-[0.45em]">Clinical Operations</p>
+            <h1 className="max-w-3xl text-2xl font-semibold tracking-tight sm:text-4xl md:text-5xl">Vaccination management with live scheduling, filtering, and boosters.</h1>
+            <p className="max-w-3xl text-sm leading-6 text-slate-300 md:text-base md:leading-7">
               Track every dose, keep follow-ups visible, and schedule batches for new intake animals without leaving the admin dashboard.
             </p>
 
@@ -430,7 +479,7 @@ export default function VaccinationManagementClient() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 rounded-[28px] border border-white/10 bg-white/5 p-4 backdrop-blur">
+          <div className="grid grid-cols-2 gap-4 rounded-[28px] border border-white/10 bg-white/5 p-4 backdrop-blur lg:grid-cols-3">
             <article className="rounded-3xl bg-slate-950/80 p-4">
               <p className="text-xs uppercase tracking-[0.32em] text-slate-400">Total</p>
               <p className="mt-3 text-3xl font-semibold text-white">{totalCount}</p>
@@ -451,10 +500,15 @@ export default function VaccinationManagementClient() {
               <p className="mt-3 text-3xl font-semibold text-white">{upcomingCount}</p>
               <p className="mt-2 text-sm text-emerald-100/75">Booked for later</p>
             </article>
+            <article className="rounded-3xl bg-cyan-500/15 p-4">
+              <p className="text-xs uppercase tracking-[0.32em] text-cyan-200">Up to date</p>
+              <p className="mt-3 text-3xl font-semibold text-white">{upToDateCount}</p>
+              <p className="mt-2 text-sm text-cyan-100/75">No immediate follow-up</p>
+            </article>
           </div>
         </section>
 
-        <section className="mt-6 grid gap-4 rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.08)] lg:grid-cols-[1.3fr_0.7fr_0.7fr_0.7fr]">
+        <section className="mt-6 grid gap-3 rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.08)] sm:grid-cols-2 lg:grid-cols-[1.3fr_0.7fr_0.7fr_0.7fr]">
           <label className="flex flex-col gap-2">
             <span className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Animal filter</span>
             <select
@@ -465,7 +519,7 @@ export default function VaccinationManagementClient() {
               <option value="">All animals</option>
               {animals.map((animal) => (
                 <option key={animal.id} value={animal.id}>
-                  {animal.name} #{animal.id}
+                  {animal.name} ({animal.animalCode})
                 </option>
               ))}
             </select>
@@ -482,6 +536,7 @@ export default function VaccinationManagementClient() {
               <option value="overdue">Overdue</option>
               <option value="today">Today</option>
               <option value="upcoming">Upcoming</option>
+              <option value="up_to_date">Up to date</option>
             </select>
           </label>
 
@@ -519,7 +574,7 @@ export default function VaccinationManagementClient() {
         ) : null}
 
         <section className="vaccination-layout mt-6 grid gap-6 lg:grid-cols-[1.45fr_0.95fr]">
-          <article className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.08)]">
+          <article className="order-2 overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.08)] lg:order-none">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-6 py-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-cyan-700">Schedule</p>
@@ -528,7 +583,91 @@ export default function VaccinationManagementClient() {
               <p className="text-sm text-slate-500">{records.length} visible records</p>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="space-y-3 p-4 md:hidden">
+              {loading ? (
+                Array.from({ length: 4 }).map((_, index) => (
+                  <div key={`vaccination-mobile-skeleton-${index}`} className="h-48 animate-pulse rounded-2xl bg-slate-100" />
+                ))
+              ) : records.length > 0 ? (
+                records.map((record) => (
+                  <article key={`mobile-record-${record.id}`} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.includes(record.id)}
+                          onChange={() => toggleSelection(record.id)}
+                          aria-label={`Select ${record.animalName}`}
+                        />
+                        <img
+                          src={record.photoUrl}
+                          alt={record.animalName}
+                          className="h-12 w-12 rounded-2xl object-cover ring-1 ring-slate-200"
+                        />
+                        <div>
+                          <p className="font-semibold leading-5 text-slate-950">{record.animalName}</p>
+                          <p className="text-xs text-slate-500">{record.animalCode} • {record.species}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 space-y-2 text-sm text-slate-700">
+                      <p>
+                        <span className="font-medium text-slate-500">Vaccine:</span> {record.vaccineName} • {record.dose}
+                      </p>
+                      <p>
+                        <span className="font-medium text-slate-500">Next due:</span> {formatDate(record.nextDueDate)}
+                      </p>
+                      <p>
+                        <span className="font-medium text-slate-500">Given:</span> {formatDate(record.dateGiven)}
+                      </p>
+                    </div>
+
+                    <div className="mt-3">
+                      <VaccinationBadge
+                        vaccinationStatus={
+                          record.status === "overdue"
+                            ? "overdue"
+                            : record.status === "today" || record.status === "upcoming"
+                              ? "due_soon"
+                              : "up_to_date"
+                        }
+                      />
+                      <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">{record.status.replaceAll("_", " ")}</p>
+                    </div>
+
+                    <div className="mt-3 grid grid-cols-1 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(record)}
+                        className="inline-flex w-full items-center justify-center rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700"
+                      >
+                        Edit
+                      </button>
+                      <Link
+                        href={`/admin/animals/${record.animalId}`}
+                        className="inline-flex w-full items-center justify-center rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700"
+                      >
+                        Animal record
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(record)}
+                        className="inline-flex w-full items-center justify-center rounded-full border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-50"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-500">
+                  No vaccination records match the current filters.
+                </div>
+              )}
+            </div>
+
+            <div className="hidden overflow-x-auto md:block">
               <table className="min-w-full divide-y divide-slate-200">
                 <thead className="bg-slate-50 text-left text-xs uppercase tracking-[0.3em] text-slate-500">
                   <tr>
@@ -574,7 +713,7 @@ export default function VaccinationManagementClient() {
                             />
                             <div>
                               <p className="font-semibold text-slate-950">{record.animalName}</p>
-                              <p className="text-sm text-slate-500">ID {record.animalId} • {record.species}</p>
+                              <p className="text-sm text-slate-500">{record.animalCode} • {record.species}</p>
                             </div>
                           </div>
                         </td>
@@ -587,7 +726,18 @@ export default function VaccinationManagementClient() {
                           <p className="text-sm text-slate-500">Given {formatDate(record.dateGiven)}</p>
                         </td>
                         <td className="px-6 py-4 align-middle">
-                          <VaccinationBadge vaccinationStatus={record.status === "overdue" ? "overdue" : record.status === "today" ? "due_soon" : "up_to_date"} />
+                          <VaccinationBadge
+                            vaccinationStatus={
+                              record.status === "overdue"
+                                ? "overdue"
+                                : record.status === "today" || record.status === "upcoming"
+                                  ? "due_soon"
+                                  : "up_to_date"
+                            }
+                          />
+                          <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">
+                            {record.status.replaceAll("_", " ")}
+                          </p>
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="inline-flex flex-wrap justify-end gap-2">
@@ -616,7 +766,7 @@ export default function VaccinationManagementClient() {
             </div>
           </article>
 
-          <div className="space-y-6">
+          <div className="order-1 space-y-6 lg:order-none">
             <VaccinationCalendar records={records} />
 
             <article className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)]">
@@ -624,7 +774,7 @@ export default function VaccinationManagementClient() {
               <div className="mt-4 space-y-3 text-sm text-slate-600">
                 <p>Bulk schedule assigns the same vaccine cycle to multiple animals at once.</p>
                 <p>CSV export downloads the currently filtered registry for reports and handoff notes.</p>
-                <p>The status badge updates from the next due date, so the page stays read-only for status logic.</p>
+                <p>Status updates are reflected from the due date in real time across the live registry and calendar.</p>
               </div>
             </article>
           </div>
@@ -690,7 +840,7 @@ export default function VaccinationManagementClient() {
                           />
                           <div>
                             <p className="text-sm font-semibold text-slate-900">{animal.name}</p>
-                            <p className="text-xs text-slate-500">ID {animal.id} • {animal.species}</p>
+                            <p className="text-xs text-slate-500">{animal.animalCode} • {animal.species}</p>
                           </div>
                         </label>
                       ))}
@@ -705,7 +855,7 @@ export default function VaccinationManagementClient() {
             {mode === "edit" && editingRecord ? (
               <FormModalShell
                 title={`Edit ${editingRecord.animalName}`}
-                description="Only the due date and notes are editable from this dashboard."
+                description="Update vaccine type, dose, status, dates, and notes for this record."
                 onClose={() => setMode(null)}
                 footer={
                   <>
@@ -720,11 +870,65 @@ export default function VaccinationManagementClient() {
               >
                 <div className="grid gap-4">
                   <label className="grid gap-2">
+                    <span className="text-sm font-medium text-slate-700">Vaccine type</span>
+                    <input
+                      type="text"
+                      value={editForm.vaccineName}
+                      onChange={(event) => setEditForm((current) => ({ ...current, vaccineName: event.target.value }))}
+                      className="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-cyan-400"
+                    />
+                  </label>
+                  <label className="grid gap-2">
+                    <span className="text-sm font-medium text-slate-700">Dose</span>
+                    <input
+                      type="text"
+                      value={editForm.dose}
+                      onChange={(event) => setEditForm((current) => ({ ...current, dose: event.target.value }))}
+                      className="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-cyan-400"
+                    />
+                  </label>
+                  <label className="grid gap-2">
+                    <span className="text-sm font-medium text-slate-700">Status</span>
+                    <select
+                      value={editForm.status}
+                      onChange={(event) => {
+                        const nextStatus = event.target.value as VaccinationStatus;
+                        setEditForm((current) => ({
+                          ...current,
+                          status: nextStatus,
+                          nextDueDate: statusToDate(nextStatus),
+                        }));
+                      }}
+                      className="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-cyan-400"
+                    >
+                      <option value="overdue">Overdue</option>
+                      <option value="today">Today</option>
+                      <option value="upcoming">Upcoming</option>
+                      <option value="up_to_date">Up to date</option>
+                    </select>
+                  </label>
+                  <label className="grid gap-2">
+                    <span className="text-sm font-medium text-slate-700">Date given</span>
+                    <input
+                      type="date"
+                      value={editForm.dateGiven}
+                      onChange={(event) => setEditForm((current) => ({ ...current, dateGiven: event.target.value }))}
+                      className="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-cyan-400"
+                    />
+                  </label>
+                  <label className="grid gap-2">
                     <span className="text-sm font-medium text-slate-700">Next due date</span>
                     <input
                       type="date"
                       value={editForm.nextDueDate}
-                      onChange={(event) => setEditForm((current) => ({ ...current, nextDueDate: event.target.value }))}
+                      onChange={(event) => {
+                        const nextDueDate = event.target.value;
+                        setEditForm((current) => ({
+                          ...current,
+                          nextDueDate,
+                          status: getVaccinationStatus(nextDueDate),
+                        }));
+                      }}
                       className="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-cyan-400"
                     />
                   </label>
@@ -821,7 +1025,7 @@ function VaccinationForm({
             <option value="">Select an animal</option>
             {animals.map((animal) => (
               <option key={animal.id} value={animal.id}>
-                {animal.name} #{animal.id}
+                {animal.name} ({animal.animalCode})
               </option>
             ))}
           </select>

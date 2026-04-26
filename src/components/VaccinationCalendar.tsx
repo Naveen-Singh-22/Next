@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import type { VaccinationStatus } from "@/lib/vaccinationTypes";
 
 type CalendarRecord = {
+  animalCode: string;
   animalName: string;
   vaccineName: string;
   nextDueDate: string;
@@ -25,8 +27,17 @@ function formatDay(value: number) {
   return new Intl.DateTimeFormat("en", { day: "numeric" }).format(new Date(2024, 0, value));
 }
 
+function toDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export default function VaccinationCalendar({ records }: VaccinationCalendarProps) {
   const today = new Date();
+  const todayKey = toDateKey(today);
+  const [selectedDateKey, setSelectedDateKey] = useState(todayKey);
   const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
   const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
   const firstDayIndex = firstDay.getDay();
@@ -48,7 +59,7 @@ export default function VaccinationCalendar({ records }: VaccinationCalendarProp
     }
 
     const cellDate = new Date(today.getFullYear(), today.getMonth(), dayNumber);
-    const key = cellDate.toISOString().slice(0, 10);
+    const key = toDateKey(cellDate);
 
     return {
       dayNumber,
@@ -57,14 +68,13 @@ export default function VaccinationCalendar({ records }: VaccinationCalendarProp
     };
   });
 
-  const upcomingAppointments = records
-    .map((record) => ({
-      ...record,
-      dueDate: toLocalDate(record.nextDueDate),
-    }))
-    .filter((record) => record.dueDate >= new Date(today.getFullYear(), today.getMonth(), 1))
-    .sort((left, right) => left.dueDate.getTime() - right.dueDate.getTime())
-    .slice(0, 6);
+  const selectedDayRecords = [...(recordsByDate.get(selectedDateKey) ?? [])].sort((left, right) => left.animalName.localeCompare(right.animalName));
+
+  const selectedDayLabel = toLocalDate(selectedDateKey).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 
   return (
     <article className="rounded-[28px] border border-slate-200 bg-slate-950/95 p-5 text-slate-100 shadow-[0_24px_80px_rgba(15,23,42,0.26)]">
@@ -95,10 +105,17 @@ export default function VaccinationCalendar({ records }: VaccinationCalendarProp
           const isToday = cell.dayNumber === today.getDate();
 
           return (
-            <div
+            <button
+              type="button"
+              onClick={() => setSelectedDateKey(cell.key)}
               key={cell.key}
+              aria-pressed={selectedDateKey === cell.key}
               className={`min-h-24 rounded-2xl border p-2 transition ${
-                isToday ? "border-cyan-300 bg-cyan-300/10 shadow-[0_0_0_1px_rgba(103,232,249,0.3)]" : "border-white/10 bg-white/5"
+                selectedDateKey === cell.key
+                  ? "border-cyan-300 bg-cyan-300/10 shadow-[0_0_0_1px_rgba(103,232,249,0.3)]"
+                  : isToday
+                    ? "border-cyan-300/60 bg-cyan-300/5"
+                    : "border-white/10 bg-white/5"
               }`}
             >
               <div className="flex items-center justify-between text-xs text-slate-300">
@@ -114,20 +131,20 @@ export default function VaccinationCalendar({ records }: VaccinationCalendarProp
                 ))}
                 {cell.records.length > 2 ? <p className="px-1 text-[11px] text-slate-400">+{cell.records.length - 2} more</p> : null}
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
 
       <div className="mt-5 rounded-3xl border border-white/10 bg-white/5 p-4">
-        <h4 className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-200">Appointments</h4>
+        <h4 className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-200">Appointments on {selectedDayLabel}</h4>
         <ul className="mt-3 space-y-3">
-          {upcomingAppointments.length > 0 ? (
-            upcomingAppointments.map((record) => (
+          {selectedDayRecords.length > 0 ? (
+            selectedDayRecords.map((record) => (
               <li key={`${record.animalName}-${record.nextDueDate}`} className="flex items-center justify-between gap-3 rounded-2xl bg-slate-900/80 px-3 py-2">
                 <div>
                   <p className="text-sm font-medium text-white">{record.animalName}</p>
-                  <p className="text-xs text-slate-400">{record.vaccineName}</p>
+                  <p className="text-xs text-slate-400">{record.animalCode} • {record.vaccineName}</p>
                 </div>
                 <div className="text-right text-xs text-slate-300">
                   <p>{toLocalDate(record.nextDueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
@@ -137,7 +154,7 @@ export default function VaccinationCalendar({ records }: VaccinationCalendarProp
             ))
           ) : (
             <li className="rounded-2xl border border-dashed border-white/15 px-3 py-4 text-sm text-slate-400">
-              No due appointments in this month yet.
+              No due appointments on this date.
             </li>
           )}
         </ul>

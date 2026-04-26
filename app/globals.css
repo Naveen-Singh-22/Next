@@ -6925,6 +6925,36 @@ th {
   cursor: pointer;
 }
 
+.inq-filter-row {
+  border-top: 1px solid #efefef;
+  padding: 0.85rem 1rem 0.55rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.inq-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.inq-filter-pill {
+  border-radius: 999px;
+  border: 1px solid #dfe5e4;
+  background: #f8f9f9;
+  color: #415050;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.inq-filter-pill.active {
+  background: #0a7b70;
+  border-color: #0a7b70;
+  color: #fff;
+}
+
 .inq-list {
   border-top: 1px solid #efefef;
   display: grid;
@@ -6992,6 +7022,26 @@ th {
 
 .inq-tag.donation {
   background: #c97b5c;
+}
+
+.inq-tag.rescue {
+  background: #0a7b70;
+}
+
+.inq-tag.adoption {
+  background: #206bc4;
+}
+
+.inq-tag.status-new {
+  background: #9c9c9c;
+}
+
+.inq-tag.status-assigned {
+  background: #d08a2d;
+}
+
+.inq-tag.status-resolved {
+  background: #2f8f5b;
 }
 
 .inq-time {
@@ -7117,6 +7167,65 @@ th {
   color: #2f3939;
   line-height: 1.7;
   font-size: 0.94rem;
+}
+
+.inq-detail-grid {
+  margin: 1rem 0 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.inq-detail-grid div {
+  border-radius: 14px;
+  border: 1px solid #ececec;
+  background: #f9faf9;
+  padding: 0.85rem 0.95rem;
+}
+
+.inq-detail-grid span {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7d8787;
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+
+.inq-detail-grid strong {
+  display: block;
+  margin-top: 0.3rem;
+  color: #1f2a2a;
+  font-size: 0.86rem;
+}
+
+.inq-note {
+  margin: 0;
+  padding: 0.8rem 1rem 0;
+  color: #5e6969;
+  font-size: 0.84rem;
+}
+
+.inq-note-error {
+  color: #b04d39;
+}
+
+.inq-empty-state,
+.inq-empty-detail {
+  padding: 1rem;
+}
+
+.inq-empty-state strong,
+.inq-empty-detail strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.inq-empty-state p,
+.inq-empty-detail p {
+  margin: 0.35rem 0 0;
+  color: #707b7b;
+  line-height: 1.5;
 }
 
 .inq-signature {
@@ -10576,6 +10685,50 @@ html.dark .admin-footer a,
     width: 100%;
   }
 
+  .inventory-page .admin-main,
+  .vaccination-page .admin-main {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .inventory-page .admin-main > section,
+  .vaccination-page .admin-main > section {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .inventory-page .admin-main > section:first-of-type,
+  .vaccination-page .admin-main > section:first-of-type {
+    margin-top: 0.5rem;
+  }
+
+  .inventory-page .admin-topbar input {
+    font-size: 16px;
+    min-height: 48px;
+  }
+
+  .inventory-page .admin-topbar-start {
+    gap: 0.65rem;
+  }
+
+  .inventory-page .admin-topbar-start input {
+    width: 100%;
+  }
+
+  .inventory-page .inventory-main h1 {
+    line-height: 1.08;
+  }
+
+  .inventory-page .inventory-main table {
+    min-width: 760px;
+  }
+
+  .inventory-page .inventory-main .overflow-x-auto {
+    margin-inline: -0.25rem;
+    padding-bottom: 0.15rem;
+  }
+
   .admin-topbar input {
     max-width: 100%;
   }
@@ -10659,6 +10812,19 @@ html.dark .admin-footer a,
 
   .inq-evidence-grid {
     grid-template-columns: 1fr;
+  }
+
+  .inq-filter-row,
+  .inq-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inq-filter-group {
+    width: 100%;
+  }
+
+  .inq-filter-pill {
+    width: 100%;
   }
 
   .inq-stats {

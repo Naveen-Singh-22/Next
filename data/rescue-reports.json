@@ -26,7 +26,8 @@
         "shelterAssigned": false,
         "reporterNotified": true
       },
-      "lastAdminUpdateAt": "2026-04-26T16:08:27.571Z"
+      "lastAdminUpdateAt": "2026-04-26T16:08:27.571Z",
+      "id": 1
     },
     {
       "reportId": "RR-TE0BYS",
@@ -52,9 +53,10 @@
         "monitored": false,
         "medicalCompleted": false,
         "shelterAssigned": false,
-        "reporterNotified": false
+        "reporterNotified": true
       },
-      "lastAdminUpdateAt": "2026-04-26T08:09:05.949Z"
+      "lastAdminUpdateAt": "2026-04-26T18:53:10.639Z",
+      "id": 2
     },
     {
       "reportId": "RR-TDZZD7",
@@ -74,7 +76,17 @@
         "latitude": 22.770164790070364,
         "longitude": 75.91056610384192
       },
-      "createdAt": "2026-04-24T12:15:07.008Z"
+      "createdAt": "2026-04-24T12:15:07.008Z",
+      "id": 3,
+      "caseStatus": "reported",
+      "adminChecklist": {
+        "rescued": false,
+        "monitored": false,
+        "medicalCompleted": false,
+        "shelterAssigned": false,
+        "reporterNotified": false
+      }
     }
-  ]
+  ],
+  "nextId": null
 }

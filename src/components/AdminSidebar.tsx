@@ -8,7 +8,6 @@ const adminNavItems = [
   { href: "/admin/adoption", label: "Adoption Pipeline" },
   { href: "/admin/inventory", label: "Animal Inventory" },
   { href: "/admin/vaccinations", label: "Vaccinations" },
-  { href: "/admin/shelter-care-logs", label: "Shelter Care Logs" },
   { href: "/admin/inquiry-management", label: "Inquiries" },
 ] as const;
 

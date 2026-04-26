@@ -10,7 +10,6 @@ import {
   ANIMAL_HEALTH_OPTIONS,
   ANIMAL_SPECIES_OPTIONS,
   ANIMAL_STATUS_OPTIONS,
-  ANIMAL_VACCINATION_OPTIONS,
   HealthBadge,
   StatusBadge,
   VaccinationBadge,
@@ -655,13 +654,15 @@ export default function AnimalInventoryClient() {
           </div>
         </header>
 
-        <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 lg:px-6">
-          <section className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_18px_45px_rgba(15,23,42,0.05)]">
+        <section className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:px-4 sm:py-6 lg:px-6">
+          <section className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_18px_45px_rgba(15,23,42,0.05)] sm:p-5 lg:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-700">Admin animal inventory</p>
-                <h1 className="mt-2 text-3xl font-semibold text-slate-950">Animal Inventory</h1>
-                <p className="mt-2 text-sm text-slate-600">
+                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-emerald-700 sm:text-xs sm:tracking-[0.28em]">Admin animal inventory</p>
+                <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl lg:text-[2.15rem]">
+                  Animal Inventory
+                </h1>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-[0.95rem]">
                   {pageSummary.total} animals found. Showing {pageSummary.loaded} on page {pageSummary.current} of {pageSummary.totalPages}.
                 </p>
               </div>
@@ -669,22 +670,22 @@ export default function AnimalInventoryClient() {
               <button
                 type="button"
                 onClick={openCreateModal}
-                className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+                className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700 sm:px-5 sm:py-3"
               >
                 Add Animal
               </button>
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <label className="space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Species</span>
+                <span className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-xs sm:tracking-[0.2em]">Species</span>
                 <select
                   value={speciesFilter}
                   onChange={(event) => {
                     setSpeciesFilter(event.target.value as AnimalSpecies | "");
                     setPage(1);
                   }}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-400"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-slate-400 sm:px-4 sm:py-3"
                 >
                   <option value="">All species</option>
                   {ANIMAL_SPECIES_OPTIONS.map((option) => (
@@ -696,14 +697,14 @@ export default function AnimalInventoryClient() {
               </label>
 
               <label className="space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Health status</span>
+                <span className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-xs sm:tracking-[0.2em]">Health status</span>
                 <select
                   value={healthFilter}
                   onChange={(event) => {
                     setHealthFilter(event.target.value as AnimalHealthStatus | "");
                     setPage(1);
                   }}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-400"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-slate-400 sm:px-4 sm:py-3"
                 >
                   <option value="">All statuses</option>
                   {ANIMAL_HEALTH_OPTIONS.map((option) => (
@@ -715,14 +716,14 @@ export default function AnimalInventoryClient() {
               </label>
 
               <label className="space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Animal status</span>
+                <span className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-xs sm:tracking-[0.2em]">Animal status</span>
                 <select
                   value={statusFilter}
                   onChange={(event) => {
                     setStatusFilter(event.target.value as AnimalStatus | "");
                     setPage(1);
                   }}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-400"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-slate-400 sm:px-4 sm:py-3"
                 >
                   <option value="">All statuses</option>
                   {ANIMAL_STATUS_OPTIONS.map((option) => (
@@ -734,14 +735,14 @@ export default function AnimalInventoryClient() {
               </label>
 
               <label className="space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Sort by</span>
+                <span className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-xs sm:tracking-[0.2em]">Sort by</span>
                 <select
                   value={sort}
                   onChange={(event) => {
                     setSort(event.target.value as "newest" | "health" | "alphabetical");
                     setPage(1);
                   }}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-400"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-slate-400 sm:px-4 sm:py-3"
                 >
                   <option value="newest">Newest</option>
                   <option value="health">Health severity</option>
@@ -760,8 +761,8 @@ export default function AnimalInventoryClient() {
           <section className="space-y-4">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-semibold text-slate-950">Animal Cards</h2>
-                <p className="text-sm text-slate-600">Quick actions and workflow controls.</p>
+                <h2 className="text-lg font-semibold text-slate-950 sm:text-xl">Animal Cards</h2>
+                <p className="text-sm leading-6 text-slate-600">Quick actions and workflow controls.</p>
               </div>
               <p className="text-sm text-slate-500">Strict status flow: rescued → admitted → available → adopted</p>
             </div>
@@ -769,7 +770,7 @@ export default function AnimalInventoryClient() {
             {isLoading ? (
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, index) => (
-                  <div key={index} className="h-[520px] animate-pulse rounded-3xl bg-slate-100" />
+                  <div key={index} className="h-[460px] animate-pulse rounded-3xl bg-slate-100 sm:h-[500px]" />
                 ))}
               </div>
             ) : animals.length ? (
@@ -792,28 +793,116 @@ export default function AnimalInventoryClient() {
             )}
           </section>
 
-          <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.05)]">
-            <div className="flex items-center justify-between gap-3">
+          <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] sm:p-5 lg:p-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-slate-950">Inventory Ledger</h2>
-                <p className="text-sm text-slate-600">Table view for fast review and record access.</p>
+                <h2 className="text-lg font-semibold text-slate-950 sm:text-xl">Inventory Ledger</h2>
+                <p className="text-sm leading-6 text-slate-600">Table view for fast review and record access.</p>
               </div>
-              <div className="flex items-center gap-2 text-sm text-slate-500">
+              <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
                 <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700">Page {pageSummary.current}</span>
                 <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700">{pageSummary.total} total</span>
               </div>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="space-y-3 md:hidden">
+              {animals.length ? (
+                animals.map((animal) => {
+                  const statusOptions = getStatusOptions(animal.status);
+
+                  return (
+                    <article key={`mobile-ledger-${animal.id}`} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-11 w-11 shrink-0 overflow-hidden rounded-2xl bg-slate-200">
+                          {animal.photoUrls[0] ? <img src={animal.photoUrls[0]} alt={animal.name} className="h-full w-full object-cover" /> : null}
+                        </div>
+                        <div>
+                          <p className="font-semibold leading-5 text-slate-950">{animal.name}</p>
+                          <p className="text-xs text-slate-500">{animal.animalCode}</p>
+                        </div>
+                      </div>
+
+                      <dl className="mt-3 grid grid-cols-1 gap-2 text-sm text-slate-700">
+                        <div className="flex items-center justify-between gap-3">
+                          <dt className="font-medium text-slate-500">Species</dt>
+                          <dd>{formatEnumLabel(animal.species)}</dd>
+                        </div>
+                        <div className="flex items-center justify-between gap-3">
+                          <dt className="font-medium text-slate-500">Health</dt>
+                          <dd><HealthBadge healthStatus={animal.healthStatus} /></dd>
+                        </div>
+                        <div className="space-y-1">
+                          <dt className="font-medium text-slate-500">Vaccination</dt>
+                          <dd className="space-y-1">
+                            <VaccinationBadge vaccinationStatus={animal.vaccinationStatus} />
+                            {vaccinationDetailByAnimalId[animal.id] ? (
+                              <p className="text-xs text-slate-500">
+                                {vaccinationDetailByAnimalId[animal.id].vaccineName} • Due {formatDate(vaccinationDetailByAnimalId[animal.id].nextDueDate)}
+                              </p>
+                            ) : (
+                              <p className="text-xs text-slate-400">No record</p>
+                            )}
+                          </dd>
+                        </div>
+                      </dl>
+
+                      <div className="mt-3">
+                        <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Status workflow</label>
+                        <select
+                          value={animal.status}
+                          onChange={(event) => updateStatus(animal, event.target.value as AnimalStatus)}
+                          className="w-full rounded-full border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-slate-400"
+                        >
+                          {statusOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(animal)}
+                          className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 transition hover:bg-slate-50"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteTarget(animal)}
+                          className="rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
+                        >
+                          Delete
+                        </button>
+                        <Link
+                          href={`/admin/animals/${animal.id}`}
+                          className="rounded-full bg-slate-900 px-3 py-2 text-xs font-semibold text-white transition hover:bg-slate-700"
+                        >
+                          View
+                        </Link>
+                      </div>
+                    </article>
+                  );
+                })
+              ) : (
+                <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-slate-500">
+                  No animal records available for this query.
+                </div>
+              )}
+            </div>
+
+            <div className="hidden overflow-x-auto rounded-2xl border border-slate-100 md:block">
               <table className="min-w-full border-separate border-spacing-y-3">
                 <thead>
-                  <tr className="text-left text-xs uppercase tracking-[0.2em] text-slate-500">
-                    <th className="px-4 py-2">Animal</th>
-                    <th className="px-4 py-2">Species</th>
-                    <th className="px-4 py-2">Health Status</th>
-                    <th className="px-4 py-2">Vaccination Status</th>
-                    <th className="px-4 py-2">Status</th>
-                    <th className="px-4 py-2">Actions</th>
+                  <tr className="text-left text-[0.68rem] uppercase tracking-[0.18em] text-slate-500 sm:text-xs sm:tracking-[0.2em]">
+                    <th className="px-3 py-2 sm:px-4">Animal</th>
+                    <th className="px-3 py-2 sm:px-4">Species</th>
+                    <th className="px-3 py-2 sm:px-4">Health Status</th>
+                    <th className="px-3 py-2 sm:px-4">Vaccination Status</th>
+                    <th className="px-3 py-2 sm:px-4">Status</th>
+                    <th className="px-3 py-2 sm:px-4">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -822,39 +911,39 @@ export default function AnimalInventoryClient() {
                       const statusOptions = getStatusOptions(animal.status);
 
                       return (
-                        <tr key={animal.id} className="rounded-2xl bg-slate-50 text-sm text-slate-700">
-                          <td className="rounded-l-2xl px-4 py-4">
+                        <tr key={animal.id} className="rounded-2xl bg-slate-50 text-[0.92rem] text-slate-700 sm:text-sm">
+                          <td className="rounded-l-2xl px-3 py-3 sm:px-4 sm:py-4">
                             <div className="flex items-center gap-3">
-                              <div className="h-12 w-12 overflow-hidden rounded-2xl bg-slate-200">
+                              <div className="h-11 w-11 shrink-0 overflow-hidden rounded-2xl bg-slate-200 sm:h-12 sm:w-12">
                                 {animal.photoUrls[0] ? (
                                   <img src={animal.photoUrls[0]} alt={animal.name} className="h-full w-full object-cover" />
                                 ) : null}
                               </div>
                               <div>
-                                <p className="font-semibold text-slate-950">{animal.name}</p>
-                                <p className="text-xs text-slate-500">{animal.animalCode}</p>
+                                <p className="font-semibold leading-5 text-slate-950">{animal.name}</p>
+                                <p className="text-[0.72rem] text-slate-500 sm:text-xs">{animal.animalCode}</p>
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-4">{formatEnumLabel(animal.species)}</td>
-                          <td className="px-4 py-4">
+                          <td className="px-3 py-3 sm:px-4 sm:py-4">{formatEnumLabel(animal.species)}</td>
+                          <td className="px-3 py-3 sm:px-4 sm:py-4">
                             <HealthBadge healthStatus={animal.healthStatus} />
                           </td>
-                          <td className="px-4 py-4">
+                          <td className="px-3 py-3 sm:px-4 sm:py-4">
                             <VaccinationBadge vaccinationStatus={animal.vaccinationStatus} />
                             {vaccinationDetailByAnimalId[animal.id] ? (
-                              <p className="mt-2 text-xs text-slate-500">
+                              <p className="mt-2 text-[0.72rem] leading-5 text-slate-500 sm:text-xs">
                                 {vaccinationDetailByAnimalId[animal.id].vaccineName} • Due {formatDate(vaccinationDetailByAnimalId[animal.id].nextDueDate)}
                               </p>
                             ) : (
-                              <p className="mt-2 text-xs text-slate-400">No record</p>
+                              <p className="mt-2 text-[0.72rem] text-slate-400 sm:text-xs">No record</p>
                             )}
                           </td>
-                          <td className="px-4 py-4">
+                          <td className="px-3 py-3 sm:px-4 sm:py-4">
                             <select
                               value={animal.status}
                               onChange={(event) => updateStatus(animal, event.target.value as AnimalStatus)}
-                              className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-slate-400"
+                              className="w-full rounded-full border border-slate-200 bg-white px-3 py-2 text-[0.9rem] outline-none transition focus:border-slate-400"
                             >
                               {statusOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -863,25 +952,25 @@ export default function AnimalInventoryClient() {
                               ))}
                             </select>
                           </td>
-                          <td className="rounded-r-2xl px-4 py-4">
-                            <div className="flex flex-wrap gap-2">
+                          <td className="rounded-r-2xl px-3 py-3 sm:px-4 sm:py-4">
+                            <div className="flex flex-wrap gap-2 sm:gap-2.5">
                               <button
                                 type="button"
                                 onClick={() => openEditModal(animal)}
-                                className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 transition hover:bg-slate-50"
+                                className="rounded-full border border-slate-200 bg-white px-3 py-2 text-[0.75rem] font-semibold text-slate-800 transition hover:bg-slate-50 sm:text-xs"
                               >
                                 Edit
                               </button>
                               <button
                                 type="button"
                                 onClick={() => setDeleteTarget(animal)}
-                                className="rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
+                                className="rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-[0.75rem] font-semibold text-rose-700 transition hover:bg-rose-100 sm:text-xs"
                               >
                                 Delete
                               </button>
                               <Link
                                 href={`/admin/animals/${animal.id}`}
-                                className="rounded-full bg-slate-900 px-3 py-2 text-xs font-semibold text-white transition hover:bg-slate-700"
+                                className="rounded-full bg-slate-900 px-3 py-2 text-[0.75rem] font-semibold text-white transition hover:bg-slate-700 sm:text-xs"
                               >
                                 View
                               </Link>
@@ -892,7 +981,7 @@ export default function AnimalInventoryClient() {
                     })
                   ) : (
                     <tr>
-                      <td className="rounded-2xl border border-dashed border-slate-200 px-4 py-10 text-center text-slate-500" colSpan={6}>
+                      <td className="rounded-2xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-500" colSpan={6}>
                         No animal records available for this query.
                       </td>
                     </tr>
