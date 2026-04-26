@@ -64,10 +64,14 @@ async function getDb() {
       );
 
       let shouldWrite = false;
-      const usedIds = new Set(db.data.rescueReports.map((report) => report.id).filter(Boolean));
+      const usedIds = new Set(
+        db.data.rescueReports
+          .map((report) => report.id)
+          .filter((value): value is number => Number.isInteger(value) && value >= 0),
+      );
 
       db.data.rescueReports = db.data.rescueReports.map((report) => {
-        if (report.id) {
+        if (typeof report.id === "number") {
           return {
             ...report,
             caseStatus: report.caseStatus ?? "reported",
@@ -105,7 +109,18 @@ async function getDb() {
       });
 
       if (shouldWrite) {
-        await db.write();
+        try {
+          await db.write();
+        } catch (error) {
+          const code =
+            typeof error === "object" && error !== null && "code" in error
+              ? String((error as { code?: unknown }).code)
+              : "";
+
+          if (code !== "EROFS" && code !== "EPERM" && code !== "EACCES") {
+            throw error;
+          }
+        }
       }
 
       return db;

@@ -45,9 +45,20 @@ function isChecklistComplete(checklist: RescueAdminChecklist) {
 
 export const runtime = "nodejs";
 
+function toMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
+
 export async function GET() {
-  const reports = await listRescueReports();
-  return NextResponse.json({ ok: true, count: reports.length, reports });
+  try {
+    const reports = await listRescueReports();
+    return NextResponse.json({ ok: true, count: reports.length, reports });
+  } catch (error) {
+    return NextResponse.json(
+      { ok: false, message: toMessage(error, "Failed to load rescue reports.") },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(request: Request) {
@@ -105,45 +116,52 @@ export async function POST(request: Request) {
 
   const reportId = `RR-${Math.floor(Date.now() / 1000).toString(36).toUpperCase()}`;
 
-  const report = await saveRescueReport({
-    reportId,
-    fullName,
-    email,
-    phone,
-    species,
-    breed: body.breed?.trim() ?? "",
-    healthConditions: Array.isArray(body.healthConditions) ? body.healthConditions : [],
-    notes: body.notes?.trim() ?? "",
-    lastSeenAddress,
-    urgency,
-    location: {
-      latitude,
-      longitude,
-    },
-    animalImageDataUrl: animalImageDataUrl || undefined,
-    caseStatus: "reported",
-    adminChecklist: {
-      rescued: false,
-      monitored: false,
-      medicalCompleted: false,
-      shelterAssigned: false,
-      reporterNotified: false,
-    },
-    createdAt: new Date().toISOString(),
-  });
+  try {
+    const report = await saveRescueReport({
+      reportId,
+      fullName,
+      email,
+      phone,
+      species,
+      breed: body.breed?.trim() ?? "",
+      healthConditions: Array.isArray(body.healthConditions) ? body.healthConditions : [],
+      notes: body.notes?.trim() ?? "",
+      lastSeenAddress,
+      urgency,
+      location: {
+        latitude,
+        longitude,
+      },
+      animalImageDataUrl: animalImageDataUrl || undefined,
+      caseStatus: "reported",
+      adminChecklist: {
+        rescued: false,
+        monitored: false,
+        medicalCompleted: false,
+        shelterAssigned: false,
+        reporterNotified: false,
+      },
+      createdAt: new Date().toISOString(),
+    });
 
-  await createInquiry({
-    type: "rescue",
-    referenceId: report.id,
-    title: `Rescue report from ${fullName}`,
-    preview: `${species} at ${lastSeenAddress}`,
-  });
+    await createInquiry({
+      type: "rescue",
+      referenceId: report.id,
+      title: `Rescue report from ${fullName}`,
+      preview: `${species} at ${lastSeenAddress}`,
+    });
 
-  return NextResponse.json({
-    ok: true,
-    reportId,
-    message: `Report submitted successfully. Reference ID: ${reportId}`,
-  });
+    return NextResponse.json({
+      ok: true,
+      reportId,
+      message: `Report submitted successfully. Reference ID: ${reportId}`,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { ok: false, message: toMessage(error, "Failed to submit rescue report.") },
+      { status: 500 },
+    );
+  }
 }
 
 export async function PUT(request: Request) {
@@ -175,10 +193,19 @@ export async function PUT(request: Request) {
     reporterNotified: Boolean(body.adminChecklist?.reporterNotified),
   };
 
-  const updated = await updateRescueReportAdmin(reportId, {
-    caseStatus,
-    adminChecklist,
-  });
+  let updated;
+
+  try {
+    updated = await updateRescueReportAdmin(reportId, {
+      caseStatus,
+      adminChecklist,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { ok: false, message: toMessage(error, "Failed to update rescue report.") },
+      { status: 500 },
+    );
+  }
 
   if (!updated) {
     return NextResponse.json({ ok: false, message: "Rescue report not found." }, { status: 404 });

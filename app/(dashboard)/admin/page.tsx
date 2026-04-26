@@ -20,6 +20,16 @@ type RescueReportsResponse = {
   reports?: RescueReport[];
 };
 
+async function readJsonSafely(response: Response): Promise<RescueReportsResponse | null> {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!contentType.toLowerCase().includes("application/json")) {
+    return null;
+  }
+
+  return (await response.json().catch(() => null)) as RescueReportsResponse | null;
+}
+
 function formatRelativeTime(isoDate: string) {
   const timestamp = new Date(isoDate).getTime();
 
@@ -98,10 +108,10 @@ export default function AdminPage() {
         setReportsError("");
 
         const response = await fetch("/api/rescue/requests", { cache: "no-store" });
-        const payload = (await response.json()) as RescueReportsResponse;
+        const payload = await readJsonSafely(response);
 
-        if (!response.ok || !payload.ok) {
-          throw new Error(payload.message ?? "Failed to load rescue reports.");
+        if (!response.ok || !payload || !payload.ok) {
+          throw new Error(payload?.message ?? "Failed to load rescue reports.");
         }
 
         if (isMounted) {

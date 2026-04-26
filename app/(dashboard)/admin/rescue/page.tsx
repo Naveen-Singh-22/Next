@@ -22,6 +22,16 @@ type RescueReportsResponse = {
   reports?: RescueReport[];
 };
 
+async function readJsonSafely<T>(response: Response): Promise<T | null> {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!contentType.toLowerCase().includes("application/json")) {
+    return null;
+  }
+
+  return (await response.json().catch(() => null)) as T | null;
+}
+
 type RescueCaseStatus = "reported" | "in_progress" | "monitored" | "rescued" | "closed";
 
 type RescueAdminChecklist = {
@@ -245,10 +255,10 @@ export default function RescueManagementPage() {
         setReportsError("");
 
         const response = await fetch("/api/rescue/requests", { cache: "no-store" });
-        const payload = (await response.json()) as RescueReportsResponse;
+        const payload = await readJsonSafely<RescueReportsResponse>(response);
 
-        if (!response.ok || !payload.ok) {
-          throw new Error(payload.message ?? "Failed to load rescue reports.");
+        if (!response.ok || !payload?.ok) {
+          throw new Error(payload?.message ?? "Failed to load rescue reports.");
         }
 
         if (isMounted) {
@@ -367,10 +377,10 @@ export default function RescueManagementPage() {
         }),
       });
 
-      const payload = (await response.json()) as RescueAdminUpdateResponse;
+      const payload = await readJsonSafely<RescueAdminUpdateResponse>(response);
 
-      if (!response.ok || !payload.ok || !payload.report) {
-        throw new Error(payload.message ?? "Failed to save checklist.");
+      if (!response.ok || !payload || !payload.ok || !payload.report) {
+        throw new Error(payload?.message ?? "Failed to save checklist.");
       }
 
       setReports((current) =>
