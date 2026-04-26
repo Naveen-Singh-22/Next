@@ -99,7 +99,9 @@ export async function findAdoptionById(id: number) {
   return db.data.applications.find((application) => application.id === id) ?? null;
 }
 
-export async function createAdoption(input: Omit<AdoptionApplication, "id" | "createdAt" | "timeline" | "status">) {
+export async function createAdoption(
+  input: Omit<AdoptionApplication, "id" | "applicationId" | "createdAt" | "timeline" | "status">,
+) {
   const db = await getDb();
   await db.read();
   const usedIds = new Set(db.data.applications.map((application) => application.applicationId));

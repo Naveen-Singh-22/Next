@@ -44,7 +44,13 @@ export default function AdoptPage() {
 
         const nextAnimals = Array.isArray(payload?.animals)
           ? payload.animals
-              .filter((item): item is Animal => Boolean(item) && typeof item === "object" && "status" in item)
+              .filter((item): item is Animal => {
+                if (!item || typeof item !== "object") {
+                  return false;
+                }
+
+                return "status" in (item as Record<string, unknown>);
+              })
               .filter(inventoryAnimalIsAdoptable)
               .map(animalToAdoptAnimal)
           : [];

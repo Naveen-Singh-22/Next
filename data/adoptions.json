@@ -1,6 +1,28 @@
 {
   "applications": [
     {
+      "applicantName": "Anshu Singh",
+      "email": "anshu@gmail.com",
+      "phone": "8959562680",
+      "city": "Dewas",
+      "housing": "house",
+      "petExperience": "my neighbor have pet was my favorite",
+      "whyAdopt": "i have good bonding with pets",
+      "animalId": 4,
+      "animalName": "Balthazar",
+      "adminNotes": "",
+      "id": 3,
+      "applicationId": "AD-TE4FGHFQ9",
+      "createdAt": "2026-04-26T21:53:05.766Z",
+      "status": "applied",
+      "timeline": [
+        {
+          "type": "Application submitted",
+          "time": "2026-04-26T21:53:05.766Z"
+        }
+      ]
+    },
+    {
       "applicantName": "Alok Singh",
       "email": "alok@gmail.com",
       "phone": "7415585620",
@@ -23,6 +45,14 @@
         {
           "type": "Application shortlisted",
           "time": "2026-04-26T09:15:58.705Z"
+        },
+        {
+          "type": "Status updated",
+          "time": "2026-04-26T21:55:06.333Z"
+        },
+        {
+          "type": "Application shortlisted",
+          "time": "2026-04-26T21:55:09.950Z"
         }
       ]
     },
@@ -65,5 +95,5 @@
       "animalName": "Animal #9"
     }
   ],
-  "nextId": 3
+  "nextId": 4
 }

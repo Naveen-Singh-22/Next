@@ -7,9 +7,15 @@ type UpdateInquiryBody = {
   status?: InquiryStatus;
 };
 
+type RouteParams = {
+  params: Promise<{
+    id: string;
+  }>;
+};
+
 export const runtime = "nodejs";
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: RouteParams) {
   let body: UpdateInquiryBody;
 
   try {
@@ -18,7 +24,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ message: "Invalid JSON payload." }, { status: 400 });
   }
 
-  const { id: idParam } = params;
+  const { id: idParam } = await params;
   const id = Number(idParam);
 
   if (!Number.isInteger(id) || id <= 0) {

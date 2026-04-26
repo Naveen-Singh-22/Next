@@ -1,0 +1,23 @@
+{
+  "inquiries": [
+    {
+      "type": "adoption",
+      "referenceId": 3,
+      "title": "Adoption application from Anshu Singh",
+      "preview": "Balthazar • Dewas",
+      "id": 2,
+      "status": "new",
+      "createdAt": "2026-04-26T21:53:05.773Z"
+    },
+    {
+      "type": "rescue",
+      "referenceId": 0,
+      "title": "Rescue report from Anshu",
+      "preview": "Cat at Babariya, Dewas, Dewas Nagar Tahsil, Dewas, Madhya Pradesh, 455001, India",
+      "id": 1,
+      "status": "new",
+      "createdAt": "2026-04-26T21:50:07.836Z"
+    }
+  ],
+  "nextId": 3
+}

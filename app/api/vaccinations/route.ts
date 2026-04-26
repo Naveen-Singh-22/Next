@@ -7,7 +7,7 @@ function toNumber(value: unknown) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function isValidDateString(value: unknown) {
+function isValidDateString(value: unknown): value is string {
   if (typeof value !== "string") {
     return false;
   }
@@ -22,8 +22,10 @@ function normalizeCreateBody(body: unknown): VaccinationCreateInput[] | null {
 
   const payload = body as Record<string, unknown>;
 
-  const isBulk = Array.isArray(payload.animalIds);
-  const animalIds = isBulk ? payload.animalIds.map(toNumber).filter((value): value is number => value !== null) : [];
+  const animalIdsInput = payload.animalIds;
+  const animalNamesInput = payload.animalNames;
+  const isBulk = Array.isArray(animalIdsInput);
+  const animalIds = isBulk ? animalIdsInput.map(toNumber).filter((value): value is number => value !== null) : [];
 
   const baseFields = {
     vaccineName: payload.vaccineName,
@@ -42,28 +44,38 @@ function normalizeCreateBody(body: unknown): VaccinationCreateInput[] | null {
     return null;
   }
 
+  const vaccineName = baseFields.vaccineName;
+  const dose = baseFields.dose;
+  const dateGiven = baseFields.dateGiven;
+  const nextDueDate = baseFields.nextDueDate;
+  const notes = typeof baseFields.notes === "string" ? baseFields.notes : undefined;
+
   if (isBulk) {
-    if (animalIds.length === 0 || !Array.isArray(payload.animalNames) || payload.animalNames.length !== animalIds.length) {
+    if (animalIds.length === 0 || !Array.isArray(animalNamesInput) || animalNamesInput.length !== animalIds.length) {
       return null;
     }
 
-    return animalIds.map((animalId, index) => {
-      const animalName = payload.animalNames?.[index];
+    const inputs: VaccinationCreateInput[] = [];
+
+    for (const [index, animalId] of animalIds.entries()) {
+      const animalName = animalNamesInput[index];
 
       if (typeof animalName !== "string") {
         return null;
       }
 
-      return {
+      inputs.push({
         animalId,
         animalName,
-        vaccineName: baseFields.vaccineName,
-        dose: baseFields.dose,
-        dateGiven: baseFields.dateGiven,
-        nextDueDate: baseFields.nextDueDate,
-        notes: typeof baseFields.notes === "string" ? baseFields.notes : undefined,
-      } satisfies VaccinationCreateInput;
-    }).filter((value): value is VaccinationCreateInput => value !== null);
+        vaccineName,
+        dose,
+        dateGiven,
+        nextDueDate,
+        notes,
+      });
+    }
+
+    return inputs;
   }
 
   const animalId = toNumber(payload.animalId);
@@ -76,11 +88,11 @@ function normalizeCreateBody(body: unknown): VaccinationCreateInput[] | null {
     {
       animalId,
       animalName: payload.animalName,
-      vaccineName: baseFields.vaccineName,
-      dose: baseFields.dose,
-      dateGiven: baseFields.dateGiven,
-      nextDueDate: baseFields.nextDueDate,
-      notes: typeof baseFields.notes === "string" ? baseFields.notes : undefined,
+      vaccineName,
+      dose,
+      dateGiven,
+      nextDueDate,
+      notes,
     },
   ];
 }
