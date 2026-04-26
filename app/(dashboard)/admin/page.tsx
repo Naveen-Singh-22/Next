@@ -197,9 +197,6 @@ export default function AdminPage() {
               <Link href="/admin/vaccinations">Vaccinations</Link>
             </li>
             <li>
-              <Link href="/admin/shelter-care-logs">Shelter Care Logs</Link>
-            </li>
-            <li>
               <Link href="/admin/inquiry-management">Inquiries</Link>
             </li>
           </ul>
@@ -381,9 +378,6 @@ export default function AdminPage() {
                 ))
                 : null}
             </div>
-            <Link className="outline-btn admin-outline-link" href="/admin/shelter-care-logs">
-              Open Care Logs
-            </Link>
           </article>
 
           <article className="story-banner admin-fade-card" style={{ animationDelay: "300ms" }}>
