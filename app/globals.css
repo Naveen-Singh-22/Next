@@ -7890,7 +7890,7 @@ html.dark .admin-footer a,
   background: #f8f8f8;
   padding: 0.8rem;
   display: grid;
-  grid-template-columns: 84px 1fr auto;
+  grid-template-columns: 84px minmax(0, 1fr) minmax(250px, 320px);
   gap: 0.9rem;
   align-items: center;
   transition:
@@ -7917,8 +7917,22 @@ html.dark .admin-footer a,
 .rm-case-image-fallback {
   display: grid;
   place-items: center;
-  font-size: 2rem;
+  align-content: center;
+  gap: 0.2rem;
   background: linear-gradient(135deg, #e8f2ee, #f7fbfa);
+}
+
+.rm-case-image-fallback span {
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.rm-case-image-fallback small {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #547171;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .rm-case-head {
@@ -7995,7 +8009,9 @@ html.dark .admin-footer a,
 
 .rm-actions-col {
   display: grid;
+  grid-template-columns: repeat(2, minmax(138px, 1fr));
   gap: 0.5rem;
+  width: 100%;
 }
 
 .rm-primary-btn,
@@ -8005,11 +8021,19 @@ html.dark .admin-footer a,
   justify-content: center;
   border: 0;
   border-radius: 999px;
-  padding: 0.38rem 0.62rem;
-  font-size: 0.66rem;
+  min-height: 36px;
+  padding: 0.42rem 1rem;
+  font-size: 0.84rem;
+  line-height: 1;
+  white-space: nowrap;
   font-weight: 700;
   cursor: pointer;
   text-decoration: none;
+}
+
+.rm-actions-col .rm-primary-btn,
+.rm-actions-col .rm-secondary-btn {
+  width: 100%;
 }
 
 .rm-primary-btn {
@@ -8024,6 +8048,69 @@ html.dark .admin-footer a,
 
 .rm-link-btn {
   border: 1px solid #d5dede;
+}
+
+.rm-admin-checklist {
+  grid-column: 1 / -1;
+  border-top: 1px dashed #d6e2df;
+  margin-top: 0.15rem;
+  padding-top: 0.65rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.rm-admin-checklist > label {
+  display: grid;
+  gap: 0.35rem;
+  color: #375454;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.rm-admin-checklist select {
+  border: 1px solid #d4dfdc;
+  border-radius: 10px;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.84rem;
+  background: #fff;
+  color: #234343;
+}
+
+.rm-checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.42rem 0.65rem;
+}
+
+.rm-checklist-grid label {
+  display: inline-flex;
+  gap: 0.38rem;
+  align-items: center;
+  color: #4b6161;
+  font-size: 0.8rem;
+}
+
+.rm-save-checklist-btn {
+  justify-self: start;
+  border: 0;
+  border-radius: 999px;
+  min-height: 38px;
+  padding: 0.54rem 0.92rem;
+  background: linear-gradient(120deg, #0f6fbc, #254f9a);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rm-save-checklist-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.rm-admin-checklist > small {
+  color: #486868;
+  font-size: 0.78rem;
 }
 
 .rm-side-col {
@@ -8319,6 +8406,15 @@ html.dark .admin-footer a,
   .rm-layout {
     grid-template-columns: 1fr;
   }
+
+  .rm-case-item {
+    grid-template-columns: 84px 1fr;
+    gap: 0.7rem;
+  }
+
+  .rm-actions-col {
+    grid-column: span 2;
+  }
 }
 
 @media (max-width: 720px) {
@@ -8335,12 +8431,18 @@ html.dark .admin-footer a,
 
   .rm-actions-col {
     grid-column: span 2;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
   }
 
   .rm-case-image {
     width: 74px;
     height: 74px;
+  }
+}
+
+@media (max-width: 560px) {
+  .rm-actions-col {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -10261,6 +10363,10 @@ html.dark .admin-footer a,
   .rm-case-image {
     width: 74px;
     height: 74px;
+  }
+
+  .rm-checklist-grid {
+    grid-template-columns: 1fr;
   }
 
   .adoption-kpis {

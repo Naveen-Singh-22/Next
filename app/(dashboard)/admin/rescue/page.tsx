@@ -12,12 +12,39 @@ type RescueReport = RescueDispatchMapReport & {
   phone: string;
   breed: string;
   animalImageDataUrl?: string;
+  caseStatus?: RescueCaseStatus;
+  adminChecklist?: RescueAdminChecklist;
 };
 
 type RescueReportsResponse = {
   ok?: boolean;
   message?: string;
   reports?: RescueReport[];
+};
+
+type RescueCaseStatus = "reported" | "in_progress" | "monitored" | "rescued" | "closed";
+
+type RescueAdminChecklist = {
+  rescued: boolean;
+  monitored: boolean;
+  medicalCompleted: boolean;
+  shelterAssigned: boolean;
+  reporterNotified: boolean;
+};
+
+type RescueAdminDraft = {
+  caseStatus: RescueCaseStatus;
+  adminChecklist: RescueAdminChecklist;
+};
+
+type RescueAdminUpdateResponse = {
+  ok?: boolean;
+  message?: string;
+  report?: RescueReport;
+  mail?: {
+    sent?: boolean;
+    reason?: string;
+  };
 };
 
 type StatusFilter = "all" | RescueReport["urgency"];
@@ -35,6 +62,59 @@ const STATUS_OPTIONS: Array<{ value: StatusFilter; label: string }> = [
   { value: "urgent", label: "Urgent" },
   { value: "standard", label: "Standard" },
 ];
+
+const CASE_STATUS_OPTIONS: Array<{ value: RescueCaseStatus; label: string }> = [
+  { value: "reported", label: "Reported" },
+  { value: "in_progress", label: "In Progress" },
+  { value: "monitored", label: "Monitored" },
+  { value: "rescued", label: "Rescued" },
+  { value: "closed", label: "Closed" },
+];
+
+function getInitialChecklist(): RescueAdminChecklist {
+  return {
+    rescued: false,
+    monitored: false,
+    medicalCompleted: false,
+    shelterAssigned: false,
+    reporterNotified: false,
+  };
+}
+
+function getReportDraft(report: RescueReport): RescueAdminDraft {
+  return {
+    caseStatus: report.caseStatus ?? "reported",
+    adminChecklist: {
+      rescued: report.adminChecklist?.rescued ?? false,
+      monitored: report.adminChecklist?.monitored ?? false,
+      medicalCompleted: report.adminChecklist?.medicalCompleted ?? false,
+      shelterAssigned: report.adminChecklist?.shelterAssigned ?? false,
+      reporterNotified: report.adminChecklist?.reporterNotified ?? false,
+    },
+  };
+}
+
+function getDefaultDraft(): RescueAdminDraft {
+  return {
+    caseStatus: "reported",
+    adminChecklist: getInitialChecklist(),
+  };
+}
+
+function caseStatusLabel(status: RescueCaseStatus | undefined) {
+  switch (status) {
+    case "in_progress":
+      return "In progress";
+    case "monitored":
+      return "Monitored";
+    case "rescued":
+      return "Rescued";
+    case "closed":
+      return "Closed";
+    default:
+      return "Reported";
+  }
+}
 
 function formatRelativeTime(isoDate: string) {
   const timestamp = new Date(isoDate).getTime();
@@ -152,6 +232,9 @@ export default function RescueManagementPage() {
   const [isLoadingReports, setIsLoadingReports] = useState(true);
   const [reportsError, setReportsError] = useState("");
   const [lastSyncedAt, setLastSyncedAt] = useState("");
+  const [adminDrafts, setAdminDrafts] = useState<Record<string, RescueAdminDraft>>({});
+  const [savingByReportId, setSavingByReportId] = useState<Record<string, boolean>>({});
+  const [saveMessageByReportId, setSaveMessageByReportId] = useState<Record<string, string>>({});
 
   useEffect(() => {
     let isMounted = true;
@@ -226,6 +309,88 @@ export default function RescueManagementPage() {
   }, [filteredReports, selectedReportId]);
 
   const selectedReport = filteredReports.find((report) => report.reportId === selectedReportId) ?? filteredReports[0];
+
+  function resolveDraft(report: RescueReport) {
+    return adminDrafts[report.reportId] ?? getReportDraft(report);
+  }
+
+  function updateDraftStatus(reportId: string, value: RescueCaseStatus) {
+    setAdminDrafts((current) => {
+      const linkedReport = reports.find((report) => report.reportId === reportId);
+      const existing = current[reportId] ?? (linkedReport ? getReportDraft(linkedReport) : getDefaultDraft());
+
+      return {
+        ...current,
+        [reportId]: {
+          ...existing,
+          caseStatus: value,
+        },
+      };
+    });
+  }
+
+  function updateDraftChecklist(reportId: string, key: keyof RescueAdminChecklist, checked: boolean) {
+    setAdminDrafts((current) => {
+      const linkedReport = reports.find((report) => report.reportId === reportId);
+      const source = current[reportId] ?? (linkedReport ? getReportDraft(linkedReport) : getDefaultDraft());
+
+      return {
+        ...current,
+        [reportId]: {
+          ...source,
+          adminChecklist: {
+            ...source.adminChecklist,
+            [key]: checked,
+          },
+        },
+      };
+    });
+  }
+
+  async function saveAdminChecklist(report: RescueReport) {
+    const reportId = report.reportId;
+    const draft = resolveDraft(report);
+
+    try {
+      setSavingByReportId((current) => ({ ...current, [reportId]: true }));
+      setSaveMessageByReportId((current) => ({ ...current, [reportId]: "" }));
+
+      const response = await fetch("/api/rescue/requests", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reportId,
+          caseStatus: draft.caseStatus,
+          adminChecklist: draft.adminChecklist,
+        }),
+      });
+
+      const payload = (await response.json()) as RescueAdminUpdateResponse;
+
+      if (!response.ok || !payload.ok || !payload.report) {
+        throw new Error(payload.message ?? "Failed to save checklist.");
+      }
+
+      setReports((current) =>
+        current.map((item) => (item.reportId === reportId ? payload.report ?? item : item)),
+      );
+
+      const mailNote = payload.mail?.sent ? " Reporter email sent." : payload.mail?.reason ? ` ${payload.mail.reason}` : "";
+      setSaveMessageByReportId((current) => ({
+        ...current,
+        [reportId]: `${payload.message ?? "Checklist saved."}${mailNote}`,
+      }));
+    } catch (error) {
+      setSaveMessageByReportId((current) => ({
+        ...current,
+        [reportId]: error instanceof Error ? error.message : "Failed to save checklist.",
+      }));
+    } finally {
+      setSavingByReportId((current) => ({ ...current, [reportId]: false }));
+    }
+  }
 
   const dashboardStats = useMemo<DashboardStat[]>(() => {
     const criticalCases = reports.filter((report) => report.urgency === "critical").length;
@@ -431,7 +596,8 @@ export default function RescueManagementPage() {
                       />
                     ) : (
                       <div className="rm-case-image rm-case-image-fallback" aria-hidden="true">
-                        🐾
+                        <span>🐾</span>
+                        <small>No photo</small>
                       </div>
                     )}
                     <div className="rm-case-copy">
@@ -444,7 +610,7 @@ export default function RescueManagementPage() {
                       </div>
                       <p>{report.lastSeenAddress}</p>
                       <div className="rm-meta-row">
-                        <span>{statusLabel(report.urgency)}</span>
+                        <span>{statusLabel(report.urgency)} • {caseStatusLabel(report.caseStatus)}</span>
                         <span className="rm-status-pill">{formatRelativeTime(report.createdAt)}</span>
                       </div>
                     </div>
@@ -456,6 +622,72 @@ export default function RescueManagementPage() {
                       <a className="rm-secondary-btn rm-link-btn" href={locationHref(report)} target="_blank" rel="noreferrer">
                         Open in Maps
                       </a>
+                    </div>
+                    <div className="rm-admin-checklist">
+                      <label>
+                        Case status
+                        <select
+                          value={resolveDraft(report).caseStatus}
+                          onChange={(event) => updateDraftStatus(report.reportId, event.target.value as RescueCaseStatus)}
+                        >
+                          {CASE_STATUS_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <div className="rm-checklist-grid">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={resolveDraft(report).adminChecklist.rescued}
+                            onChange={(event) => updateDraftChecklist(report.reportId, "rescued", event.target.checked)}
+                          />
+                          Animal rescued
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={resolveDraft(report).adminChecklist.monitored}
+                            onChange={(event) => updateDraftChecklist(report.reportId, "monitored", event.target.checked)}
+                          />
+                          Animal monitored
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={resolveDraft(report).adminChecklist.medicalCompleted}
+                            onChange={(event) => updateDraftChecklist(report.reportId, "medicalCompleted", event.target.checked)}
+                          />
+                          Medical check done
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={resolveDraft(report).adminChecklist.shelterAssigned}
+                            onChange={(event) => updateDraftChecklist(report.reportId, "shelterAssigned", event.target.checked)}
+                          />
+                          Shelter assigned
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={resolveDraft(report).adminChecklist.reporterNotified}
+                            onChange={(event) => updateDraftChecklist(report.reportId, "reporterNotified", event.target.checked)}
+                          />
+                          Reporter notified
+                        </label>
+                      </div>
+                      <button
+                        type="button"
+                        className="rm-save-checklist-btn"
+                        disabled={Boolean(savingByReportId[report.reportId])}
+                        onClick={() => void saveAdminChecklist(report)}
+                      >
+                        {savingByReportId[report.reportId] ? "Saving..." : "Save Checklist"}
+                      </button>
+                      {saveMessageByReportId[report.reportId] ? <small>{saveMessageByReportId[report.reportId]}</small> : null}
                     </div>
                   </article>
                 ))}

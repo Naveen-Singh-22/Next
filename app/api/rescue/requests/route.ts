@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
-import { listRescueReports, saveRescueReport } from "@/lib/rescueReportsDb";
+import { sendRescueChecklistCompletionEmail } from "@/lib/rescueEmailNotifier";
+import {
+  listRescueReports,
+  saveRescueReport,
+  updateRescueReportAdmin,
+  type RescueAdminChecklist,
+  type RescueCaseStatus,
+} from "@/lib/rescueReportsDb";
 
 type RescueRequestBody = {
   fullName?: string;
@@ -18,11 +25,22 @@ type RescueRequestBody = {
   animalImageDataUrl?: string;
 };
 
+type RescueAdminUpdateBody = {
+  reportId?: string;
+  caseStatus?: RescueCaseStatus;
+  adminChecklist?: Partial<RescueAdminChecklist>;
+};
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const IMAGE_DATA_URL_REGEX = /^data:image\/[a-zA-Z0-9+.-]+;base64,[A-Za-z0-9+/=]+$/;
 const MAX_IMAGE_DATA_URL_LENGTH = 4_000_000;
 const VALID_URGENCY = new Set(["critical", "urgent", "standard"]);
 const VALID_SPECIES = new Set(["Dog", "Cat", "Bird", "Other"]);
+const VALID_CASE_STATUS = new Set<RescueCaseStatus>(["reported", "in_progress", "monitored", "rescued", "closed"]);
+
+function isChecklistComplete(checklist: RescueAdminChecklist) {
+  return checklist.rescued && checklist.monitored && checklist.medicalCompleted && checklist.shelterAssigned && checklist.reporterNotified;
+}
 
 export const runtime = "nodejs";
 
@@ -102,6 +120,14 @@ export async function POST(request: Request) {
       longitude,
     },
     animalImageDataUrl: animalImageDataUrl || undefined,
+    caseStatus: "reported",
+    adminChecklist: {
+      rescued: false,
+      monitored: false,
+      medicalCompleted: false,
+      shelterAssigned: false,
+      reporterNotified: false,
+    },
     createdAt: new Date().toISOString(),
   });
 
@@ -109,5 +135,68 @@ export async function POST(request: Request) {
     ok: true,
     reportId,
     message: `Report submitted successfully. Reference ID: ${reportId}`,
+  });
+}
+
+export async function PUT(request: Request) {
+  let body: RescueAdminUpdateBody;
+
+  try {
+    body = (await request.json()) as RescueAdminUpdateBody;
+  } catch {
+    return NextResponse.json({ ok: false, message: "Invalid request payload." }, { status: 400 });
+  }
+
+  const reportId = body.reportId?.trim() ?? "";
+
+  if (!reportId) {
+    return NextResponse.json({ ok: false, message: "Report ID is required." }, { status: 400 });
+  }
+
+  const caseStatus = body.caseStatus;
+
+  if (!caseStatus || !VALID_CASE_STATUS.has(caseStatus)) {
+    return NextResponse.json({ ok: false, message: "Please select a valid case status." }, { status: 400 });
+  }
+
+  const adminChecklist: RescueAdminChecklist = {
+    rescued: Boolean(body.adminChecklist?.rescued),
+    monitored: Boolean(body.adminChecklist?.monitored),
+    medicalCompleted: Boolean(body.adminChecklist?.medicalCompleted),
+    shelterAssigned: Boolean(body.adminChecklist?.shelterAssigned),
+    reporterNotified: Boolean(body.adminChecklist?.reporterNotified),
+  };
+
+  const updated = await updateRescueReportAdmin(reportId, {
+    caseStatus,
+    adminChecklist,
+  });
+
+  if (!updated) {
+    return NextResponse.json({ ok: false, message: "Rescue report not found." }, { status: 404 });
+  }
+
+  const previousComplete = isChecklistComplete(updated.previous.adminChecklist);
+  const nextComplete = isChecklistComplete(updated.updated.adminChecklist);
+  let mailInfo: { sent: boolean; reason?: string } = { sent: false };
+
+  if (!previousComplete && nextComplete) {
+    try {
+      mailInfo = await sendRescueChecklistCompletionEmail(updated.updated);
+    } catch (error) {
+      mailInfo = {
+        sent: false,
+        reason: error instanceof Error ? error.message : "Failed to send reporter email.",
+      };
+    }
+  }
+
+  return NextResponse.json({
+    ok: true,
+    report: updated.updated,
+    mail: mailInfo,
+    message: mailInfo.sent
+      ? "Case checklist saved and reporter email sent automatically."
+      : "Case checklist saved successfully.",
   });
 }
