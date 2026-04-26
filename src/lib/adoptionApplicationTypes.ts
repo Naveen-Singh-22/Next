@@ -13,6 +13,7 @@ export type AdoptionTimelineEntry = {
 
 export type AdoptionApplication = {
   id: number;
+  applicationId: string;
   applicantName: string;
   email: string;
   phone: string;
@@ -21,6 +22,8 @@ export type AdoptionApplication = {
   petExperience: string;
   whyAdopt: string;
   animalId: number;
+  animalName: string;
+  animalCode?: string;
   status: AdoptionStatus;
   adminNotes?: string;
   timeline: AdoptionTimelineEntry[];

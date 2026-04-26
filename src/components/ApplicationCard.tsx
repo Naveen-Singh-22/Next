@@ -37,19 +37,19 @@ export default function ApplicationCard({ application, selected, onOpen, onMove,
           onOpen(application.id);
         }
       }}
-      aria-label={`Open application ${application.id}`}
+      aria-label={`Open application ${application.applicationId}`}
     >
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <h4 className="text-sm font-semibold text-slate-900">{application.applicantName}</h4>
-          <p className="text-xs text-slate-600">Animal #{application.animalId}</p>
+          <p className="text-xs text-slate-600">{application.animalName}</p>
         </div>
         <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold uppercase text-slate-600">
           {application.status.replace("_", " ")}
         </span>
       </div>
 
-      <p className="mb-3 text-xs text-slate-500">Submitted {formatDate(application.createdAt)}</p>
+      <p className="mb-3 text-xs text-slate-500">{application.applicationId} • Submitted {formatDate(application.createdAt)}</p>
 
       <div className="grid grid-cols-2 gap-2" onClick={(event) => event.stopPropagation()}>
         <button

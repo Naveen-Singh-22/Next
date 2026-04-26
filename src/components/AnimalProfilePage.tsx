@@ -22,12 +22,15 @@ type AdoptionRequestPayload = {
   petExperience: string;
   whyAdopt: string;
   animalId: number;
+  animalName: string;
+  animalCode?: string;
 };
 
 type AdoptionApiResponse = {
   message?: string;
   application?: {
     id: number;
+    applicationId: string;
   };
 };
 
@@ -248,6 +251,8 @@ export default function AnimalProfilePage({ animal }: AnimalProfilePageProps) {
       petExperience: petExperience.trim(),
       whyAdopt: whyAdopt.trim(),
       animalId,
+      animalName: animal.name,
+      animalCode: undefined,
     };
 
     if (
@@ -285,7 +290,7 @@ export default function AnimalProfilePage({ animal }: AnimalProfilePageProps) {
       }
 
       setSubmitState("success");
-      setSubmitMessage(`Application submitted successfully. Reference #${result.application.id}.`);
+      setSubmitMessage(`Application submitted successfully. Reference ${result.application.applicationId}.`);
       setApplicantName("");
       setApplicantEmail("");
       setApplicantPhone("");

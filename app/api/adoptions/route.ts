@@ -10,6 +10,8 @@ type CreateAdoptionBody = {
   petExperience?: string;
   whyAdopt?: string;
   animalId?: number;
+  animalName?: string;
+  animalCode?: string;
 };
 
 export const runtime = "nodejs";
@@ -37,6 +39,8 @@ export async function POST(request: Request) {
   const petExperience = body.petExperience?.trim() ?? "";
   const whyAdopt = body.whyAdopt?.trim() ?? "";
   const animalId = Number(body.animalId);
+  const animalName = body.animalName?.trim() ?? "";
+  const animalCode = body.animalCode?.trim() ?? "";
 
   if (!applicantName || !email || !phone || !city || !housing || !petExperience || !whyAdopt) {
     return NextResponse.json({ message: "Please complete all required fields." }, { status: 400 });
@@ -50,6 +54,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "A valid animal ID is required." }, { status: 400 });
   }
 
+  if (!animalName) {
+    return NextResponse.json({ message: "Animal name is required." }, { status: 400 });
+  }
+
   const application = await createAdoption({
     applicantName,
     email,
@@ -59,6 +67,8 @@ export async function POST(request: Request) {
     petExperience,
     whyAdopt,
     animalId,
+    animalName,
+    animalCode: animalCode || undefined,
     adminNotes: "",
   });
 

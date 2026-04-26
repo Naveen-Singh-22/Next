@@ -99,14 +99,27 @@ function inferVaccinationStatus(vaccinated: boolean): AnimalVaccinationStatus {
   return vaccinated ? "up_to_date" : "due_soon";
 }
 
+function createUniqueCode(prefix: string, usedCodes: Set<string>) {
+  let code = "";
+
+  do {
+    code = `${prefix}-${Math.floor(Date.now() / 1000).toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
+  } while (usedCodes.has(code));
+
+  usedCodes.add(code);
+  return code;
+}
+
 function buildSeedAnimals() {
   const now = Date.now();
+  const usedCodes = new Set<string>();
 
   return adoptAnimals.map((animal, index) => {
     const createdAt = new Date(now - index * 86400000).toISOString();
 
     return {
       id: index + 1,
+      animalCode: createUniqueCode("AN", usedCodes),
       name: animal.name,
       species: mapSpecies(animal.species),
       breed: animal.breed,
@@ -139,8 +152,25 @@ async function getDb() {
 
       db.data ||= { animals: [] };
 
+      const usedCodes = new Set(db.data.animals.map((animal) => animal.animalCode).filter(Boolean));
+      let hadBackfill = false;
+
+      db.data.animals = db.data.animals.map((animal) => {
+        if (animal.animalCode) {
+          return animal;
+        }
+
+        hadBackfill = true;
+        return {
+          ...animal,
+          animalCode: createUniqueCode("AN", usedCodes),
+        };
+      });
+
       if (db.data.animals.length === 0) {
         db.data.animals = buildSeedAnimals();
+        await db.write();
+      } else if (hadBackfill) {
         await db.write();
       }
 
@@ -156,7 +186,7 @@ function normalizeText(value: string) {
 }
 
 function createSearchBlob(animal: Animal) {
-  return [animal.name, animal.breed ?? "", animal.notes ?? "", animal.species, animal.status, animal.healthStatus]
+  return [animal.name, animal.animalCode, animal.breed ?? "", animal.notes ?? "", animal.species, animal.status, animal.healthStatus]
     .join(" ")
     .toLowerCase();
 }
@@ -246,9 +276,11 @@ export async function getAnimalById(id: number) {
 export async function createAnimal(input: AnimalCreateInput) {
   const db = await getDb();
   await db.read();
+  const usedCodes = new Set(db.data.animals.map((animal) => animal.animalCode));
 
   const animal: Animal = {
     id: getNextId(db.data.animals),
+    animalCode: createUniqueCode("AN", usedCodes),
     name: input.name.trim(),
     species: input.species,
     breed: input.breed?.trim() || undefined,

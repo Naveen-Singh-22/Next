@@ -7,6 +7,7 @@ import type { AdoptionApplication, AdoptionStatus } from "@/lib/adoptionApplicat
 
 type PipelineCard = {
   id: number;
+  applicationId: string;
   applicant: string;
   pet: string;
   date: string;
@@ -169,6 +170,9 @@ export default function AdoptionPipelinePage() {
       const matchesSearch =
         query.length === 0 ||
         application.applicantName.toLowerCase().includes(query) ||
+        application.animalName.toLowerCase().includes(query) ||
+        application.applicationId.toLowerCase().includes(query) ||
+        (application.animalCode ?? "").toLowerCase().includes(query) ||
         String(application.animalId).includes(query);
       const matchesStatus = statusFilter === "all" || application.status === statusFilter;
       return matchesSearch && matchesStatus;
@@ -194,8 +198,9 @@ export default function AdoptionPipelinePage() {
 
       collection.push({
         id: application.id,
+        applicationId: application.applicationId,
         applicant: application.applicantName,
-        pet: `Animal #${application.animalId}`,
+        pet: application.animalName,
         date: formatRelativeTime(application.createdAt),
         tone:
           application.status === "applied"
@@ -208,7 +213,7 @@ export default function AdoptionPipelinePage() {
                 ? "blue"
                 : "neutral",
         image: cardAvatar,
-        tag: `ID ${application.id}`,
+        tag: application.applicationId,
         location: `${application.city} | ${application.housing}`,
         status: application.status,
       });
@@ -505,7 +510,7 @@ export default function AdoptionPipelinePage() {
             </button>
             <input
               aria-label="Search"
-              placeholder="Search applicant or animal ID..."
+              placeholder="Search applicant, animal name, or application ID..."
               type="text"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
@@ -676,8 +681,8 @@ export default function AdoptionPipelinePage() {
                         }
                       }}
                     >
-                      <p className="pipeline-tag">ID {application.id} - {application.applicantName}</p>
-                      <small className="pipeline-location">Animal #{application.animalId}</small>
+                      <p className="pipeline-tag">{application.applicationId} - {application.applicantName}</p>
+                      <small className="pipeline-location">{application.animalName}{application.animalCode ? ` (${application.animalCode})` : ""}</small>
                       <small className="pipeline-location">{application.city} | {application.housing}</small>
                       <small className="pipeline-location">Status: {application.status.replace("_", " ")}</small>
                       <small className="pipeline-location">Submitted: {formatTime(application.createdAt)}</small>
@@ -694,7 +699,7 @@ export default function AdoptionPipelinePage() {
           <article className="pipeline-column">
             <h2>
               Application Details
-              {selectedApplication ? <span> (#{selectedApplication.id})</span> : null}
+              {selectedApplication ? <span> ({selectedApplication.applicationId})</span> : null}
             </h2>
             {!selectedApplication ? (
               <p className="pipeline-empty-note">Select a card from the board to view full application details.</p>
@@ -707,7 +712,10 @@ export default function AdoptionPipelinePage() {
                   <small className="pipeline-location">
                     {selectedApplication.city} | {selectedApplication.housing}
                   </small>
-                  <small className="pipeline-location">Animal #{selectedApplication.animalId}</small>
+                  <small className="pipeline-location">
+                    {selectedApplication.animalName}
+                    {selectedApplication.animalCode ? ` (${selectedApplication.animalCode})` : ""}
+                  </small>
                 </div>
 
                 <div className="pipeline-card warm">

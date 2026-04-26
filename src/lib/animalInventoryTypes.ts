@@ -6,6 +6,7 @@ export type AnimalVaccinationStatus = "up_to_date" | "due_soon" | "overdue";
 
 export type Animal = {
   id: number;
+  animalCode: string;
   name: string;
   species: AnimalSpecies;
   breed?: string;
@@ -29,11 +30,11 @@ export type AnimalFilters = {
   limit?: number;
 };
 
-export type AnimalCreateInput = Omit<Animal, "id" | "createdAt"> & {
+export type AnimalCreateInput = Omit<Animal, "id" | "animalCode" | "createdAt"> & {
   status?: AnimalStatus;
 };
 
-export type AnimalUpdateInput = Partial<Omit<Animal, "id" | "createdAt">>;
+export type AnimalUpdateInput = Partial<Omit<Animal, "id" | "animalCode" | "createdAt">>;
 
 const allowedStatusTransitions: Record<AnimalStatus, AnimalStatus[]> = {
   rescued: ["admitted"],

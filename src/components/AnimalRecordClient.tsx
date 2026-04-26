@@ -136,7 +136,7 @@ export default function AnimalRecordClient() {
                 <div className="space-y-4">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Animal #{animal.id}</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Animal {animal.animalCode}</p>
                       <h2 className="mt-2 text-3xl font-semibold text-slate-950">{animal.name}</h2>
                       <p className="mt-2 text-sm text-slate-600">
                         {formatEnumLabel(animal.species)} • {animal.breed || "Breed not recorded"}

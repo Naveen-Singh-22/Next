@@ -174,7 +174,7 @@ function AnimalCard({
 
         <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
           <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur">
-            #{animal.id}
+            {animal.animalCode}
           </span>
           <span className="rounded-full bg-slate-950/75 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white">
             {formatEnumLabel(animal.species)}
@@ -714,7 +714,7 @@ export default function AnimalInventoryClient() {
                               </div>
                               <div>
                                 <p className="font-semibold text-slate-950">{animal.name}</p>
-                                <p className="text-xs text-slate-500">#{animal.id}</p>
+                                <p className="text-xs text-slate-500">{animal.animalCode}</p>
                               </div>
                             </div>
                           </td>

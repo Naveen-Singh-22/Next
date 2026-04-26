@@ -9,6 +9,17 @@ type AdoptionStore = {
   nextId: number;
 };
 
+function createApplicationId(usedIds: Set<string>) {
+  let value = "";
+
+  do {
+    value = `AD-${Math.floor(Date.now() / 1000).toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
+  } while (usedIds.has(value));
+
+  usedIds.add(value);
+  return value;
+}
+
 const DATA_DIR = path.join(process.cwd(), "data");
 const DB_PATH = path.join(DATA_DIR, "adoptions.json");
 
@@ -36,6 +47,35 @@ async function getDb() {
         db.data.applications.reduce((maxId, application) => Math.max(maxId, application.id), 0) + 1,
       );
 
+      const usedIds = new Set(db.data.applications.map((application) => application.applicationId).filter(Boolean));
+      let hasBackfill = false;
+
+      db.data.applications = db.data.applications.map((application) => {
+        const updates: Partial<AdoptionApplication> = {};
+
+        if (!application.applicationId) {
+          updates.applicationId = createApplicationId(usedIds);
+        }
+
+        if (!application.animalName) {
+          updates.animalName = `Animal #${application.animalId}`;
+        }
+
+        if (Object.keys(updates).length === 0) {
+          return application;
+        }
+
+        hasBackfill = true;
+        return {
+          ...application,
+          ...updates,
+        };
+      });
+
+      if (hasBackfill) {
+        await db.write();
+      }
+
       return db;
     })();
   }
@@ -62,12 +102,14 @@ export async function findAdoptionById(id: number) {
 export async function createAdoption(input: Omit<AdoptionApplication, "id" | "createdAt" | "timeline" | "status">) {
   const db = await getDb();
   await db.read();
+  const usedIds = new Set(db.data.applications.map((application) => application.applicationId));
 
   const nowIso = new Date().toISOString();
 
   const application: AdoptionApplication = {
     ...input,
     id: db.data.nextId++,
+    applicationId: createApplicationId(usedIds),
     createdAt: nowIso,
     status: "applied",
     timeline: [

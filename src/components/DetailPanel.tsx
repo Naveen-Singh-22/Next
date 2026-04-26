@@ -34,7 +34,7 @@ export default function DetailPanel({ application, onSaveNotes, isSaving = false
 
   return (
     <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h3 className="mb-1 text-lg font-semibold text-slate-900">Application #{application.id}</h3>
+      <h3 className="mb-1 text-lg font-semibold text-slate-900">Application {application.applicationId}</h3>
       <p className="mb-4 text-sm text-slate-600">Current status: {application.status.replace("_", " ")}</p>
 
       <div className="mb-4 space-y-1 text-sm text-slate-700">
@@ -54,7 +54,7 @@ export default function DetailPanel({ application, onSaveNotes, isSaving = false
           <strong>Housing:</strong> {application.housing}
         </p>
         <p>
-          <strong>Animal:</strong> #{application.animalId}
+          <strong>Animal:</strong> {application.animalName}
         </p>
       </div>
 
