@@ -48,7 +48,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     return NextResponse.json({ message: "Invalid status update." }, { status: 400 });
   }
 
-  const application = updateAdoptionStatus(parsedId, body.status);
+  const application = await updateAdoptionStatus(parsedId, body.status);
 
   if (!application) {
     return NextResponse.json({ message: "Adoption application not found." }, { status: 404 });

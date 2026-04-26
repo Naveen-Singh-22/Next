@@ -15,9 +15,12 @@ type RescueRequestBody = {
     latitude?: number;
     longitude?: number;
   };
+  animalImageDataUrl?: string;
 };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const IMAGE_DATA_URL_REGEX = /^data:image\/[a-zA-Z0-9+.-]+;base64,[A-Za-z0-9+/=]+$/;
+const MAX_IMAGE_DATA_URL_LENGTH = 4_000_000;
 const VALID_URGENCY = new Set(["critical", "urgent", "standard"]);
 const VALID_SPECIES = new Set(["Dog", "Cat", "Bird", "Other"]);
 
@@ -45,6 +48,7 @@ export async function POST(request: Request) {
   const urgency = body.urgency;
   const latitude = Number(body.location?.latitude);
   const longitude = Number(body.location?.longitude);
+  const animalImageDataUrl = body.animalImageDataUrl?.trim() ?? "";
 
   if (fullName.length < 2) {
     return NextResponse.json({ ok: false, message: "Please provide your full name." }, { status: 400 });
@@ -74,6 +78,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Please pin a valid location on the map." }, { status: 400 });
   }
 
+  if (animalImageDataUrl) {
+    if (animalImageDataUrl.length > MAX_IMAGE_DATA_URL_LENGTH || !IMAGE_DATA_URL_REGEX.test(animalImageDataUrl)) {
+      return NextResponse.json({ ok: false, message: "Please upload a valid image under 4MB." }, { status: 400 });
+    }
+  }
+
   const reportId = `RR-${Math.floor(Date.now() / 1000).toString(36).toUpperCase()}`;
 
   await saveRescueReport({
@@ -91,6 +101,7 @@ export async function POST(request: Request) {
       latitude,
       longitude,
     },
+    animalImageDataUrl: animalImageDataUrl || undefined,
     createdAt: new Date().toISOString(),
   });
 
