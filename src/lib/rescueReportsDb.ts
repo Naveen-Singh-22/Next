@@ -18,6 +18,7 @@ export type StoredRescueReport = {
     latitude: number;
     longitude: number;
   };
+  animalImageDataUrl?: string;
   createdAt: string;
 };
 
