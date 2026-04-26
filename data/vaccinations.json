@@ -1,6 +1,15 @@
 {
   "vaccinations": [
     {
+      "id": 26,
+      "animalId": 37,
+      "animalName": "Stiger",
+      "vaccineName": "Rabies Booster",
+      "dose": "01",
+      "dateGiven": "2026-04-26",
+      "nextDueDate": "2026-05-26"
+    },
+    {
       "id": 25,
       "animalId": 36,
       "animalName": "Hancock",
@@ -210,16 +219,6 @@
       "notes": "Auto-seeded from the current inventory record for Whiskers."
     },
     {
-      "id": 21,
-      "animalId": 20,
-      "animalName": "Mittens",
-      "vaccineName": "FVRCP Combination",
-      "dose": "Booster",
-      "dateGiven": "2025-09-14",
-      "nextDueDate": "2025-09-10",
-      "notes": "Auto-seeded from the current inventory record for Mittens."
-    },
-    {
       "id": 22,
       "animalId": 21,
       "animalName": "Mocha",
@@ -238,16 +237,6 @@
       "dateGiven": "2025-08-23",
       "nextDueDate": "2025-09-24",
       "notes": "Auto-seeded from the current inventory record for Cleo."
-    },
-    {
-      "id": 24,
-      "animalId": 23,
-      "animalName": "Figaro",
-      "vaccineName": "FVRCP Combination",
-      "dose": "Booster",
-      "dateGiven": "2025-08-12",
-      "nextDueDate": "2025-09-14",
-      "notes": "Auto-seeded from the current inventory record for Figaro."
     }
   ]
 }

@@ -24,9 +24,9 @@
         "monitored": false,
         "medicalCompleted": false,
         "shelterAssigned": false,
-        "reporterNotified": false
+        "reporterNotified": true
       },
-      "lastAdminUpdateAt": "2026-04-26T08:09:02.996Z"
+      "lastAdminUpdateAt": "2026-04-26T16:08:27.571Z"
     },
     {
       "reportId": "RR-TE0BYS",
