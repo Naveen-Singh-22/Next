@@ -14,6 +14,21 @@ type AnimalResponse = {
   message?: string;
 };
 
+type VaccinationRecord = {
+  id: number;
+  animalId: number;
+  animalName: string;
+  vaccineName: string;
+  dose: string;
+  dateGiven: string;
+  nextDueDate: string;
+  notes?: string;
+};
+
+type VaccinationResponse = {
+  vaccinations?: VaccinationRecord[];
+};
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
@@ -27,6 +42,7 @@ export default function AnimalRecordClient() {
   const animalId = Array.isArray(params.id) ? params.id[0] : params.id;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [animal, setAnimal] = useState<Animal | null>(null);
+  const [latestVaccination, setLatestVaccination] = useState<VaccinationRecord | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,14 +60,31 @@ export default function AnimalRecordClient() {
       setError(null);
 
       try {
-        const response = await fetch(`/api/animals/${animalId}`, { cache: "no-store", signal: controller.signal });
-        const payload = (await response.json().catch(() => null)) as AnimalResponse | null;
+        const [animalResponse, vaccinationResponse] = await Promise.all([
+          fetch(`/api/animals/${animalId}`, { cache: "no-store", signal: controller.signal }),
+          fetch(`/api/vaccinations?animalId=${animalId}`, { cache: "no-store", signal: controller.signal }),
+        ]);
 
-        if (!response.ok) {
+        const payload = (await animalResponse.json().catch(() => null)) as AnimalResponse | null;
+
+        if (!animalResponse.ok) {
           throw new Error(payload?.message ?? "Unable to load animal record.");
         }
 
         setAnimal(payload?.animal ?? null);
+
+        if (vaccinationResponse.ok) {
+          const vaccinationPayload = (await vaccinationResponse.json().catch(() => null)) as VaccinationResponse | null;
+          const records = Array.isArray(vaccinationPayload?.vaccinations) ? vaccinationPayload.vaccinations : [];
+
+          const latest = [...records].sort(
+            (left, right) => new Date(right.nextDueDate).getTime() - new Date(left.nextDueDate).getTime(),
+          )[0] ?? null;
+
+          setLatestVaccination(latest);
+        } else {
+          setLatestVaccination(null);
+        }
       } catch (loadError) {
         if (loadError instanceof DOMException && loadError.name === "AbortError") {
           return;
@@ -197,6 +230,28 @@ export default function AnimalRecordClient() {
                   <p>
                     <span className="font-semibold text-slate-900">Vaccination:</span> {formatEnumLabel(animal.vaccinationStatus)}
                   </p>
+                </div>
+
+                <div className="space-y-2 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4 text-sm text-emerald-900">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Latest vaccination detail</p>
+                  {latestVaccination ? (
+                    <>
+                      <p>
+                        <span className="font-semibold">Vaccine:</span> {latestVaccination.vaccineName}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Dose:</span> {latestVaccination.dose}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Given:</span> {formatDate(latestVaccination.dateGiven)}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Next due:</span> {formatDate(latestVaccination.nextDueDate)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-slate-600">No vaccination entry found for this animal yet.</p>
+                  )}
                 </div>
               </aside>
             </div>
