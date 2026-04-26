@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 type PreviewItem = {
@@ -7,10 +8,38 @@ type PreviewItem = {
   url: string;
 };
 
-export default function RescueImageUpload() {
+type RescueImageUploadProps = {
+  onImageChange?: (imageDataUrl: string | null) => void;
+};
+
+const MAX_FILE_SIZE_BYTES = 3 * 1024 * 1024;
+
+function readFileAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+        return;
+      }
+
+      reject(new Error("Unsupported image format."));
+    };
+
+    reader.onerror = () => {
+      reject(new Error("Unable to read the selected image."));
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+export default function RescueImageUpload({ onImageChange }: RescueImageUploadProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [previews, setPreviews] = useState<PreviewItem[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
 
   useEffect(() => {
     return () => {
@@ -18,22 +47,40 @@ export default function RescueImageUpload() {
     };
   }, [previews]);
 
-  const updateFiles = (fileList: FileList | File[]) => {
-    const nextFiles = Array.from(fileList).filter((file) =>
-      file.type.startsWith("image/"),
-    );
+  const updateFiles = async (fileList: FileList | File[]) => {
+    const nextFile = Array.from(fileList).find((file) => file.type.startsWith("image/"));
 
-    if (nextFiles.length === 0) {
+    if (!nextFile) {
+      setUploadMessage("Please select a valid image file.");
+      onImageChange?.(null);
       return;
     }
 
-    setPreviews((current) => {
-      current.forEach((item) => URL.revokeObjectURL(item.url));
-      return nextFiles.map((file) => ({
-        file,
-        url: URL.createObjectURL(file),
-      }));
-    });
+    if (nextFile.size > MAX_FILE_SIZE_BYTES) {
+      setUploadMessage("Image is too large. Please upload a file smaller than 3MB.");
+      onImageChange?.(null);
+      return;
+    }
+
+    try {
+      const dataUrl = await readFileAsDataUrl(nextFile);
+
+      setPreviews((current) => {
+        current.forEach((item) => URL.revokeObjectURL(item.url));
+        return [
+          {
+            file: nextFile,
+            url: URL.createObjectURL(nextFile),
+          },
+        ];
+      });
+
+      setUploadMessage("Image ready and will be submitted with this report.");
+      onImageChange?.(dataUrl);
+    } catch {
+      setUploadMessage("Could not process the selected image. Try another file.");
+      onImageChange?.(null);
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +88,7 @@ export default function RescueImageUpload() {
       return;
     }
 
-    updateFiles(event.target.files);
+    void updateFiles(event.target.files);
   };
 
   const handleDrop = (event: React.DragEvent<HTMLButtonElement>) => {
@@ -49,7 +96,7 @@ export default function RescueImageUpload() {
     setIsDragging(false);
 
     if (event.dataTransfer.files.length > 0) {
-      updateFiles(event.dataTransfer.files);
+      void updateFiles(event.dataTransfer.files);
     }
   };
 
@@ -58,7 +105,7 @@ export default function RescueImageUpload() {
   };
 
   const fileSummary = previews.length
-    ? `${previews.length} image${previews.length === 1 ? "" : "s"} selected`
+    ? `${previews.length} image selected`
     : "Drag and drop or click to upload";
 
   return (
@@ -84,23 +131,31 @@ export default function RescueImageUpload() {
         <span className="upload-icon">📷</span>
         <strong>Photo Upload (Optional)</strong>
         <small>{fileSummary}</small>
-        <span className="upload-hint">PNG, JPG, WebP, and HEIC images are supported.</span>
+        <span className="upload-hint">PNG, JPG, WebP, and HEIC images are supported. Max 3MB.</span>
       </button>
 
       <input
         ref={inputRef}
         accept="image/*"
         className="upload-input"
-        multiple
         onChange={handleChange}
         type="file"
       />
+
+      {uploadMessage ? <p className="upload-status-text">{uploadMessage}</p> : null}
 
       {previews.length > 0 && (
         <div className="upload-preview-grid" aria-label="Selected image previews">
           {previews.map((item) => (
             <figure key={`${item.file.name}-${item.file.lastModified}`} className="upload-preview-card">
-              <img alt={item.file.name} src={item.url} />
+              <Image
+                alt={item.file.name}
+                className="upload-preview-image"
+                height={180}
+                src={item.url}
+                unoptimized
+                width={180}
+              />
               <figcaption>{item.file.name}</figcaption>
             </figure>
           ))}

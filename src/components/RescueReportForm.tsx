@@ -22,6 +22,7 @@ type RescueReportPayload = {
     latitude: number;
     longitude: number;
   };
+  animalImageDataUrl?: string;
 };
 
 type RescueApiResponse = {
@@ -96,6 +97,7 @@ export default function RescueReportForm() {
   const [breed, setBreed] = useState("");
   const [healthConditions, setHealthConditions] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
+  const [animalImageDataUrl, setAnimalImageDataUrl] = useState<string | null>(null);
   const [lastSeenAddress, setLastSeenAddress] = useState("");
   const [urgency, setUrgency] = useState<Urgency>("standard");
   const [marker, setMarker] = useState<LatLngTuple>(INDIA_CENTER);
@@ -178,6 +180,7 @@ export default function RescueReportForm() {
         latitude: marker[0],
         longitude: marker[1],
       },
+      animalImageDataUrl: animalImageDataUrl ?? undefined,
     };
 
     if (!payload.fullName || !payload.email || !payload.phone || !payload.lastSeenAddress) {
@@ -319,7 +322,7 @@ export default function RescueReportForm() {
               </label>
             </div>
 
-            <RescueImageUpload />
+            <RescueImageUpload onImageChange={setAnimalImageDataUrl} />
           </article>
 
           <article className="panel reveal-item rescue-panel-anim">
