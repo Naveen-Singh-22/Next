@@ -17,7 +17,7 @@ export const runtime = "nodejs";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function GET() {
-  return NextResponse.json({ applications: listAdoptions() });
+  return NextResponse.json({ applications: await listAdoptions() });
 }
 
 export async function POST(request: Request) {
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "A valid animal ID is required." }, { status: 400 });
   }
 
-  const application = createAdoption({
+  const application = await createAdoption({
     applicantName,
     email,
     phone,

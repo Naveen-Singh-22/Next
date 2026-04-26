@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import AdminThemeToggle from "@/components/AdminThemeToggle";
@@ -10,6 +11,7 @@ type RescueReport = RescueDispatchMapReport & {
   email: string;
   phone: string;
   breed: string;
+  animalImageDataUrl?: string;
 };
 
 type RescueReportsResponse = {
@@ -418,6 +420,20 @@ export default function RescueManagementPage() {
                     className={`rm-case-item ${selectedReportId === report.reportId ? "selected" : ""}`}
                     style={{ animationDelay: `${120 + index * 80}ms` }}
                   >
+                    {report.animalImageDataUrl ? (
+                      <Image
+                        alt={`${report.species} reported by ${report.fullName}`}
+                        className="rm-case-image"
+                        height={84}
+                        src={report.animalImageDataUrl}
+                        unoptimized
+                        width={84}
+                      />
+                    ) : (
+                      <div className="rm-case-image rm-case-image-fallback" aria-hidden="true">
+                        🐾
+                      </div>
+                    )}
                     <div className="rm-case-copy">
                       <div className="rm-case-head">
                         <span className={`rm-priority ${urgencyTone(report.urgency)}`}>{urgencyLabel(report.urgency)}</span>
@@ -465,6 +481,16 @@ export default function RescueManagementPage() {
 
               {selectedReport ? (
                 <div className="rm-detail-body">
+                  {selectedReport.animalImageDataUrl ? (
+                    <Image
+                      alt={`${selectedReport.species} rescue case image`}
+                      className="rm-detail-image"
+                      height={220}
+                      src={selectedReport.animalImageDataUrl}
+                      unoptimized
+                      width={380}
+                    />
+                  ) : null}
                   <strong>{selectedReport.fullName}</strong>
                   <p>
                     {selectedReport.species}

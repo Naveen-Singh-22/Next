@@ -25,7 +25,7 @@ export async function GET(_: Request, { params }: RouteParams) {
     return NextResponse.json({ message: "Invalid adoption application ID." }, { status: 400 });
   }
 
-  const application = findAdoptionById(parsedId);
+  const application = await findAdoptionById(parsedId);
 
   if (!application) {
     return NextResponse.json({ message: "Adoption application not found." }, { status: 404 });
@@ -50,7 +50,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     return NextResponse.json({ message: "Invalid JSON payload." }, { status: 400 });
   }
 
-  const application = updateAdoption(parsedId, body);
+  const application = await updateAdoption(parsedId, body);
 
   if (!application) {
     return NextResponse.json({ message: "Adoption application not found." }, { status: 404 });
