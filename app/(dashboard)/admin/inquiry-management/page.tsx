@@ -96,9 +96,6 @@ export default function InquiryManagementPage() {
             <li>
               <Link href="/admin/vaccinations">Vaccinations</Link>
             </li>
-            <li>
-              <Link href="/admin/shelter-care-logs">Shelter Care Logs</Link>
-            </li>
             <li className="active">
               <Link href="/admin/inquiry-management">Inquiry Management</Link>
             </li>

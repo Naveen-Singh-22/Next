@@ -111,9 +111,6 @@ export default function AdoptionReviewPage() {
               <Link href="/admin/vaccinations">Vaccinations</Link>
             </li>
             <li>
-              <Link href="/admin/shelter-care-logs">Shelter Care Logs</Link>
-            </li>
-            <li>
               <Link href="/admin/inquiry-management">Inquiries</Link>
             </li>
           </ul>
