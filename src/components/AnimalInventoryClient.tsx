@@ -33,6 +33,21 @@ type AnimalListResponse = {
   limit: number;
 };
 
+type VaccinationRecord = {
+  id: number;
+  animalId: number;
+  animalName: string;
+  vaccineName: string;
+  dose: string;
+  dateGiven: string;
+  nextDueDate: string;
+  notes?: string;
+};
+
+type VaccinationListResponse = {
+  vaccinations?: VaccinationRecord[];
+};
+
 type AnimalFormState = {
   name: string;
   species: AnimalSpecies;
@@ -44,6 +59,12 @@ type AnimalFormState = {
   notes: string;
   photoUrls: string[];
   vaccinationStatus: AnimalVaccinationStatus;
+  addVaccinationEntry: boolean;
+  vaccineName: string;
+  vaccineDose: string;
+  vaccineDateGiven: string;
+  vaccineNextDueDate: string;
+  vaccineNotes: string;
 };
 
 const PAGE_SIZE = 12;
@@ -56,6 +77,10 @@ const statusLabels: Record<AnimalStatus, string> = {
 };
 
 function createEmptyFormState(): AnimalFormState {
+  const today = new Date();
+  const nextMonth = new Date(today);
+  nextMonth.setDate(nextMonth.getDate() + 30);
+
   return {
     name: "",
     species: "dog",
@@ -67,6 +92,12 @@ function createEmptyFormState(): AnimalFormState {
     notes: "",
     photoUrls: [],
     vaccinationStatus: "up_to_date",
+    addVaccinationEntry: true,
+    vaccineName: "Rabies Booster",
+    vaccineDose: "Primary Course",
+    vaccineDateGiven: today.toISOString().slice(0, 10),
+    vaccineNextDueDate: nextMonth.toISOString().slice(0, 10),
+    vaccineNotes: "",
   };
 }
 
@@ -86,6 +117,12 @@ function buildFormState(animal: Animal | null): AnimalFormState {
     notes: animal.notes ?? "",
     photoUrls: animal.photoUrls,
     vaccinationStatus: animal.vaccinationStatus,
+    addVaccinationEntry: false,
+    vaccineName: "Rabies Booster",
+    vaccineDose: "Primary Course",
+    vaccineDateGiven: new Date().toISOString().slice(0, 10),
+    vaccineNextDueDate: new Date(Date.now() + 86400000 * 30).toISOString().slice(0, 10),
+    vaccineNotes: "",
   };
 }
 
@@ -147,11 +184,13 @@ function getStatusOptions(currentStatus?: AnimalStatus) {
 
 function AnimalCard({
   animal,
+  vaccinationDetail,
   onEdit,
   onDelete,
   onStatusChange,
 }: {
   animal: Animal;
+  vaccinationDetail?: VaccinationRecord;
   onEdit: (animal: Animal) => void;
   onDelete: (animal: Animal) => void;
   onStatusChange: (animal: Animal, status: AnimalStatus) => void;
@@ -200,8 +239,19 @@ function AnimalCard({
 
         <div className="flex flex-wrap gap-2">
           <HealthBadge healthStatus={animal.healthStatus} />
-          <VaccinationBadge vaccinationStatus={animal.vaccinationStatus} />
+          {/* <VaccinationBadge vaccinationStatus={animal.vaccinationStatus} /> */}
         </div>
+
+        {vaccinationDetail ? (
+          <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 px-3 py-2 text-xs text-emerald-800">
+            <p className="font-semibold">{vaccinationDetail.vaccineName} • {vaccinationDetail.dose}</p>
+            <p className="mt-1">Given: {formatDate(vaccinationDetail.dateGiven)} • Next due: {formatDate(vaccinationDetail.nextDueDate)}</p>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500">
+            No vaccination record added yet.
+          </div>
+        )}
 
         <p className="line-clamp-3 text-sm leading-6 text-slate-600">{animal.notes || "No notes recorded yet."}</p>
 
@@ -307,6 +357,7 @@ export default function AnimalInventoryClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Animal | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [vaccinationDetailByAnimalId, setVaccinationDetailByAnimalId] = useState<Record<number, VaccinationRecord>>({});
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -345,8 +396,42 @@ export default function AnimalInventoryClient() {
       }
 
       const payload = (await response.json()) as AnimalListResponse;
-      setAnimals(Array.isArray(payload.animals) ? payload.animals : []);
+      const currentAnimals = Array.isArray(payload.animals) ? payload.animals : [];
+      setAnimals(currentAnimals);
       setTotal(typeof payload.total === "number" ? payload.total : 0);
+
+      if (currentAnimals.length === 0) {
+        setVaccinationDetailByAnimalId({});
+        return;
+      }
+
+      const vaccinationResponse = await fetch("/api/vaccinations", {
+        cache: "no-store",
+        signal,
+      });
+
+      if (!vaccinationResponse.ok) {
+        setVaccinationDetailByAnimalId({});
+        return;
+      }
+
+      const vaccinationPayload = (await vaccinationResponse.json()) as VaccinationListResponse;
+      const records = Array.isArray(vaccinationPayload.vaccinations) ? vaccinationPayload.vaccinations : [];
+      const animalIds = new Set(currentAnimals.map((animal) => animal.id));
+      const latestByAnimalId: Record<number, VaccinationRecord> = {};
+
+      records.forEach((record) => {
+        if (!animalIds.has(record.animalId)) {
+          return;
+        }
+
+        const previous = latestByAnimalId[record.animalId];
+        if (!previous || new Date(record.nextDueDate).getTime() > new Date(previous.nextDueDate).getTime()) {
+          latestByAnimalId[record.animalId] = record;
+        }
+      });
+
+      setVaccinationDetailByAnimalId(latestByAnimalId);
     } catch (loadError) {
       if (loadError instanceof DOMException && loadError.name === "AbortError") {
         return;
@@ -407,6 +492,16 @@ export default function AnimalInventoryClient() {
     setIsSubmitting(true);
     setFormError(null);
 
+    if (
+      !editingAnimal &&
+      formState.addVaccinationEntry &&
+      (!formState.vaccineName.trim() || !formState.vaccineDose.trim() || !formState.vaccineDateGiven || !formState.vaccineNextDueDate)
+    ) {
+      setFormError("Please complete vaccination details or turn off vaccination entry.");
+      setIsSubmitting(false);
+      return;
+    }
+
     const payload = {
       name: formState.name.trim(),
       species: formState.species,
@@ -427,10 +522,32 @@ export default function AnimalInventoryClient() {
         body: JSON.stringify(payload),
       });
 
-      const result = (await response.json().catch(() => null)) as { message?: string } | null;
+      const result = (await response.json().catch(() => null)) as { message?: string; animal?: Animal } | null;
 
       if (!response.ok) {
         throw new Error(result?.message ?? "Unable to save animal.");
+      }
+
+      const createdAnimal = result?.animal;
+
+      if (!editingAnimal && createdAnimal && formState.addVaccinationEntry) {
+        const vaccinationResponse = await fetch("/api/vaccinations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            animalId: createdAnimal.id,
+            animalName: createdAnimal.name,
+            vaccineName: formState.vaccineName.trim(),
+            dose: formState.vaccineDose.trim(),
+            dateGiven: formState.vaccineDateGiven,
+            nextDueDate: formState.vaccineNextDueDate,
+            notes: formState.vaccineNotes.trim() || undefined,
+          }),
+        });
+
+        if (!vaccinationResponse.ok) {
+          setError("Animal added, but vaccination entry could not be created. Please add it from Vaccinations page.");
+        }
       }
 
       const nextPage = editingAnimal ? page : 1;
@@ -661,6 +778,7 @@ export default function AnimalInventoryClient() {
                   <AnimalCard
                     key={animal.id}
                     animal={animal}
+                    vaccinationDetail={vaccinationDetailByAnimalId[animal.id]}
                     onEdit={openEditModal}
                     onDelete={setDeleteTarget}
                     onStatusChange={updateStatus}
@@ -724,6 +842,13 @@ export default function AnimalInventoryClient() {
                           </td>
                           <td className="px-4 py-4">
                             <VaccinationBadge vaccinationStatus={animal.vaccinationStatus} />
+                            {vaccinationDetailByAnimalId[animal.id] ? (
+                              <p className="mt-2 text-xs text-slate-500">
+                                {vaccinationDetailByAnimalId[animal.id].vaccineName} • Due {formatDate(vaccinationDetailByAnimalId[animal.id].nextDueDate)}
+                              </p>
+                            ) : (
+                              <p className="mt-2 text-xs text-slate-400">No record</p>
+                            )}
                           </td>
                           <td className="px-4 py-4">
                             <select
@@ -903,13 +1028,76 @@ export default function AnimalInventoryClient() {
                 </select>
               </label>
 
-              <div className="space-y-2 md:col-span-2">
-                <span className="text-sm font-medium text-slate-800">Vaccination status</span>
-                <div className="inline-flex rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                  {ANIMAL_VACCINATION_OPTIONS.find((option) => option.value === formState.vaccinationStatus)?.label ??
-                    formatEnumLabel(formState.vaccinationStatus)}
+              {!editingAnimal ? (
+                <div className="space-y-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4 md:col-span-2">
+                  <label className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-900">
+                    <input
+                      type="checkbox"
+                      checked={formState.addVaccinationEntry}
+                      onChange={(event) => updateFormField("addVaccinationEntry", event.currentTarget.checked)}
+                    />
+                    Create vaccination entry now
+                  </label>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <label className="space-y-2">
+                      <span className="text-sm font-medium text-slate-800">Vaccine name</span>
+                      <input
+                        value={formState.vaccineName}
+                        onChange={(event) => updateFormField("vaccineName", event.currentTarget.value)}
+                        disabled={!formState.addVaccinationEntry}
+                        className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-slate-400 disabled:cursor-not-allowed disabled:bg-slate-100"
+                        placeholder="Rabies Booster"
+                      />
+                    </label>
+
+                    <label className="space-y-2">
+                      <span className="text-sm font-medium text-slate-800">Dose</span>
+                      <input
+                        value={formState.vaccineDose}
+                        onChange={(event) => updateFormField("vaccineDose", event.currentTarget.value)}
+                        disabled={!formState.addVaccinationEntry}
+                        className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-slate-400 disabled:cursor-not-allowed disabled:bg-slate-100"
+                        placeholder="Primary Course"
+                      />
+                    </label>
+
+                    <label className="space-y-2">
+                      <span className="text-sm font-medium text-slate-800">Date given</span>
+                      <input
+                        type="date"
+                        value={formState.vaccineDateGiven}
+                        onChange={(event) => updateFormField("vaccineDateGiven", event.currentTarget.value)}
+                        disabled={!formState.addVaccinationEntry}
+                        className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-slate-400 disabled:cursor-not-allowed disabled:bg-slate-100"
+                      />
+                    </label>
+
+                    <label className="space-y-2">
+                      <span className="text-sm font-medium text-slate-800">Next due date</span>
+                      <input
+                        type="date"
+                        value={formState.vaccineNextDueDate}
+                        onChange={(event) => updateFormField("vaccineNextDueDate", event.currentTarget.value)}
+                        disabled={!formState.addVaccinationEntry}
+                        className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-slate-400 disabled:cursor-not-allowed disabled:bg-slate-100"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="space-y-2">
+                    <span className="text-sm font-medium text-slate-800">Vaccination notes</span>
+                    <textarea
+                      rows={3}
+                      value={formState.vaccineNotes}
+                      onChange={(event) => updateFormField("vaccineNotes", event.currentTarget.value)}
+                      disabled={!formState.addVaccinationEntry}
+                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-slate-400 disabled:cursor-not-allowed disabled:bg-slate-100"
+                      placeholder="Optional notes for this vaccination entry"
+                    />
+                  </label>
                 </div>
-              </div>
+              ) : null}
 
               <label className="space-y-2 md:col-span-2">
                 <span className="text-sm font-medium text-slate-800">Notes</span>
