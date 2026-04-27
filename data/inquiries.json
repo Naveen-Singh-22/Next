@@ -2,6 +2,24 @@
   "inquiries": [
     {
       "type": "adoption",
+      "referenceId": 4,
+      "title": "Adoption application from asdfffffffffff",
+      "preview": "Hancock • wefqerfwefwedfe",
+      "id": 4,
+      "status": "new",
+      "createdAt": "2026-04-27T13:36:57.094Z"
+    },
+    {
+      "type": "donation",
+      "referenceId": 1,
+      "title": "Donation from wew435234r4325",
+      "preview": "DN-TE5MXQ • 999 INR",
+      "id": 3,
+      "status": "new",
+      "createdAt": "2026-04-27T13:32:14.190Z"
+    },
+    {
+      "type": "adoption",
       "referenceId": 3,
       "title": "Adoption application from Anshu Singh",
       "preview": "Balthazar • Dewas",
@@ -19,5 +37,5 @@
       "createdAt": "2026-04-26T21:50:07.836Z"
     }
   ],
-  "nextId": 3
+  "nextId": 5
 }

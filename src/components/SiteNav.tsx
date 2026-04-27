@@ -67,6 +67,13 @@ export default function SiteNav({ className = "" }: SiteNavProps) {
   }, [isOpen]);
 
   useEffect(() => {
+    document.body.classList.add("site-nav-present");
+    return () => {
+      document.body.classList.remove("site-nav-present");
+    };
+  }, []);
+
+  useEffect(() => {
     const updateTopState = () => {
       document.body.classList.toggle("page-at-top", window.scrollY < 20);
     };
@@ -89,8 +96,8 @@ export default function SiteNav({ className = "" }: SiteNavProps) {
   return (
     <header className={`top-nav ${className}`.trim()}>
       <div className="top-nav-inner section-wrap">
-        <Link className="brand" href="/">
-          <span>thecaninehelp</span>
+        <Link className="brand" href="/" aria-label="thecaninehelp home">
+          <span className="brand-name">thecaninehelp</span>
           <small className="brand-subtitle">Shelter Operations</small>
         </Link>
 

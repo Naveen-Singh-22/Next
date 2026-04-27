@@ -263,6 +263,7 @@ export default function Home() {
                 src="/images/unsplash/05.jpg"
                 alt="Cat resting comfortably after adoption"
                 fill
+                loading="eager"
                 sizes="(max-width: 920px) 50vw, 24vw"
               />
             </div>

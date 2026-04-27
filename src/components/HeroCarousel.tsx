@@ -147,7 +147,7 @@ export default function HeroCarousel({
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.12),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(20,184,166,0.2),_transparent_40%)]" />
 
       <div className="relative z-10 flex min-h-[100svh] items-end">
-        <div className="mx-auto flex w-full max-w-[96rem] flex-col gap-5 px-4 pb-12 pt-28 sm:px-6 sm:pb-14 sm:pt-32 lg:px-8 lg:pb-16 lg:pt-36">
+        <div className="mx-auto flex w-full max-w-[96rem] flex-col gap-5 px-4 pb-10 pt-36 sm:px-6 sm:pb-14 sm:pt-32 lg:-translate-x-6 lg:px-8 lg:pb-16 lg:pt-36">
           <div className="max-w-3xl text-left text-white sm:max-w-2xl lg:max-w-3xl">
             {eyebrow ? (
               <p className="mb-3 inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-emerald-50/90 backdrop-blur-sm sm:mb-4 sm:px-4 sm:text-xs sm:tracking-[0.24em]">
