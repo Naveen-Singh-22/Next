@@ -25,11 +25,11 @@ const resourcesLinks = [
 ];
 
 const socialLinks = [
-  { href: "#", label: "Facebook", icon: FacebookIcon },
+  { href: "https://www.facebook.com/thecaninehelp", label: "Facebook", icon: FacebookIcon },
   { href: "#", label: "X", icon: XIcon },
-  { href: "#", label: "Instagram", icon: InstagramIcon },
+  { href: "https://www.instagram.com/thecaninehelp/", label: "Instagram", icon: InstagramIcon },
   { href: "#", label: "LinkedIn", icon: LinkedInIcon },
-  { href: "#", label: "YouTube", icon: YouTubeIcon },
+  { href: "https://www.youtube.com/@TheCanineHelpindore", label: "YouTube", icon: YouTubeIcon },
 ];
 
 function MailIcon() {
