@@ -8,7 +8,7 @@ import NewsletterSignupForm from "@/components/NewsletterSignupForm";
 export default function Home() {
   const heroSlides = [
     {
-      src: "/images/unsplash/liam-8XbWqqz7ukE-unsplash.jpg",
+      src: "/images/unsplash/05.jpg",
       alt: "Three rescue puppies standing together on a road",
     },
     {
