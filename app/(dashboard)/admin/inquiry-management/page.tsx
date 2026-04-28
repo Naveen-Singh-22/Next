@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import AdminThemeToggle from "@/components/AdminThemeToggle";
+import AdminTopNav from "@/components/AdminTopNav";
+import AdminTopbarBrand from "@/components/AdminTopbarBrand";
 import type { InquiryStatus, InquiryType, StoredInquiry } from "@/lib/inquiryStore";
 
 const typeLabels: Record<InquiryType, string> = {
@@ -234,6 +236,7 @@ export default function InquiryManagementPage() {
               <span />
               <span />
             </button>
+            <AdminTopbarBrand />
             <input
               aria-label="Search inquiries"
               placeholder="Search rescue, adoption, or donation inbox..."
@@ -242,6 +245,7 @@ export default function InquiryManagementPage() {
               onChange={(event) => setSearchText(event.target.value)}
             />
           </div>
+          <AdminTopNav activeHref="/admin/inquiry-management" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
             <span>🔔</span>

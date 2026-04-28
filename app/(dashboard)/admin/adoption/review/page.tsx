@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import AdminThemeToggle from "@/components/AdminThemeToggle";
+import AdminTopNav from "@/components/AdminTopNav";
+import AdminTopbarBrand from "@/components/AdminTopbarBrand";
 
 type BoardCard = {
   applicant: string;
@@ -149,8 +151,10 @@ export default function AdoptionReviewPage() {
               <span />
               <span />
             </button>
+            <AdminTopbarBrand />
             <input aria-label="Search" placeholder="Search applications or animals..." type="text" />
           </div>
+          <AdminTopNav activeHref="/admin/adoption" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
             <span>🔔</span>
