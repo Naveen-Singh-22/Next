@@ -30,7 +30,11 @@ export default function AdminSidebar({
     <>
       <aside className={`admin-sidebar admin-mobile-sidebar ${isOpen ? "open" : ""}`.trim()}>
         <div className="admin-brand">
-          <Link href="/">thecaninehelp</Link>
+          <Link href="/" className="admin-brand-link" aria-label="thecaninehelp home">
+            <img src="/images/logo3.png" alt="thecaninehelp logo" className="admin-brand-logo admin-brand-logo-light" />
+            <img src="/images/logo3-dark.png" alt="thecaninehelp logo" className="admin-brand-logo admin-brand-logo-dark" />
+            <span className="admin-brand-text">thecaninehelp</span>
+          </Link>
           <small>{userRole}</small>
         </div>
 
