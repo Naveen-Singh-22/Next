@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminThemeToggle from "@/components/AdminThemeToggle";
+import AdminTopNav from "@/components/AdminTopNav";
+import AdminTopbarBrand from "@/components/AdminTopbarBrand";
 import VaccinationCalendar from "@/components/VaccinationCalendar";
 import { VaccinationBadge } from "@/components/AnimalBadges";
 import { getVaccinationStatus } from "@/lib/vaccinationTypes";
@@ -442,6 +444,7 @@ export default function VaccinationManagementClient() {
               <span />
               <span />
             </button>
+            <AdminTopbarBrand />
             <input
               aria-label="Search vaccination records"
               placeholder="Search animals, vaccines, doses..."
@@ -450,6 +453,7 @@ export default function VaccinationManagementClient() {
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
+          <AdminTopNav activeHref="/admin/vaccinations" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
             <span>🔔</span>

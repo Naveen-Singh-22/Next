@@ -18,21 +18,7 @@ const NAV_LINKS = [
   { href: "/rescue", label: "Rescue Form" },
 ];
 
-function MoonIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M14.9 3.8a8.8 8.8 0 1 0 5.3 15.8A9 9 0 0 1 12.3 4a9 9 0 0 1 2.6-.2Z" />
-    </svg>
-  );
-}
-
-function SunIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M12 7.2A4.8 4.8 0 1 0 16.8 12 4.8 4.8 0 0 0 12 7.2Zm0-4.2a.9.9 0 0 1 .9.9v1.4a.9.9 0 1 1-1.8 0V3.9A.9.9 0 0 1 12 3Zm0 15.8a.9.9 0 0 1 .9.9v1.4a.9.9 0 1 1-1.8 0v-1.4a.9.9 0 0 1 .9-.9ZM4 11.1h1.4a.9.9 0 1 1 0 1.8H4a.9.9 0 1 1 0-1.8Zm14.6 0H20a.9.9 0 1 1 0 1.8h-1.4a.9.9 0 1 1 0-1.8ZM6.2 5l1 1a.9.9 0 0 1-1.3 1.3l-1-1A.9.9 0 0 1 6.2 5Zm11.6 11.6 1 1a.9.9 0 1 1-1.3 1.3l-1-1a.9.9 0 1 1 1.3-1.3ZM6.2 19a.9.9 0 0 1-1.3-1.3l1-1a.9.9 0 0 1 1.3 1.3l-1 1Zm11.6-11.6a.9.9 0 0 1-1.3-1.3l1-1a.9.9 0 0 1 1.3 1.3l-1 1Z" />
-    </svg>
-  );
-}
+// Theme icons replaced by Bootstrap Icons classes
 
 export default function SiteNav({ className = "" }: SiteNavProps) {
   const pathname = usePathname();
@@ -93,12 +79,17 @@ export default function SiteNav({ className = "" }: SiteNavProps) {
     setTheme(nextTheme);
   };
 
+  const brandLogoSrc = theme === "dark" ? "/images/logo3-dark.png" : "/images/logo3.png";
+
   return (
     <header className={`top-nav ${className}`.trim()}>
       <div className="top-nav-inner section-wrap">
         <Link className="brand" href="/" aria-label="thecaninehelp home">
-          <span className="brand-name">thecaninehelp</span>
-          <small className="brand-subtitle">Shelter Operations</small>
+          <img src={brandLogoSrc} alt="thecaninehelp logo" className="brand-logo" />
+          <span className="brand-text">
+            <span className="brand-name">THE CANINE HELP</span>
+            <small className="brand-subtitle">RESCUE  CARE  LOVE</small>
+          </span>
         </Link>
 
         <nav aria-label="Main navigation" className="desktop-nav">
@@ -129,9 +120,7 @@ export default function SiteNav({ className = "" }: SiteNavProps) {
             aria-pressed={theme === "dark"}
             onClick={handleThemeToggle}
           >
-            <span className="theme-nav-icon" aria-hidden="true">
-              {theme === "dark" ? <SunIcon /> : <MoonIcon />}
-            </span>
+            <i className={`bi ${theme === "dark" ? "bi-sun" : "bi-moon"} theme-nav-icon`} aria-hidden="true" />
             <span className="theme-nav-label">{theme === "dark" ? "Light" : "Dark"}</span>
           </button>
           <Link className="pill-btn solid pill-link" href="/donate">
@@ -202,9 +191,7 @@ export default function SiteNav({ className = "" }: SiteNavProps) {
             onClick={handleThemeToggle}
           >
             <span className="mobile-theme-toggle-main">
-              <span className="mobile-theme-toggle-icon" aria-hidden="true">
-                {theme === "dark" ? <SunIcon /> : <MoonIcon />}
-              </span>
+              <i className={`bi ${theme === "dark" ? "bi-sun" : "bi-moon"} mobile-theme-toggle-icon`} aria-hidden="true" />
               <span className="mobile-theme-toggle-title">Dark mode</span>
             </span>
             <span className="mobile-theme-toggle-value">{theme === "dark" ? "On" : "Off"}</span>
