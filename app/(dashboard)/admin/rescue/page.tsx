@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import AdminThemeToggle from "@/components/AdminThemeToggle";
+import AdminTopNav from "@/components/AdminTopNav";
+import AdminTopbarBrand from "@/components/AdminTopbarBrand";
 import RescueDispatchMap, { type RescueDispatchMapReport } from "@/components/RescueDispatchMap";
 import ScrollReveal from "@/components/ScrollReveal";
 
@@ -517,6 +519,7 @@ export default function RescueManagementPage() {
               <span />
               <span />
             </button>
+            <AdminTopbarBrand />
             <input
               aria-label="Search rescue reports"
               placeholder="Search rescue reports..."
@@ -525,6 +528,7 @@ export default function RescueManagementPage() {
               onChange={(event) => setSearchQuery(event.target.value)}
             />
           </div>
+          <AdminTopNav activeHref="/admin/rescue" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
             <span>🔔</span>
