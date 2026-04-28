@@ -42,6 +42,7 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem("theme");var d=(t==="dark"||t==="light")?t:"light";var r=document.documentElement;r.setAttribute("data-theme",d);r.classList.toggle("dark",d==="dark");r.style.colorScheme=d;}catch(e){}})();`,
           }}
         />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
       </head>
       <body className="min-h-full flex flex-col" id="top">
         {children}
