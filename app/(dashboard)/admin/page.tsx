@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import AdminThemeToggle from "@/components/AdminThemeToggle";
+import AdminTopNav from "@/components/AdminTopNav";
+import AdminTopbarBrand from "@/components/AdminTopbarBrand";
 
 type RescueReport = {
   reportId: string;
@@ -177,7 +179,7 @@ export default function AdminPage() {
       <aside className={`admin-sidebar admin-mobile-sidebar ${isSidebarOpen ? "open" : ""}`.trim()}>
         <div className="admin-brand">
           <Link href="/">thecaninehelp</Link>
-          <small>Shelter Operations</small>
+          <small>RESCUE CARE LOVE </small>
         </div>
 
         <button
@@ -248,6 +250,7 @@ export default function AdminPage() {
               <span />
               <span />
             </button>
+            <AdminTopbarBrand />
             <input
               aria-label="Search"
               placeholder="Search animals, records, or inquiries..."
@@ -256,11 +259,10 @@ export default function AdminPage() {
               onChange={(event) => setSearchQuery(event.target.value)}
             />
           </div>
+          <AdminTopNav activeHref="/admin" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
-            <span>🔔</span>
-            <span>⚙️</span>
-            <span>?</span>
+            
             <span className="avatar">AD</span>
           </div>
         </header>
