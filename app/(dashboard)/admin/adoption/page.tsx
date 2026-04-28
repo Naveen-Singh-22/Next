@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import AdminThemeToggle from "@/components/AdminThemeToggle";
+import AdminTopNav from "@/components/AdminTopNav";
+import AdminTopbarBrand from "@/components/AdminTopbarBrand";
 import type { AdoptionApplication, AdoptionStatus } from "@/lib/adoptionApplicationTypes";
 
 type PipelineCard = {
@@ -505,6 +507,7 @@ export default function AdoptionPipelinePage() {
               <span />
               <span />
             </button>
+            <AdminTopbarBrand />
             <input
               aria-label="Search"
               placeholder="Search applicant, animal name, or application ID..."
@@ -513,6 +516,7 @@ export default function AdoptionPipelinePage() {
               onChange={(event) => setSearchTerm(event.target.value)}
             />
           </div>
+          <AdminTopNav activeHref="/admin/adoption" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
             <span>Bell</span>
