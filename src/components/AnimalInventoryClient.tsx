@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminThemeToggle from "@/components/AdminThemeToggle";
+import AdminTopNav from "@/components/AdminTopNav";
+import AdminTopbarBrand from "@/components/AdminTopbarBrand";
 import AnimalImageUploader from "@/components/AnimalImageUploader";
 import {
   ANIMAL_GENDER_OPTIONS,
@@ -637,6 +639,7 @@ export default function AnimalInventoryClient() {
               <span />
               <span />
             </button>
+            <AdminTopbarBrand />
             <input
               aria-label="Search animals"
               placeholder="Search by name, breed, notes or ID..."
@@ -646,6 +649,7 @@ export default function AnimalInventoryClient() {
               className="min-w-0 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
             />
           </div>
+          <AdminTopNav activeHref="/admin/inventory" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
             <span>🔔</span>

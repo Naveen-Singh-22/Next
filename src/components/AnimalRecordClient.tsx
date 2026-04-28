@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminThemeToggle from "@/components/AdminThemeToggle";
+import AdminTopNav from "@/components/AdminTopNav";
+import AdminTopbarBrand from "@/components/AdminTopbarBrand";
 import { HealthBadge, StatusBadge, VaccinationBadge, formatEnumLabel } from "@/components/AnimalBadges";
 import type { Animal } from "@/lib/animalInventoryTypes";
 
@@ -121,10 +123,12 @@ export default function AnimalRecordClient() {
               <span />
               <span />
             </button>
+            <AdminTopbarBrand />
             <Link href="/admin/inventory" className="rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50">
               Back to inventory
             </Link>
           </div>
+          <AdminTopNav activeHref="/admin/inventory" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
             <span>🔔</span>
