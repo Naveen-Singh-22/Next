@@ -10832,7 +10832,7 @@ html.dark .admin-footer a,
 
   .site-footer-social {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 2.9rem));
+    grid-template-columns: repeat(5, minmax(0, 2.9rem));
     gap: 0.55rem;
     width: fit-content;
   }
