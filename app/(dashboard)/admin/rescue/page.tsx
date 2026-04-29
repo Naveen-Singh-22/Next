@@ -531,9 +531,7 @@ export default function RescueManagementPage() {
           <AdminTopNav activeHref="/admin/rescue" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
-            <span>🔔</span>
-            <span>⚙️</span>
-            <span>?</span>
+            
             <strong className="rm-head-title">Admin Dashboard</strong>
           </div>
         </header>

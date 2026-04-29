@@ -157,9 +157,6 @@ export default function AdoptionReviewPage() {
           <AdminTopNav activeHref="/admin/adoption" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
-            <span>🔔</span>
-            <span>⚙️</span>
-            <span>?</span>
           </div>
         </header>
 

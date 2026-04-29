@@ -248,8 +248,7 @@ export default function InquiryManagementPage() {
           <AdminTopNav activeHref="/admin/inquiry-management" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
-            <span>🔔</span>
-            <span>⚙️</span>
+          
             <div className="inq-user-chip">
               <div>
                 <strong>Alex Rivera</strong>

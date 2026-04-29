@@ -131,9 +131,7 @@ export default function AnimalRecordClient() {
           <AdminTopNav activeHref="/admin/inventory" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
-            <span>🔔</span>
-            <span>⚙️</span>
-            <span>?</span>
+            
           </div>
         </header>
 

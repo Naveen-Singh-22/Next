@@ -456,9 +456,7 @@ export default function VaccinationManagementClient() {
           <AdminTopNav activeHref="/admin/vaccinations" />
           <div className="admin-top-icons">
             <AdminThemeToggle />
-            <span>🔔</span>
-            <span>⚙️</span>
-            <span className="avatar">VX</span>
+            
           </div>
         </header>
 
