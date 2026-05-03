@@ -16,6 +16,7 @@ const NAV_LINKS = [
   { href: "/adopt", label: "Adopt" },
   { href: "/volunteer", label: "Volunteer" },
   { href: "/rescue", label: "Rescue Form" },
+  { href: "/login", label: "Sign In" },
 ];
 
 // Theme icons replaced by Bootstrap Icons classes
@@ -24,6 +25,8 @@ export default function SiteNav({ className = "" }: SiteNavProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [theme, setTheme] = useState<Theme>("light");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     setTheme(initializeTheme());
@@ -38,6 +41,27 @@ export default function SiteNav({ className = "" }: SiteNavProps) {
     window.addEventListener("themechange", onThemeChange);
     return () => {
       window.removeEventListener("themechange", onThemeChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    fetch("/api/auth/session")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!mounted) return;
+        setIsAuthenticated(Boolean(data?.authenticated));
+        setUserName(data?.user?.name?.trim() || data?.email?.split("@")[0] || null);
+      })
+      .catch(() => {
+        if (mounted) {
+          setIsAuthenticated(false);
+          setUserName(null);
+        }
+      });
+
+    return () => {
+      mounted = false;
     };
   }, []);
 
@@ -96,15 +120,22 @@ export default function SiteNav({ className = "" }: SiteNavProps) {
           <ul className="menu-list">
             {NAV_LINKS.map((item) => {
               const isActive = pathname === item.href;
+              let href = item.href;
+              let label = item.label;
+
+              if (item.href === "/login" && isAuthenticated) {
+                href = "/profile";
+                label = userName ?? "Profile";
+              }
 
               return (
                 <li key={item.href}>
                   <Link
-                    href={item.href}
+                    href={href}
                     className={isActive ? "active-link" : undefined}
                     aria-current={isActive ? "page" : undefined}
                   >
-                    {item.label}
+                    {label}
                   </Link>
                 </li>
               );
@@ -123,6 +154,7 @@ export default function SiteNav({ className = "" }: SiteNavProps) {
             <i className={`bi ${theme === "dark" ? "bi-sun" : "bi-moon"} theme-nav-icon`} aria-hidden="true" />
             <span className="theme-nav-label">{theme === "dark" ? "Light" : "Dark"}</span>
           </button>
+
           <Link className="pill-btn solid pill-link" href="/donate">
             Donate
           </Link>
@@ -167,19 +199,33 @@ export default function SiteNav({ className = "" }: SiteNavProps) {
         <ul className="mobile-menu-list">
           {NAV_LINKS.map((item) => {
             const isActive = pathname === item.href;
+            let href = item.href;
+            let label = item.label;
+
+            if (item.href === "/login" && isAuthenticated) {
+              href = "/profile";
+              label = userName ?? "Profile";
+            }
 
             return (
               <li key={`${item.href}-mobile`}>
                 <Link
-                  href={item.href}
+                  href={href}
                   className={isActive ? "active-link" : undefined}
                   aria-current={isActive ? "page" : undefined}
+                  onClick={() => setIsOpen(false)}
                 >
-                  {item.label}
+                  {label}
                 </Link>
               </li>
             );
           })}
+          {isAuthenticated && (
+            <li>
+              <button className="active-link" onClick={() => (window.location.href = "/api/auth/logout")}>Sign Out</button>
+            </li>
+          )}
+          
         </ul>
 
         <div className="mobile-theme-toggle-wrap">
