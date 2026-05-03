@@ -13,7 +13,8 @@
       "homeType": "farm",
       "message": "I Wanna adopt a pet",
       "status": "pending",
-      "createdAt": "2026-04-25T05:05:22.330Z"
+      "createdAt": "2026-04-25T05:05:22.330Z",
+      "id": 1
     },
     {
       "requestId": "AR-TE0JJ8",
@@ -28,7 +29,9 @@
       "homeType": "house",
       "message": "I am alone  in my house i need a pet",
       "status": "pending",
-      "createdAt": "2026-04-24T19:30:44.491Z"
+      "createdAt": "2026-04-24T19:30:44.491Z",
+      "id": 2
     }
-  ]
+  ],
+  "nextId": null
 }

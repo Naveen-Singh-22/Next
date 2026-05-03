@@ -1,0 +1,40 @@
+{
+  "users": [
+    {
+      "id": "user_1777662811181",
+      "name": "Aman Singh",
+      "email": "imailductilework@gmail.com",
+      "password": "Aman@123",
+      "role": "donor",
+      "createdAt": "2026-05-01T19:13:31.181Z",
+      "isActive": true
+    },
+    {
+      "id": "user_1777696277708",
+      "name": "Ductile",
+      "email": "singhaman@gmail.com",
+      "password": "Aman123",
+      "role": "adopter",
+      "createdAt": "2026-05-02T04:31:17.708Z",
+      "isActive": true
+    },
+    {
+      "id": "user_1777701834849",
+      "name": "Sakshi Singh",
+      "email": "Sakshi@gmail.com",
+      "password": "Sakshi123",
+      "role": "volunteer",
+      "createdAt": "2026-05-02T06:03:54.849Z",
+      "isActive": true
+    },
+    {
+      "id": "user_admin_001",
+      "name": "Administrator",
+      "email": "admin@thecaninehelp.org",
+      "password": "admin123",
+      "role": "admin",
+      "createdAt": "2026-05-01T00:00:00.000Z",
+      "isActive": true
+    }
+  ]
+}

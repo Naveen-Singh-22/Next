@@ -1,6 +1,24 @@
 {
   "inquiries": [
     {
+      "type": "donation",
+      "referenceId": 3,
+      "title": "Donation from Aman",
+      "preview": "DN-TEEV72 • 499 INR",
+      "id": 6,
+      "status": "new",
+      "createdAt": "2026-05-02T13:09:02.161Z"
+    },
+    {
+      "type": "donation",
+      "referenceId": 2,
+      "title": "Donation from Aman Singh",
+      "preview": "DN-TEDLH1 • 999 INR",
+      "id": 5,
+      "status": "new",
+      "createdAt": "2026-05-01T20:41:25.538Z"
+    },
+    {
       "type": "adoption",
       "referenceId": 4,
       "title": "Adoption application from asdfffffffffff",
@@ -37,5 +55,5 @@
       "createdAt": "2026-04-26T21:50:07.836Z"
     }
   ],
-  "nextId": 5
+  "nextId": 7
 }

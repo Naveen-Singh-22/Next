@@ -1,0 +1,29 @@
+{
+  "applications": [
+    {
+      "fullName": "Ductile",
+      "email": "singhaman@gmail.com",
+      "phone": "7415505727",
+      "city": "Satna",
+      "interestArea": "Shelter Assistant",
+      "availability": "i wanna contribute to the NGO",
+      "status": "pending",
+      "id": 2,
+      "applicationId": "VL-TEE7CP",
+      "createdAt": "2026-05-02T04:34:01.529Z"
+    },
+    {
+      "fullName": "Aman",
+      "email": "imailductilework@gmail.com",
+      "phone": "7415505727",
+      "city": "Satna",
+      "interestArea": "Rescue Dispatcher",
+      "availability": "anytime when you need",
+      "status": "pending",
+      "id": 1,
+      "applicationId": "VL-TEDLK6",
+      "createdAt": "2026-05-01T20:43:18.110Z"
+    }
+  ],
+  "nextId": 3
+}
