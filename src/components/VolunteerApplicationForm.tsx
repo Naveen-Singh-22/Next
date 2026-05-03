@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { ensureLoggedIn } from "@/lib/authClient";
 
 type SubmitState = "idle" | "success" | "error";
 
@@ -39,6 +40,10 @@ export default function VolunteerApplicationForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!(await ensureLoggedIn("/volunteer", "volunteer"))) {
+      return;
+    }
 
     const payload = {
       fullName: formData.fullName.trim(),
