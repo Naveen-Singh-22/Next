@@ -5,7 +5,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 export default function ImpactPage() {
   return (
     <div className="impact-page">
-      <SiteNav className="impact-nav" />
+      <SiteNav />
 
       <main>
         <ScrollReveal as="section" className="section-wrap impact-hero" delayMs={40}>

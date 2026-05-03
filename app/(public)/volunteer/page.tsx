@@ -44,7 +44,7 @@ const reasons = [
 export default function VolunteerPage() {
   return (
     <div className="volunteer-page">
-      <SiteNav className="volunteer-nav" />
+      <SiteNav />
 
       <main>
         <ScrollReveal as="section" className="section-wrap volunteer-hero">
