@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createVolunteerApplication } from "@/lib/volunteerApplicationsStore";
 
 type VolunteerApplicationBody = {
   fullName?: string;
@@ -76,6 +77,16 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
+
+  await createVolunteerApplication({
+    fullName,
+    email,
+    phone,
+    city,
+    interestArea,
+    availability,
+    status: "pending",
+  });
 
   return NextResponse.json({
     ok: true,
