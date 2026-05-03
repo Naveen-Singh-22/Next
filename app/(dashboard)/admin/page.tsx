@@ -263,6 +263,15 @@ export default function AdminPage() {
           <div className="admin-top-icons">
             <AdminThemeToggle />
             
+            <button
+              type="button"
+              className="admin-logout-btn"
+              onClick={() => (window.location.href = "/api/admin/logout")}
+              aria-label="Sign out"
+            >
+              Sign Out
+            </button>
+
             <span className="avatar">AD</span>
           </div>
         </header>
