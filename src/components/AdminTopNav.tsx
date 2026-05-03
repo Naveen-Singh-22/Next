@@ -10,6 +10,7 @@ const ADMIN_NAV_ITEMS = [
   { href: "/admin/adoption", label: "Adoption Pipeline" },
   { href: "/admin/inventory", label: "Animal Inventory" },
   { href: "/admin/vaccinations", label: "Vaccinations" },
+  { href: "/admin/users", label: "User Management" },
   { href: "/admin/inquiry-management", label: "Inquiries" },
 ] as const;
 

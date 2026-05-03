@@ -6,6 +6,7 @@ import Link from "next/link";
 import SiteNav from "@/components/SiteNav";
 import ScrollReveal from "@/components/ScrollReveal";
 import type { AdoptAnimal } from "@/lib/adoptAnimals";
+import { ensureLoggedIn } from "@/lib/authClient";
 
 type AnimalProfilePageProps = {
   animal: AdoptAnimal;
@@ -239,6 +240,10 @@ export default function AnimalProfilePage({ animal }: AnimalProfilePageProps) {
     if (!animalId) {
       setSubmitState("error");
       setSubmitMessage("Unable to identify this animal record. Please refresh and try again.");
+      return;
+    }
+
+    if (!(await ensureLoggedIn(window.location.pathname + window.location.search, "donor"))) {
       return;
     }
 
@@ -493,7 +498,10 @@ export default function AnimalProfilePage({ animal }: AnimalProfilePageProps) {
         {isFormOpen ? (
           <div className="animal-adopt-modal" role="dialog" aria-modal="true" aria-label={`Apply to adopt ${animal.name}`}>
             <div className="animal-adopt-modal-backdrop" onClick={() => setIsFormOpen(false)} aria-hidden="true" />
-            <article className="animal-adopt-modal-card">
+            <article
+              className="animal-adopt-modal-card"
+              style={{ maxHeight: "calc(100dvh - 1.5rem)", overflowY: "auto" }}
+            >
               <div className="animal-adopt-modal-head">
                 <h3>Apply to Adopt {animal.name}</h3>
                 <button
