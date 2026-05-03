@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import SiteNav from "@/components/SiteNav";
 import ScrollReveal from "@/components/ScrollReveal";
+import { ensureLoggedIn } from "@/lib/authClient";
 
 const reasons = [
   {
@@ -52,6 +53,10 @@ export default function DonatePage() {
 
   async function handleDonate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!(await ensureLoggedIn("/donate", "donor"))) {
+      return;
+    }
 
     if (!Number.isFinite(finalAmount) || finalAmount <= 0) {
       setStatusMessage("Please select a valid donation amount in rupees.");
