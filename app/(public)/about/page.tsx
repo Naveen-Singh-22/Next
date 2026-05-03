@@ -69,7 +69,7 @@ const team = [
 export default function AboutPage() {
   return (
     <div className="about-page">
-      <SiteNav className="about-nav" />
+      <SiteNav />
 
       <main>
         <ScrollReveal as="section" className="section-wrap about-hero" delayMs={40}>
