@@ -225,16 +225,19 @@ export default function UserManagementClient() {
   };
 
   return (
-    <div className="admin-container">
+    <div className="admin-page admin-mobile-shell">
       {/* Header */}
       <div className="admin-topbar">
         <button
-          className="admin-topbar-menu-toggle"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          aria-label="Toggle sidebar"
+          className="admin-menu-btn"
+          onClick={() => setIsSidebarOpen(true)}
+          aria-label="Open admin menu"
+          aria-expanded={isSidebarOpen}
           type="button"
         >
-          ☰
+          <span />
+          <span />
+          <span />
         </button>
         <AdminTopbarBrand />
         <AdminTopNav activeHref="/admin/users" />
@@ -288,6 +291,8 @@ export default function UserManagementClient() {
             Emergency Alert
           </button>
         </aside>
+
+        <div className={`admin-sidebar-backdrop ${isSidebarOpen ? "show" : ""}`.trim()} onClick={() => setIsSidebarOpen(false)} aria-hidden={!isSidebarOpen} />
 
         {/* Content */}
         <main className="admin-content">
@@ -621,7 +626,7 @@ export default function UserManagementClient() {
       </div>
 
       <style>{`
-        .admin-container {
+        .admin-page {
           display: flex;
           flex-direction: column;
           min-height: 100vh;

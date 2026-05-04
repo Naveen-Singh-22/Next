@@ -481,6 +481,9 @@ export default function RescueManagementPage() {
               <Link href="/admin/vaccinations">Vaccinations</Link>
             </li>
             <li>
+              <Link href="/admin/users">User Management</Link>
+            </li>
+            <li>
               <Link href="/admin/inquiry-management">Inquiries</Link>
             </li>
           </ul>
