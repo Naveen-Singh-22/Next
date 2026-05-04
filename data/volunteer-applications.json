@@ -1,6 +1,18 @@
 {
   "applications": [
     {
+      "fullName": "Kartik Singh",
+      "email": "kartiksingh@gmail.com",
+      "phone": "7415505740",
+      "city": "Satna",
+      "interestArea": "Event Support",
+      "availability": "i am good at event management so i wanna contribute",
+      "status": "pending",
+      "id": 3,
+      "applicationId": "VL-TEHR2W",
+      "createdAt": "2026-05-04T02:32:56.028Z"
+    },
+    {
       "fullName": "Ductile",
       "email": "singhaman@gmail.com",
       "phone": "7415505727",
@@ -25,5 +37,5 @@
       "createdAt": "2026-05-01T20:43:18.110Z"
     }
   ],
-  "nextId": 3
+  "nextId": 4
 }

@@ -19,10 +19,6 @@ export default async function ProfileRoute() {
     redirect("/login?next=/profile");
   }
 
-  if (role === "admin") {
-    redirect("/admin");
-  }
-
   const snapshot = await getProfileSnapshot(email);
 
   return (

@@ -35,6 +35,15 @@
       "role": "admin",
       "createdAt": "2026-05-01T00:00:00.000Z",
       "isActive": true
+    },
+    {
+      "id": "user_1777861893203",
+      "name": "Kartik singh",
+      "email": "kartiksingh@gmail.com",
+      "password": "Kartik123",
+      "role": "volunteer",
+      "createdAt": "2026-05-04T02:31:33.203Z",
+      "isActive": true
     }
   ]
 }
