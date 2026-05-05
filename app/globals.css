@@ -6720,9 +6720,11 @@ html.dark .about-subscribe-form .pill-btn.solid,
 .admin-top-nav {
   display: none;
   align-items: center;
+  justify-content: center;
   gap: 0.85rem;
   flex-wrap: nowrap;
   white-space: nowrap;
+  flex: 1;
 }
 
 .admin-top-nav a {
@@ -6779,8 +6781,10 @@ html.dark .about-subscribe-form .pill-btn.solid,
 .admin-top-icons {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.8rem;
   color: #697575;
+  min-width: 2rem;
 }
 
 .admin-theme-toggle {

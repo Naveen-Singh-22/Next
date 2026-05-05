@@ -3,9 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
-import AdminThemeToggle from "@/components/AdminThemeToggle";
-import AdminTopNav from "@/components/AdminTopNav";
-import AdminTopbarBrand from "@/components/AdminTopbarBrand";
+import AdminTopbar from "@/components/AdminTopbar";
 import AnimalImageUploader from "@/components/AnimalImageUploader";
 import {
   ANIMAL_GENDER_OPTIONS,
@@ -626,35 +624,7 @@ export default function AnimalInventoryClient() {
       <AdminSidebar activeHref="/admin/inventory" isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <main className="admin-main inventory-main">
-        <header className="admin-topbar">
-          <div className="admin-topbar-start">
-            <button
-              className="admin-menu-btn"
-              type="button"
-              onClick={() => setIsSidebarOpen(true)}
-              aria-label="Open admin menu"
-              aria-expanded={isSidebarOpen}
-            >
-              <span />
-              <span />
-              <span />
-            </button>
-            <AdminTopbarBrand />
-            <input
-              aria-label="Search animals"
-              placeholder="Search by name, breed, notes or ID..."
-              type="search"
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.currentTarget.value)}
-              className="min-w-0 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
-            />
-          </div>
-          <AdminTopNav activeHref="/admin/inventory" />
-          <div className="admin-top-icons">
-            <AdminThemeToggle />
-            
-          </div>
-        </header>
+        <AdminTopbar activeHref="/admin/inventory" isSidebarOpen={isSidebarOpen} onOpenMenu={() => setIsSidebarOpen(true)} />
 
         <section className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-3 py-4 sm:px-4 sm:py-6 lg:px-6">
           <section className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_18px_45px_rgba(15,23,42,0.05)] sm:p-5 lg:p-6">
