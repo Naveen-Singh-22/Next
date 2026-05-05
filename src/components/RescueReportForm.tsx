@@ -233,7 +233,7 @@ export default function RescueReportForm() {
               <label>
                 Full Name
                 <input
-                  placeholder="Jane Doe"
+                  placeholder="Aman Singh"
                   type="text"
                   value={fullName}
                   onChange={(event) => setFullName(event.target.value)}
@@ -245,7 +245,7 @@ export default function RescueReportForm() {
                 <label>
                   Email Address
                   <input
-                    placeholder="jane@example.com"
+                    placeholder="amansingh@example.com"
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
@@ -256,7 +256,7 @@ export default function RescueReportForm() {
                 <label>
                   Phone Number
                   <input
-                    placeholder="+1 (555) 000-0000"
+                    placeholder="+91 98939 08123"
                     type="tel"
                     value={phone}
                     onChange={(event) => setPhone(event.target.value)}

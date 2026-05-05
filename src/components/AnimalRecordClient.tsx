@@ -4,9 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import AdminSidebar from "@/components/AdminSidebar";
-import AdminThemeToggle from "@/components/AdminThemeToggle";
-import AdminTopNav from "@/components/AdminTopNav";
-import AdminTopbarBrand from "@/components/AdminTopbarBrand";
+import AdminTopbar from "@/components/AdminTopbar";
 import { HealthBadge, StatusBadge, VaccinationBadge, formatEnumLabel } from "@/components/AnimalBadges";
 import type { Animal } from "@/lib/animalInventoryTypes";
 
@@ -110,30 +108,7 @@ export default function AnimalRecordClient() {
       <AdminSidebar activeHref="/admin/inventory" isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <main className="admin-main inventory-main">
-        <header className="admin-topbar">
-          <div className="admin-topbar-start">
-            <button
-              className="admin-menu-btn"
-              type="button"
-              onClick={() => setIsSidebarOpen(true)}
-              aria-label="Open admin menu"
-              aria-expanded={isSidebarOpen}
-            >
-              <span />
-              <span />
-              <span />
-            </button>
-            <AdminTopbarBrand />
-            <Link href="/admin/inventory" className="rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50">
-              Back to inventory
-            </Link>
-          </div>
-          <AdminTopNav activeHref="/admin/inventory" />
-          <div className="admin-top-icons">
-            <AdminThemeToggle />
-            
-          </div>
-        </header>
+        <AdminTopbar activeHref="/admin/inventory" isSidebarOpen={isSidebarOpen} onOpenMenu={() => setIsSidebarOpen(true)} />
 
         <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 lg:px-6">
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_18px_45px_rgba(15,23,42,0.05)]">
