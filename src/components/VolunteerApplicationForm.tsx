@@ -106,7 +106,7 @@ export default function VolunteerApplicationForm() {
           <label>
             Full Name
             <input
-              placeholder="John Doe"
+              placeholder="Aman Singh"
               type="text"
               value={formData.fullName}
               onChange={(event) => updateField("fullName", event.target.value)}
@@ -117,7 +117,7 @@ export default function VolunteerApplicationForm() {
           <label>
             Email Address
             <input
-              placeholder="john@example.com"
+              placeholder="amansingh@gmail.com"
               type="email"
               value={formData.email}
               onChange={(event) => updateField("email", event.target.value)}
@@ -131,7 +131,7 @@ export default function VolunteerApplicationForm() {
           <label>
             Phone Number
             <input
-              placeholder="+1 (555) 000-0000"
+              placeholder="+91 98939 08123"
               type="tel"
               value={formData.phone}
               onChange={(event) => updateField("phone", event.target.value)}
@@ -142,7 +142,7 @@ export default function VolunteerApplicationForm() {
           <label>
             City
             <input
-              placeholder="San Francisco"
+              placeholder="Indore"
               type="text"
               value={formData.city}
               onChange={(event) => updateField("city", event.target.value)}

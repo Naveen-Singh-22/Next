@@ -4,9 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import AdminSidebar from "@/components/AdminSidebar";
-import AdminThemeToggle from "@/components/AdminThemeToggle";
-import AdminTopNav from "@/components/AdminTopNav";
-import AdminTopbarBrand from "@/components/AdminTopbarBrand";
+import AdminTopbar from "@/components/AdminTopbar";
 import VaccinationCalendar from "@/components/VaccinationCalendar";
 import { VaccinationBadge } from "@/components/AnimalBadges";
 import { getVaccinationStatus } from "@/lib/vaccinationTypes";
@@ -431,34 +429,7 @@ export default function VaccinationManagementClient() {
       <AdminSidebar activeHref="/admin/vaccinations" isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <main className="admin-main">
-        <header className="admin-topbar">
-          <div className="admin-topbar-start">
-            <button
-              className="admin-menu-btn"
-              type="button"
-              onClick={() => setIsSidebarOpen(true)}
-              aria-label="Open admin menu"
-              aria-expanded={isSidebarOpen}
-            >
-              <span />
-              <span />
-              <span />
-            </button>
-            <AdminTopbarBrand />
-            <input
-              aria-label="Search vaccination records"
-              placeholder="Search animals, vaccines, doses..."
-              type="search"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-          </div>
-          <AdminTopNav activeHref="/admin/vaccinations" />
-          <div className="admin-top-icons">
-            <AdminThemeToggle />
-            
-          </div>
-        </header>
+        <AdminTopbar activeHref="/admin/vaccinations" isSidebarOpen={isSidebarOpen} onOpenMenu={() => setIsSidebarOpen(true)} />
 
         <section className="grid gap-5 rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 p-4 text-white shadow-[0_30px_120px_rgba(15,23,42,0.24)] sm:p-6 lg:grid-cols-[1.5fr_0.95fr]">
           <div className="space-y-4">

@@ -2,10 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Briefcase, HeartHandshake, Shield, UserCheck, Users } from "lucide-react";
-import Link from "next/link";
-import AdminThemeToggle from "@/components/AdminThemeToggle";
-import AdminTopNav from "@/components/AdminTopNav";
-import AdminTopbarBrand from "@/components/AdminTopbarBrand";
+import AdminSidebar from "@/components/AdminSidebar";
+import AdminTopbar from "@/components/AdminTopbar";
 import type { User, UserRole } from "@/lib/usersStore";
 
 type UsersResponse = {
@@ -226,74 +224,11 @@ export default function UserManagementClient() {
 
   return (
     <div className="admin-page admin-mobile-shell">
-      {/* Header */}
-      <div className="admin-topbar">
-        <button
-          className="admin-menu-btn"
-          onClick={() => setIsSidebarOpen(true)}
-          aria-label="Open admin menu"
-          aria-expanded={isSidebarOpen}
-          type="button"
-        >
-          <span />
-          <span />
-          <span />
-        </button>
-        <AdminTopbarBrand />
-        <AdminTopNav activeHref="/admin/users" />
-        <AdminThemeToggle />
-      </div>
+      <AdminTopbar activeHref="/admin/users" isSidebarOpen={isSidebarOpen} onOpenMenu={() => setIsSidebarOpen(true)} />
+      <AdminSidebar activeHref="/admin/users" isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       {/* Main Content */}
       <div className="admin-main">
-        {/* Sidebar */}
-        <aside className={`admin-sidebar admin-mobile-sidebar ${isSidebarOpen ? "open" : ""}`.trim()}>
-          <div className="admin-brand">
-            <Link href="/" className="admin-brand-link" aria-label="thecaninehelp home">
-              <img src="/images/logo3.png" alt="thecaninehelp" className="admin-brand-logo admin-brand-logo-light" />
-              <img src="/images/logo3-dark.png" alt="thecaninehelp" className="admin-brand-logo admin-brand-logo-dark" />
-              <span className="admin-brand-text">thecaninehelp</span>
-            </Link>
-            <small>Global Governance</small>
-          </div>
-
-          <button className="admin-sidebar-close" type="button" onClick={() => setIsSidebarOpen(false)} aria-label="Close sidebar">
-            Close
-          </button>
-
-          <nav>
-            <ul className="admin-nav">
-              <li>
-                <a href="/admin">Overview</a>
-              </li>
-              <li>
-                <a href="/admin/rescue">Rescue Management</a>
-              </li>
-              <li>
-                <a href="/admin/adoption">Adoption Pipeline</a>
-              </li>
-              <li>
-                <a href="/admin/inventory">Animal Inventory</a>
-              </li>
-              <li>
-                <a href="/admin/vaccinations">Vaccinations</a>
-              </li>
-              <li className="active">
-                <a href="/admin/users">User Management</a>
-              </li>
-              <li>
-                <a href="/admin/inquiry-management">Inquiries</a>
-              </li>
-            </ul>
-          </nav>
-
-          <button className="alert-btn" type="button">
-            Emergency Alert
-          </button>
-        </aside>
-
-        <div className={`admin-sidebar-backdrop ${isSidebarOpen ? "show" : ""}`.trim()} onClick={() => setIsSidebarOpen(false)} aria-hidden={!isSidebarOpen} />
-
         {/* Content */}
         <main className="admin-content">
           {/* Page Header */}
