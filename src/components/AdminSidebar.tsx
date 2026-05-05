@@ -18,6 +18,7 @@ type AdminSidebarProps = {
   onClose: () => void;
   userName?: string;
   userRole?: string;
+  onEmergencyAlert?: () => void;
 };
 
 export default function AdminSidebar({
@@ -26,6 +27,7 @@ export default function AdminSidebar({
   onClose,
   userName = "Admin Profile",
   userRole = "Shelter Operations",
+  onEmergencyAlert,
 }: AdminSidebarProps) {
   return (
     <>
@@ -53,7 +55,7 @@ export default function AdminSidebar({
           </ul>
         </nav>
 
-        <button className="alert-btn" type="button">
+        <button className="alert-btn" type="button" onClick={onEmergencyAlert}>
           Emergency Alert
         </button>
 

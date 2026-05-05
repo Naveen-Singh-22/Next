@@ -3,9 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import AdminThemeToggle from "@/components/AdminThemeToggle";
-import AdminTopNav from "@/components/AdminTopNav";
-import AdminTopbarBrand from "@/components/AdminTopbarBrand";
+import AdminSidebar from "@/components/AdminSidebar";
+import AdminTopbar from "@/components/AdminTopbar";
 import RescueDispatchMap, { type RescueDispatchMapReport } from "@/components/RescueDispatchMap";
 import ScrollReveal from "@/components/ScrollReveal";
 
@@ -448,96 +447,20 @@ export default function RescueManagementPage() {
 
   return (
     <div className="admin-page admin-mobile-shell rescue-management-page rescue-live-page">
-      <aside className={`admin-sidebar admin-mobile-sidebar ${isSidebarOpen ? "open" : ""}`.trim()}>
-        <div className="admin-brand">
-          <Link href="/">thecaninehelp</Link>
-          <small>Shelter Operations</small>
-        </div>
-
-        <button
-          className="admin-sidebar-close"
-          type="button"
-          onClick={() => setIsSidebarOpen(false)}
-          aria-label="Close admin menu"
-        >
-          Close
-        </button>
-
-        <nav>
-          <ul className="admin-nav">
-            <li>
-              <Link href="/admin">Overview</Link>
-            </li>
-            <li className="active">
-              <Link href="/admin/rescue">Rescue Management</Link>
-            </li>
-            <li>
-              <Link href="/admin/adoption">Adoption Pipeline</Link>
-            </li>
-            <li>
-              <Link href="/admin/inventory">Animal Inventory</Link>
-            </li>
-            <li>
-              <Link href="/admin/vaccinations">Vaccinations</Link>
-            </li>
-            <li>
-              <Link href="/admin/users">User Management</Link>
-            </li>
-            <li>
-              <Link href="/admin/inquiry-management">Inquiries</Link>
-            </li>
-          </ul>
-        </nav>
-
-        <button className="alert-btn" type="button" onClick={() => setStatusFilter("critical")}>
-          Emergency Alert
-        </button>
-
-        <div className="admin-user">
-          <span>👩🏽‍💻</span>
-          <div>
-            <p>NGO Admin</p>
-            <small>Sign Out</small>
-          </div>
-        </div>
-      </aside>
-
-      <div
-        className={`admin-sidebar-backdrop ${isSidebarOpen ? "show" : ""}`.trim()}
-        onClick={() => setIsSidebarOpen(false)}
-        aria-hidden={!isSidebarOpen}
+      <AdminSidebar
+        activeHref="/admin/rescue"
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onEmergencyAlert={() => setStatusFilter("critical")}
       />
 
       <main className="admin-main rescue-management-main">
-        <header className="admin-topbar rescue-topbar">
-          <div className="admin-topbar-start">
-            <button
-              className="admin-menu-btn"
-              type="button"
-              onClick={() => setIsSidebarOpen(true)}
-              aria-label="Open admin menu"
-              aria-expanded={isSidebarOpen}
-            >
-              <span />
-              <span />
-              <span />
-            </button>
-            <AdminTopbarBrand />
-            <input
-              aria-label="Search rescue reports"
-              placeholder="Search rescue reports..."
-              type="text"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-            />
-          </div>
-          <AdminTopNav activeHref="/admin/rescue" />
-          <div className="admin-top-icons">
-            <AdminThemeToggle />
-            
-            <strong className="rm-head-title">Admin Dashboard</strong>
-          </div>
-        </header>
+        <AdminTopbar
+          activeHref="/admin/rescue"
+          isSidebarOpen={isSidebarOpen}
+          onOpenMenu={() => setIsSidebarOpen(true)}
+          className="rescue-topbar"
+        />
 
         <ScrollReveal as="section" className="rm-title-row rescue-hero">
           <div>

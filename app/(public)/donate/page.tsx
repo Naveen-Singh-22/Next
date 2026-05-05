@@ -147,7 +147,7 @@ export default function DonatePage() {
                   <input
                     type="text"
                     name="name"
-                    placeholder="Jane Doe"
+                    placeholder="Aman Singh"
                     value={donorName}
                     onChange={(event) => setDonorName(event.target.value)}
                     required
@@ -158,7 +158,7 @@ export default function DonatePage() {
                   <input
                     type="email"
                     name="email"
-                    placeholder="jane@example.com"
+                    placeholder="amansingh@gmail.com"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     required
@@ -171,7 +171,7 @@ export default function DonatePage() {
                 <input
                   type="tel"
                   name="phone"
-                  placeholder="+91 98765 43210"
+                  placeholder="+91 98939 08123"
                   value={phone}
                   onChange={(event) => setPhone(event.target.value)}
                 />

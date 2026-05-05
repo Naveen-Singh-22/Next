@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import AdminThemeToggle from "@/components/AdminThemeToggle";
-import AdminTopNav from "@/components/AdminTopNav";
-import AdminTopbarBrand from "@/components/AdminTopbarBrand";
+import AdminSidebar from "@/components/AdminSidebar";
+import AdminTopbar from "@/components/AdminTopbar";
 import type { InquiryStatus, InquiryType, StoredInquiry } from "@/lib/inquiryStore";
 
 const typeLabels: Record<InquiryType, string> = {
@@ -165,102 +164,14 @@ export default function InquiryManagementPage() {
 
   return (
     <div className="admin-page admin-mobile-shell inquiry-page">
-      <aside className={`admin-sidebar admin-mobile-sidebar ${isSidebarOpen ? "open" : ""}`.trim()}>
-        <div className="admin-brand">
-          <Link href="/">thecaninehelp</Link>
-          <small>Shelter Operations</small>
-        </div>
-
-        <button
-          className="admin-sidebar-close"
-          type="button"
-          onClick={() => setIsSidebarOpen(false)}
-          aria-label="Close admin menu"
-        >
-          Close
-        </button>
-
-        <nav>
-          <ul className="admin-nav">
-            <li>
-              <Link href="/admin">Overview</Link>
-            </li>
-            <li>
-              <Link href="/admin/rescue">Rescue Management</Link>
-            </li>
-            <li>
-              <Link href="/admin/adoption">Adoption Pipeline</Link>
-            </li>
-            <li>
-              <Link href="/admin/inventory">Animal Inventory</Link>
-            </li>
-            <li>
-              <Link href="/admin/vaccinations">Vaccinations</Link>
-            </li>
-            <li>
-              <Link href="/admin/users">User Management</Link>
-            </li>
-            <li className="active">
-              <Link href="/admin/inquiry-management">Inquiry Management</Link>
-            </li>
-          </ul>
-        </nav>
-
-        <button className="alert-btn" type="button">
-          Emergency Alert
-        </button>
-
-        <div className="admin-user">
-          <span>👩🏽‍💻</span>
-          <div>
-            <p>NGO Director</p>
-            <small>Sarah Jenkins</small>
-          </div>
-        </div>
-      </aside>
-
-      <div
-        className={`admin-sidebar-backdrop ${isSidebarOpen ? "show" : ""}`.trim()}
-        onClick={() => setIsSidebarOpen(false)}
-        aria-hidden={!isSidebarOpen}
-      />
+      <AdminSidebar activeHref="/admin/inquiry-management" isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <main className="admin-main inquiry-main">
-        <header className="admin-topbar">
-          <div className="admin-topbar-start">
-            <button
-              className="admin-menu-btn"
-              type="button"
-              onClick={() => setIsSidebarOpen(true)}
-              aria-label="Open admin menu"
-              aria-expanded={isSidebarOpen}
-            >
-              <span />
-              <span />
-              <span />
-            </button>
-            <AdminTopbarBrand />
-            <input
-              aria-label="Search inquiries"
-              placeholder="Search rescue, adoption, or donation inbox..."
-              type="search"
-              value={searchText}
-              onChange={(event) => setSearchText(event.target.value)}
-            />
-          </div>
-          <AdminTopNav activeHref="/admin/inquiry-management" />
-          <div className="admin-top-icons">
-            <AdminThemeToggle />
-          
-            <div className="inq-user-chip">
-              <div>
-                <strong>Alex Rivera</strong>
-                <small>Chief Curator</small>
-              </div>
-              <span className="avatar">AR</span>
-            </div>
-          </div>
-        </header>
+        <AdminTopbar
+          activeHref="/admin/inquiry-management"
+          isSidebarOpen={isSidebarOpen}
+          onOpenMenu={() => setIsSidebarOpen(true)}
+        />
 
         <section className="inq-head">
           <div>
