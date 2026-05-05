@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import AdminThemeToggle from "@/components/AdminThemeToggle";
-import AdminTopNav from "@/components/AdminTopNav";
-import AdminTopbarBrand from "@/components/AdminTopbarBrand";
+import AdminSidebar from "@/components/AdminSidebar";
+import AdminTopbar from "@/components/AdminTopbar";
 import type { AdoptionApplication, AdoptionStatus } from "@/lib/adoptionApplicationTypes";
 
 type PipelineCard = {
@@ -436,97 +435,10 @@ export default function AdoptionPipelinePage() {
 
   return (
     <div className="admin-page admin-mobile-shell adoption-page">
-      <aside className={`admin-sidebar admin-mobile-sidebar ${isSidebarOpen ? "open" : ""}`.trim()}>
-        <div className="admin-brand">
-          <Link href="/">thecaninehelp</Link>
-          <small>Shelter Operations</small>
-        </div>
-
-        <button
-          className="admin-sidebar-close"
-          type="button"
-          onClick={() => setIsSidebarOpen(false)}
-          aria-label="Close admin menu"
-        >
-          Close
-        </button>
-
-        <nav>
-          <ul className="admin-nav">
-            <li>
-              <Link href="/admin">Overview</Link>
-            </li>
-            <li>
-              <Link href="/admin/rescue">Rescue Management</Link>
-            </li>
-            <li className="active">
-              <Link href="/admin/adoption">Adoption Pipeline</Link>
-            </li>
-            <li>
-              <Link href="/admin/inventory">Animal Inventory</Link>
-            </li>
-            <li>
-              <Link href="/admin/vaccinations">Vaccinations</Link>
-            </li>
-            <li>
-              <Link href="/admin/users">User Management</Link>
-            </li>
-            <li>
-              <Link href="/admin/inquiry-management">Inquiries</Link>
-            </li>
-          </ul>
-        </nav>
-
-        <button className="alert-btn" type="button">
-          Emergency Alert
-        </button>
-
-        <div className="admin-user">
-          <span>ADM</span>
-          <div>
-            <p>Admin Portal</p>
-            <small>Adoption Team</small>
-          </div>
-        </div>
-      </aside>
-
-      <div
-        className={`admin-sidebar-backdrop ${isSidebarOpen ? "show" : ""}`.trim()}
-        onClick={() => setIsSidebarOpen(false)}
-        aria-hidden={!isSidebarOpen}
-      />
+      <AdminSidebar activeHref="/admin/adoption" isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <main className="admin-main adoption-main">
-        <header className="admin-topbar">
-          <div className="admin-topbar-start">
-            <button
-              className="admin-menu-btn"
-              type="button"
-              onClick={() => setIsSidebarOpen(true)}
-              aria-label="Open admin menu"
-              aria-expanded={isSidebarOpen}
-            >
-              <span />
-              <span />
-              <span />
-            </button>
-            <AdminTopbarBrand />
-            <input
-              aria-label="Search"
-              placeholder="Search applicant, animal name, or application ID..."
-              type="text"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-            />
-          </div>
-          <AdminTopNav activeHref="/admin/adoption" />
-          <div className="admin-top-icons">
-            <AdminThemeToggle />
-            <span>Bell</span>
-            <span>Settings</span>
-            <span className="avatar">AR</span>
-          </div>
-        </header>
+        <AdminTopbar activeHref="/admin/adoption" isSidebarOpen={isSidebarOpen} onOpenMenu={() => setIsSidebarOpen(true)} />
 
         <section className="adoption-head">
           <div>
