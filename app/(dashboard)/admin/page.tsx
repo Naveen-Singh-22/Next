@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import AdminThemeToggle from "@/components/AdminThemeToggle";
-import AdminTopNav from "@/components/AdminTopNav";
-import AdminTopbarBrand from "@/components/AdminTopbarBrand";
+import AdminSidebar from "@/components/AdminSidebar";
+import AdminTopbar from "@/components/AdminTopbar";
 
 type RescueReport = {
   reportId: string;
@@ -176,108 +175,10 @@ export default function AdminPage() {
 
   return (
     <div className="admin-page admin-mobile-shell">
-      <aside className={`admin-sidebar admin-mobile-sidebar ${isSidebarOpen ? "open" : ""}`.trim()}>
-        <div className="admin-brand">
-          <Link href="/">thecaninehelp</Link>
-          <small>RESCUE CARE LOVE </small>
-        </div>
-
-        <button
-          className="admin-sidebar-close"
-          type="button"
-          onClick={() => setIsSidebarOpen(false)}
-          aria-label="Close admin menu"
-        >
-          Close
-        </button>
-
-        <nav>
-          <ul className="admin-nav">
-            <li className="active">
-              <Link href="/admin">Overview</Link>
-            </li>
-            <li>
-              <Link href="/admin/rescue">Rescue Management</Link>
-            </li>
-            <li>
-              <Link href="/admin/adoption">Adoption Pipeline</Link>
-            </li>
-            <li>
-              <Link href="/admin/inventory">Animal Inventory</Link>
-            </li>
-            <li>
-              <Link href="/admin/vaccinations">Vaccinations</Link>
-            </li>
-            <li>
-              <Link href="/admin/users">User Management</Link>
-            </li>
-            <li>
-              <Link href="/admin/inquiry-management">Inquiries</Link>
-            </li>
-          </ul>
-        </nav>
-
-        <button className="alert-btn" type="button">
-          Emergency Alert
-        </button>
-
-        <div className="admin-user">
-          <span>👩🏽‍💻</span>
-          <div>
-            <p>Admin Portal</p>
-            <small>Shelter Operations</small>
-          </div>
-          <Link href="/api/admin/logout" className="admin-logout-link">
-            Sign out
-          </Link>
-        </div>
-      </aside>
-
-      <div
-        className={`admin-sidebar-backdrop ${isSidebarOpen ? "show" : ""}`.trim()}
-        onClick={() => setIsSidebarOpen(false)}
-        aria-hidden={!isSidebarOpen}
-      />
+      <AdminSidebar activeHref="/admin" isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <main className="admin-main">
-        <header className="admin-topbar">
-          <div className="admin-topbar-start">
-            <button
-              className="admin-menu-btn"
-              type="button"
-              onClick={() => setIsSidebarOpen(true)}
-              aria-label="Open admin menu"
-              aria-expanded={isSidebarOpen}
-            >
-              <span />
-              <span />
-              <span />
-            </button>
-            <AdminTopbarBrand />
-            <input
-              aria-label="Search"
-              placeholder="Search animals, records, or inquiries..."
-              type="text"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-            />
-          </div>
-          <AdminTopNav activeHref="/admin" />
-          <div className="admin-top-icons">
-            <AdminThemeToggle />
-            
-            <button
-              type="button"
-              className="admin-logout-btn"
-              onClick={() => (window.location.href = "/api/admin/logout")}
-              aria-label="Sign out"
-            >
-              Sign Out
-            </button>
-
-            <span className="avatar">AD</span>
-          </div>
-        </header>
+        <AdminTopbar activeHref="/admin" isSidebarOpen={isSidebarOpen} onOpenMenu={() => setIsSidebarOpen(true)} />
 
         <section className="admin-title">
           <h1>Overview Dashboard</h1>
