@@ -34,7 +34,7 @@ html.dark .nav-toggle:hover span,
   --font-mono: var(--font-geist-mono);
 }
 
-html,
+/* html,
 body {
   width: 100%;
   max-width: 100%;
@@ -47,7 +47,7 @@ svg,
 canvas {
   max-width: 100%;
   height: auto;
-}
+} */
 
 :root[data-theme="dark"] {
   --background: #0f1515;
@@ -11480,10 +11480,6 @@ html.dark .admin-footer a,
     line-height: 1.08;
   }
 
-  .inventory-page .inventory-main table {
-    min-width: 760px;
-  }
-
   .inventory-page .inventory-main .overflow-x-auto {
     margin-inline: -0.25rem;
     padding-bottom: 0.15rem;
@@ -13922,3 +13918,233 @@ html.dark .profile-side-spotlight {
   text-align: center;
   color: var(--muted);
 }
+
+  /* ============================================
+     MOBILE OPTIMIZATION: DONATION & VOLUNTEER
+     ============================================ */
+
+  @media (max-width: 640px) {
+    .admin-donation-tracking,
+    .admin-volunteer-management {
+      padding: 1rem 0.75rem;
+    }
+
+    .donation-stats-grid,
+    .volunteer-stats-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .donation-stat-card,
+    .volunteer-stat-card {
+      padding: 1rem;
+    }
+
+    .donation-stat-card h3,
+    .volunteer-stat-card h3 {
+      font-size: 1.5rem;
+    }
+
+    .donation-stat-card p,
+    .volunteer-stat-card p {
+      font-size: 0.75rem;
+    }
+
+    .donation-content-section,
+    .volunteer-content-section {
+      gap: 1.5rem;
+    }
+
+    .donation-controls,
+    .volunteer-controls {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .donation-search-wrap,
+    .volunteer-search-wrap {
+      width: 100%;
+      min-width: auto;
+      flex: none;
+    }
+
+    .donation-search-input,
+    .volunteer-search-input {
+      font-size: 16px;
+      padding: 0.75rem 1rem;
+    }
+
+    .donation-filters,
+    .volunteer-filters {
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .donation-filters select,
+    .donation-refresh-btn,
+    .volunteer-filters select,
+    .volunteer-refresh-btn {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 16px;
+    }
+
+    .donation-table-wrap,
+    .volunteer-registry-wrap {
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    .donation-section-title,
+    .volunteer-section-title {
+      padding: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .donation-table,
+    .volunteer-table {
+      font-size: 0.8rem;
+    }
+
+    .donation-table th,
+    .donation-table td,
+    .volunteer-table th,
+    .volunteer-table td {
+      padding: 0.75rem 1rem;
+    }
+
+    .donation-table th,
+    .volunteer-table th {
+      font-size: 0.7rem;
+    }
+
+    .donor-name p,
+    .volunteer-name p {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .donor-name small,
+    .volunteer-name small {
+      font-size: 0.75rem;
+    }
+
+    .donation-amount {
+      font-size: 0.95rem;
+    }
+
+    .skill-badge,
+    .status-badge,
+    .status-approved,
+    .status-pending,
+    .status-reviewing,
+    .status-declined,
+    .status-successful {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.65rem;
+    }
+
+    .action-button {
+      font-size: 1rem;
+    }
+
+    .donation-pagination,
+    .volunteer-pagination {
+      padding: 1rem;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+      padding: 0.4rem 0.6rem;
+      font-size: 0.8rem;
+    }
+
+    .donation-count-info,
+    .volunteer-count-info {
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+    }
+
+    .volunteer-detail-modal {
+      padding: 1.5rem;
+      max-width: 95vw;
+    }
+
+    .volunteer-detail-modal h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .no-data-message {
+      padding: 2rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .loading-container {
+      padding: 2rem 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .admin-donation-tracking,
+    .admin-volunteer-management {
+      padding: 0.75rem 0.5rem;
+    }
+
+    .donation-stat-card,
+    .volunteer-stat-card {
+      padding: 0.75rem;
+    }
+
+    .donation-stat-card h3,
+    .volunteer-stat-card h3 {
+      font-size: 1.25rem;
+    }
+
+    .donation-stat-card p,
+    .volunteer-stat-card p {
+      font-size: 0.7rem;
+    }
+
+    .donation-search-input,
+    .volunteer-search-input {
+      font-size: 16px;
+      min-height: 44px;
+    }
+
+    .donation-filters select,
+    .donation-refresh-btn,
+    .volunteer-filters select,
+    .volunteer-refresh-btn {
+      min-height: 44px;
+    }
+
+    .donation-table,
+    .volunteer-table {
+      font-size: 0.75rem;
+    }
+
+    .donation-table th,
+    .donation-table td,
+    .volunteer-table th,
+    .volunteer-table td {
+      padding: 0.5rem 0.75rem;
+    }
+
+    .donation-table th,
+    .volunteer-table th {
+      font-size: 0.65rem;
+    }
+
+    .donor-name p,
+    .volunteer-name p {
+      font-size: 0.85rem;
+    }
+
+    .donor-name small,
+    .volunteer-name small {
+      font-size: 0.7rem;
+    }
+  }
