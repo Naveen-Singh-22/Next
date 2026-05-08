@@ -34,6 +34,21 @@ html.dark .nav-toggle:hover span,
   --font-mono: var(--font-geist-mono);
 }
 
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+svg,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
 :root[data-theme="dark"] {
   --background: #0f1515;
   --foreground: #e5efed;
@@ -6721,7 +6736,7 @@ html.dark .about-subscribe-form .pill-btn.solid,
 }
 
 .admin-top-nav {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: flex-start;
   gap: 0.85rem;
@@ -6772,6 +6787,7 @@ html.dark .about-subscribe-form .pill-btn.solid,
   }
 
   .admin-top-nav {
+    display: flex;
     flex: 1;
     order: 0;
     justify-content: center;
@@ -13124,8 +13140,51 @@ html.dark .profile-side-spotlight {
 }
 
 @media (max-width: 760px) {
+  .admin-page,
+  .admin-main,
+  .admin-donation-tracking,
+  .admin-volunteer-management,
+  .profile-page-shell,
+  .profile-page-shell .section-wrap,
+  .rescue-layout,
+  .volunteer-main-grid,
+  .about-page,
+  .impact-page,
+  .adopt-page,
+  .animal-profile-page {
+    width: 100%;
+    max-width: 100%;
+  }
+
   .profile-page-shell .section-wrap {
     width: min(100%, calc(100% - 1rem));
+  }
+
+  .profile-table-wrap {
+    overflow-x: auto;
+  }
+
+  .profile-table {
+    min-width: 0;
+  }
+
+  .inventory-page .inventory-main table {
+    min-width: 0;
+  }
+
+  .inventory-page .inventory-main .overflow-x-auto,
+  .vaccination-page .admin-main .overflow-x-auto {
+    margin-inline: 0;
+  }
+
+  .admin-main {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .admin-donation-tracking,
+  .admin-volunteer-management {
+    padding: 1rem 0;
   }
 
   .profile-hero-card,
