@@ -169,7 +169,7 @@ export default function AdminPage() {
       { label: "Standard Cases", value: String(standardCases), note: "stable", accent: "good" },
       { label: "Pending Rescue", value: String(criticalOrUrgent), note: "priority", accent: "warn" },
       { label: "Medical Flags", value: String(flaggedMedical), note: "active", accent: "alert" },
-      { label: "Monthly Donations", value: "$18,400", note: "this month", accent: "money" },
+      { label: "Monthly Donations", value: "₹18,400", note: "this month", accent: "money" },
     ];
   }, [reports]);
 
