@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  createAnimal,
-  listAnimals,
-} from "@/lib/animalInventoryDb";
+import { createAnimal, listAnimals } from "@/lib/animalInventoryDb";
 import type {
   AnimalCreateInput,
   AnimalFilters,
@@ -12,6 +9,8 @@ import type {
   AnimalStatus,
   AnimalVaccinationStatus,
 } from "@/lib/animalInventoryTypes";
+import { requireAdmin } from "@/lib/authContext";
+import { handleError } from "@/lib/apiErrors";
 
 const speciesValues: AnimalSpecies[] = ["dog", "cat", "bird"];
 const genderValues: AnimalGender[] = ["male", "female"];
@@ -54,57 +53,63 @@ function parsePhotoUrls(value: unknown) {
 }
 
 export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const result = await listAnimals(parseAnimalsQuery(url.searchParams));
+  try {
+    const url = new URL(request.url);
+    const result = await listAnimals(parseAnimalsQuery(url.searchParams));
 
-  return NextResponse.json(result, { status: 200 });
+    return NextResponse.json(result, { status: 200 });
+  } catch (error) {
+    return handleError(error);
+  }
 }
 
 export async function POST(request: Request) {
-  let body: Partial<AnimalCreateInput>;
-
   try {
-    body = (await request.json()) as Partial<AnimalCreateInput>;
-  } catch {
-    return NextResponse.json({ ok: false, message: "Invalid request body." }, { status: 400 });
+    // Check admin authorization
+    await requireAdmin();
+
+    const body = (await request.json()) as Partial<AnimalCreateInput>;
+
+    // Validate required fields
+    if (!body.name?.trim()) {
+      return NextResponse.json({ ok: false, message: "Animal name is required." }, { status: 400 });
+    }
+
+    if (!speciesValues.includes(body.species as AnimalSpecies)) {
+      return NextResponse.json({ ok: false, message: "Valid species is required." }, { status: 400 });
+    }
+
+    if (!healthValues.includes(body.healthStatus as AnimalHealthStatus)) {
+      return NextResponse.json({ ok: false, message: "Valid health status is required." }, { status: 400 });
+    }
+
+    if (body.gender && !genderValues.includes(body.gender as AnimalGender)) {
+      return NextResponse.json({ ok: false, message: "Gender must be male or female." }, { status: 400 });
+    }
+
+    if (body.status && !statusValues.includes(body.status as AnimalStatus)) {
+      return NextResponse.json({ ok: false, message: "Invalid animal status." }, { status: 400 });
+    }
+
+    if (!vaccinationValues.includes(body.vaccinationStatus as AnimalVaccinationStatus)) {
+      return NextResponse.json({ ok: false, message: "Valid vaccination status is required." }, { status: 400 });
+    }
+
+    const created = await createAnimal({
+      name: body.name,
+      species: body.species as AnimalSpecies,
+      breed: body.breed,
+      age: body.age,
+      gender: body.gender as AnimalGender | undefined,
+      healthStatus: body.healthStatus as AnimalHealthStatus,
+      status: (body.status as AnimalStatus) ?? "admitted",
+      notes: body.notes,
+      photoUrls: parsePhotoUrls(body.photoUrls),
+      vaccinationStatus: body.vaccinationStatus as AnimalVaccinationStatus,
+    });
+
+    return NextResponse.json({ ok: true, animal: created }, { status: 201 });
+  } catch (error) {
+    return handleError(error);
   }
-
-  if (!body.name?.trim()) {
-    return NextResponse.json({ ok: false, message: "Animal name is required." }, { status: 400 });
-  }
-
-  if (!speciesValues.includes(body.species as AnimalSpecies)) {
-    return NextResponse.json({ ok: false, message: "Valid species is required." }, { status: 400 });
-  }
-
-  if (!healthValues.includes(body.healthStatus as AnimalHealthStatus)) {
-    return NextResponse.json({ ok: false, message: "Valid health status is required." }, { status: 400 });
-  }
-
-  if (body.gender && !genderValues.includes(body.gender as AnimalGender)) {
-    return NextResponse.json({ ok: false, message: "Gender must be male or female." }, { status: 400 });
-  }
-
-  if (body.status && !statusValues.includes(body.status as AnimalStatus)) {
-    return NextResponse.json({ ok: false, message: "Invalid animal status." }, { status: 400 });
-  }
-
-  if (!vaccinationValues.includes(body.vaccinationStatus as AnimalVaccinationStatus)) {
-    return NextResponse.json({ ok: false, message: "Valid vaccination status is required." }, { status: 400 });
-  }
-
-  const created = await createAnimal({
-    name: body.name,
-    species: body.species as AnimalSpecies,
-    breed: body.breed,
-    age: body.age,
-    gender: body.gender as AnimalGender | undefined,
-    healthStatus: body.healthStatus as AnimalHealthStatus,
-    status: (body.status as AnimalStatus) ?? "admitted",
-    notes: body.notes,
-    photoUrls: parsePhotoUrls(body.photoUrls),
-    vaccinationStatus: body.vaccinationStatus as AnimalVaccinationStatus,
-  });
-
-  return NextResponse.json({ ok: true, animal: created }, { status: 201 });
 }

@@ -35,7 +35,7 @@ export default function VolunteerManagementPage() {
   }, []);
 
   return (
-    <div className="admin-layout">
+    <div className="admin-page admin-mobile-shell">
       <AdminSidebar
         activeHref="/admin/volunteer-management"
         isOpen={isSidebarOpen}

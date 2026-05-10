@@ -1,9 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  deleteAnimal,
-  getAnimalById,
-  updateAnimal,
-} from "@/lib/animalInventoryDb";
+import { deleteAnimal, getAnimalById, updateAnimal } from "@/lib/animalInventoryDb";
 import type {
   AnimalGender,
   AnimalHealthStatus,
@@ -11,6 +7,8 @@ import type {
   AnimalStatus,
   AnimalVaccinationStatus,
 } from "@/lib/animalInventoryTypes";
+import { requireAdmin } from "@/lib/authContext";
+import { handleError, NotFoundError } from "@/lib/apiErrors";
 
 const speciesValues: AnimalSpecies[] = ["dog", "cat", "bird"];
 const genderValues: AnimalGender[] = ["male", "female"];
@@ -36,59 +34,60 @@ function parsePhotoUrls(value: unknown) {
 }
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
-  const { id } = await context.params;
-  const animalId = parseId(id);
+  try {
+    const { id } = await context.params;
+    const animalId = parseId(id);
 
-  if (!animalId) {
-    return NextResponse.json({ ok: false, message: "Invalid animal id." }, { status: 400 });
+    if (!animalId) {
+      return NextResponse.json({ ok: false, message: "Invalid animal id." }, { status: 400 });
+    }
+
+    const animal = await getAnimalById(animalId);
+
+    if (!animal) {
+      throw new NotFoundError("Animal not found");
+    }
+
+    return NextResponse.json({ ok: true, animal }, { status: 200 });
+  } catch (error) {
+    return handleError(error);
   }
-
-  const animal = await getAnimalById(animalId);
-
-  if (!animal) {
-    return NextResponse.json({ ok: false, message: "Animal not found." }, { status: 404 });
-  }
-
-  return NextResponse.json({ ok: true, animal }, { status: 200 });
 }
 
 export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
-  const { id } = await context.params;
-  const animalId = parseId(id);
-
-  if (!animalId) {
-    return NextResponse.json({ ok: false, message: "Invalid animal id." }, { status: 400 });
-  }
-
-  let body: Record<string, unknown>;
-
   try {
-    body = (await request.json()) as Record<string, unknown>;
-  } catch {
-    return NextResponse.json({ ok: false, message: "Invalid request body." }, { status: 400 });
-  }
+    // Check admin authorization
+    await requireAdmin();
 
-  if (body.species && !speciesValues.includes(body.species as AnimalSpecies)) {
-    return NextResponse.json({ ok: false, message: "Invalid species." }, { status: 400 });
-  }
+    const { id } = await context.params;
+    const animalId = parseId(id);
 
-  if (body.gender && !genderValues.includes(body.gender as AnimalGender)) {
-    return NextResponse.json({ ok: false, message: "Invalid gender." }, { status: 400 });
-  }
+    if (!animalId) {
+      return NextResponse.json({ ok: false, message: "Invalid animal id." }, { status: 400 });
+    }
 
-  if (body.healthStatus && !healthValues.includes(body.healthStatus as AnimalHealthStatus)) {
-    return NextResponse.json({ ok: false, message: "Invalid health status." }, { status: 400 });
-  }
+    const body = (await request.json()) as Record<string, unknown>;
 
-  if (body.status && !statusValues.includes(body.status as AnimalStatus)) {
-    return NextResponse.json({ ok: false, message: "Invalid status." }, { status: 400 });
-  }
+    if (body.species && !speciesValues.includes(body.species as AnimalSpecies)) {
+      return NextResponse.json({ ok: false, message: "Invalid species." }, { status: 400 });
+    }
 
-  if (body.vaccinationStatus && !vaccinationValues.includes(body.vaccinationStatus as AnimalVaccinationStatus)) {
-    return NextResponse.json({ ok: false, message: "Invalid vaccination status." }, { status: 400 });
-  }
+    if (body.gender && !genderValues.includes(body.gender as AnimalGender)) {
+      return NextResponse.json({ ok: false, message: "Invalid gender." }, { status: 400 });
+    }
 
-  try {
+    if (body.healthStatus && !healthValues.includes(body.healthStatus as AnimalHealthStatus)) {
+      return NextResponse.json({ ok: false, message: "Invalid health status." }, { status: 400 });
+    }
+
+    if (body.status && !statusValues.includes(body.status as AnimalStatus)) {
+      return NextResponse.json({ ok: false, message: "Invalid status." }, { status: 400 });
+    }
+
+    if (body.vaccinationStatus && !vaccinationValues.includes(body.vaccinationStatus as AnimalVaccinationStatus)) {
+      return NextResponse.json({ ok: false, message: "Invalid vaccination status." }, { status: 400 });
+    }
+
     const updated = await updateAnimal(animalId, {
       name: typeof body.name === "string" ? body.name : undefined,
       species: body.species as AnimalSpecies | undefined,
@@ -103,31 +102,35 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
     });
 
     if (!updated) {
-      return NextResponse.json({ ok: false, message: "Animal not found." }, { status: 404 });
+      throw new NotFoundError("Animal not found");
     }
 
     return NextResponse.json({ ok: true, animal: updated }, { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      { ok: false, message: error instanceof Error ? error.message : "Unable to update animal." },
-      { status: 400 },
-    );
+    return handleError(error);
   }
 }
 
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
-  const { id } = await context.params;
-  const animalId = parseId(id);
+  try {
+    // Check admin authorization
+    await requireAdmin();
 
-  if (!animalId) {
-    return NextResponse.json({ ok: false, message: "Invalid animal id." }, { status: 400 });
+    const { id } = await context.params;
+    const animalId = parseId(id);
+
+    if (!animalId) {
+      return NextResponse.json({ ok: false, message: "Invalid animal id." }, { status: 400 });
+    }
+
+    const deleted = await deleteAnimal(animalId);
+
+    if (!deleted) {
+      throw new NotFoundError("Animal not found");
+    }
+
+    return NextResponse.json({ ok: true }, { status: 200 });
+  } catch (error) {
+    return handleError(error);
   }
-
-  const deleted = await deleteAnimal(animalId);
-
-  if (!deleted) {
-    return NextResponse.json({ ok: false, message: "Animal not found." }, { status: 404 });
-  }
-
-  return NextResponse.json({ ok: true }, { status: 200 });
 }
