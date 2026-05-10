@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { listUsers, updateUserRole, updateUserStatus } from "@/lib/usersStore";
 import type { UserRole } from "@/lib/usersStore";
+import { requireAdmin } from "@/lib/authContext";
+import { handleError, NotFoundError, ValidationError } from "@/lib/apiErrors";
 
 type UpdateUserBody = {
   role?: UserRole;
@@ -9,28 +11,32 @@ type UpdateUserBody = {
 
 export const runtime = "nodejs";
 
-export async function GET() {
-  const users = await listUsers();
-  return NextResponse.json({ users });
+export async function GET(request: Request) {
+  try {
+    // Check admin authorization
+    await requireAdmin();
+
+    const users = await listUsers();
+    return NextResponse.json({ ok: true, users });
+  } catch (error) {
+    return handleError(error);
+  }
 }
 
 export async function PATCH(request: Request) {
-  const url = new URL(request.url);
-  const userId = url.searchParams.get("id");
-
-  if (!userId) {
-    return NextResponse.json({ message: "User ID is required" }, { status: 400 });
-  }
-
-  let body: UpdateUserBody;
-
   try {
-    body = (await request.json()) as UpdateUserBody;
-  } catch {
-    return NextResponse.json({ message: "Invalid JSON payload" }, { status: 400 });
-  }
+    // Check admin authorization
+    await requireAdmin();
 
-  try {
+    const url = new URL(request.url);
+    const userId = url.searchParams.get("id");
+
+    if (!userId) {
+      throw new ValidationError("User ID is required", { id: "Missing user ID" });
+    }
+
+    const body = (await request.json()) as UpdateUserBody;
+
     let user = null;
 
     if (body.role !== undefined) {
@@ -42,11 +48,11 @@ export async function PATCH(request: Request) {
     }
 
     if (!user) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      throw new NotFoundError("User not found");
     }
 
-    return NextResponse.json({ user });
+    return NextResponse.json({ ok: true, user });
   } catch (error) {
-    return NextResponse.json({ message: error instanceof Error ? error.message : "Failed to update user" }, { status: 500 });
+    return handleError(error);
   }
 }

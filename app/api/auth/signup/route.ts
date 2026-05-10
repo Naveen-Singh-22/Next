@@ -1,79 +1,77 @@
-import { writeFileSync, readFileSync } from "fs";
-import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { AUTH_EMAIL_COOKIE, AUTH_ROLE_COOKIE, AUTH_SESSION_MAX_AGE } from "@/lib/auth";
+import { SignupSchema } from "@/lib/validation";
+import { hashPassword } from "@/lib/password";
+import { handleError, ConflictError } from "@/lib/apiErrors";
+import { findUserByEmail, listUsers } from "@/lib/usersStore";
+import { Low } from "lowdb";
+import { JSONFile } from "lowdb/node";
+import path from "path";
+import { mkdir } from "fs/promises";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  role: string;
-  createdAt: string;
+interface UsersStore {
+  users: Array<{
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+    createdAt: string;
+    isActive: boolean;
+  }>;
 }
 
-const DATA_DIR = join(process.cwd(), "data");
-const USERS_FILE = join(DATA_DIR, "users.json");
+export const runtime = "nodejs";
 
-function getUsersData(): User[] {
-  try {
-    const data = readFileSync(USERS_FILE, "utf-8");
-    const parsed = JSON.parse(data) as { users: User[] };
-    return Array.isArray(parsed.users) ? parsed.users : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveUsersData(users: User[]) {
-  writeFileSync(USERS_FILE, JSON.stringify({ users }, null, 2));
+async function getDb() {
+  const dataDir = path.join(process.cwd(), "data");
+  const dbPath = path.join(dataDir, "users.json");
+  
+  await mkdir(dataDir, { recursive: true });
+  
+  const adapter = new JSONFile<UsersStore>(dbPath);
+  const db = new Low<UsersStore>(adapter, { users: [] });
+  await db.read();
+  
+  return db;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password } = await request.json();
+    const body = await request.json();
+    const { name, email, password } = SignupSchema.parse(body);
 
-    if (!name || !email || !password) {
-      return NextResponse.json(
-        { ok: false, message: "Name, email, and password are required" },
-        { status: 400 }
-      );
-    }
-
-    if (password.length < 6) {
-      return NextResponse.json(
-        { ok: false, message: "Password must be at least 6 characters" },
-        { status: 400 }
-      );
-    }
-
-    const users = getUsersData();
-    const existingUser = users.find((u) => u.email === email);
-
+    // Check if user already exists
+    const existingUser = await findUserByEmail(email);
     if (existingUser) {
-      return NextResponse.json(
-        { ok: false, message: "Email already registered" },
-        { status: 409 }
-      );
+      throw new ConflictError("Email already registered");
     }
 
-    const newUser: User = {
+    // Hash password
+    const hashedPassword = await hashPassword(password);
+
+    // Create new user
+    const db = await getDb();
+    const newUser = {
       id: `user_${Date.now()}`,
       name,
       email,
-      password, // In production, hash this!
-      role: "donor",
+      password: hashedPassword,
+      role: "donor" as const,
       createdAt: new Date().toISOString(),
+      isActive: true,
     };
 
-    users.push(newUser);
-    saveUsersData(users);
+    db.data.users.push(newUser);
+    await db.write();
 
+    // Set cookies and return
     const response = NextResponse.json({
       ok: true,
       message: "Account created successfully",
       role: newUser.role,
       email: newUser.email,
+      name: newUser.name,
     });
 
     response.cookies.set({
@@ -98,10 +96,6 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error("Signup error:", error);
-    return NextResponse.json(
-      { ok: false, message: "Internal server error" },
-      { status: 500 }
-    );
+    return handleError(error);
   }
 }
