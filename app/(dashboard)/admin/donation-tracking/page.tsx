@@ -35,7 +35,7 @@ export default function DonationTrackingPage() {
   }, []);
 
   return (
-    <div className="admin-layout">
+    <div className="admin-page admin-mobile-shell">
       <AdminSidebar
         activeHref="/admin/donation-tracking"
         isOpen={isSidebarOpen}
