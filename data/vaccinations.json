@@ -1,6 +1,16 @@
 {
   "vaccinations": [
     {
+      "id": 27,
+      "animalId": 38,
+      "animalName": "Astha",
+      "vaccineName": "Rabies Booster",
+      "dose": "Primary Course",
+      "dateGiven": "2026-05-09",
+      "nextDueDate": "2026-06-08",
+      "notes": "done"
+    },
+    {
       "id": 26,
       "animalId": 37,
       "animalName": "Stiger",
