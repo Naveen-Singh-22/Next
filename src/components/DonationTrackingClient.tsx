@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { CalendarDays, HeartHandshake, LoaderCircle, Search, RefreshCw, TrendingUp, Users, Eye } from "lucide-react";
 import type { StoredDonation } from "@/lib/donationsStore";
 import ScrollReveal from "@/components/ScrollReveal";
 
@@ -79,7 +80,7 @@ export default function DonationTrackingClient({ initialDonations }: DonationTra
   function formatCurrency(amount: number) {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 2,
     }).format(amount);
   }
@@ -96,32 +97,44 @@ export default function DonationTrackingClient({ initialDonations }: DonationTra
     <div className="admin-donation-tracking">
       <ScrollReveal as="section" className="donation-stats-grid" delayMs={0}>
         <article className="donation-stat-card reveal-item">
-          <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <HeartHandshake size={18} aria-hidden="true" />
             <p>TOTAL DONATIONS</p>
+          </div>
+          <div>
             <h3>{formatCurrency(stats.totalDonations)}</h3>
           </div>
-          <span className="stat-trend">↑ {stats.monthlyGrowth} vs last month</span>
+          <span className="stat-trend">{stats.monthlyGrowth} vs last month</span>
         </article>
 
         <article className="donation-stat-card reveal-item">
-          <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <TrendingUp size={18} aria-hidden="true" />
             <p>MONTHLY GROWTH</p>
+          </div>
+          <div>
             <h3>{stats.monthlyGrowth}</h3>
           </div>
-          <span className="stat-trend">📈 trending up</span>
+          <span className="stat-trend">Trending up</span>
         </article>
 
         <article className="donation-stat-card reveal-item">
-          <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <Users size={18} aria-hidden="true" />
             <p>ACTIVE DONORS</p>
+          </div>
+          <div>
             <h3>{stats.activeDonors}</h3>
           </div>
           <span className="stat-trend">New supporters this week</span>
         </article>
 
         <article className="donation-stat-card reveal-item">
-          <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <CalendarDays size={18} aria-hidden="true" />
             <p>SUCCESSFUL DONATIONS</p>
+          </div>
+          <div>
             <h3>{stats.successfulDonations}</h3>
           </div>
           <span className="stat-trend">100% success rate</span>
@@ -131,6 +144,12 @@ export default function DonationTrackingClient({ initialDonations }: DonationTra
       <ScrollReveal as="section" className="donation-content-section" delayMs={120}>
         <div className="donation-controls reveal-item">
           <div className="donation-search-wrap">
+            <div style={{ position: "relative" }}>
+              <Search
+                size={16}
+                aria-hidden="true"
+                style={{ position: "absolute", left: "0.9rem", top: "50%", transform: "translateY(-50%)", opacity: 0.65 }}
+              />
             <input
               type="search"
               placeholder="Search by donor name, email, or transaction ID..."
@@ -140,11 +159,13 @@ export default function DonationTrackingClient({ initialDonations }: DonationTra
                 setCurrentPage(1);
               }}
               className="donation-search-input"
+              style={{ paddingLeft: "2.35rem" }}
             />
+            </div>
           </div>
 
           <div className="donation-filters">
-            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as typeof filterStatus)}>
+            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as typeof filterStatus)} aria-label="Filter donations by status">
               <option value="all">All Donations</option>
               <option value="successful">Successful</option>
               <option value="pending">Pending</option>
@@ -155,8 +176,10 @@ export default function DonationTrackingClient({ initialDonations }: DonationTra
               disabled={isLoading}
               type="button"
               aria-label="Refresh donations"
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "0.45rem" }}
             >
-              {isLoading ? "Refreshing..." : "Refresh"}
+              {isLoading ? <LoaderCircle size={16} aria-hidden="true" className="animate-spin" /> : <RefreshCw size={16} aria-hidden="true" />}
+              <span>{isLoading ? "Refreshing..." : "Refresh"}</span>
             </button>
           </div>
         </div>
@@ -198,7 +221,7 @@ export default function DonationTrackingClient({ initialDonations }: DonationTra
                           title={`View details for ${donation.donationId}`}
                           aria-label={`View donation details`}
                         >
-                          →
+                          <Eye size={16} aria-hidden="true" />
                         </button>
                       </td>
                     </tr>
