@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { updateInquiryStatus, type InquiryStatus } from "@/lib/inquiryStore";
+import { requireAdmin } from "@/lib/authContext";
 
 const VALID_STATUSES = new Set<InquiryStatus>(["new", "assigned", "resolved"]);
 
@@ -16,6 +17,8 @@ type RouteParams = {
 export const runtime = "nodejs";
 
 export async function PUT(request: Request, { params }: RouteParams) {
+  await requireAdmin();
+
   let body: UpdateInquiryBody;
 
   try {
