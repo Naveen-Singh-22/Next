@@ -29,7 +29,7 @@ function titleCase(value: string) {
     .join(" ");
 }
 
-function ageToDisplay(age?: number) {
+function ageToDisplay(age?: number | null) {
   if (typeof age !== "number" || Number.isNaN(age)) {
     return "Age unknown";
   }
@@ -93,7 +93,7 @@ function inferTemperament(animal: Animal) {
   return traits.slice(0, 3);
 }
 
-function splitNotes(notes?: string) {
+function splitNotes(notes?: string | null) {
   const value = notes?.trim();
 
   if (!value) {
@@ -135,7 +135,7 @@ export function animalToAdoptAnimal(animal: Animal): AdoptAnimal {
     image: animal.photoUrls[0] ?? fallbackImages[animal.species],
     city: "Shelter Intake",
     temperament: inferTemperament(animal),
-    vaccinated: animal.vaccinationStatus === "up_to_date",
+    vaccinated: animal.vaccinationState === "up-to-date",
     neutered: inferNeutered(animal),
     goodWith: inferGoodWith(animal),
     profileSummary: notes.profileSummary,

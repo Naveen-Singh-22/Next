@@ -1,13 +1,5 @@
 import type { AdoptionApplication, AdoptionStatus } from "@/lib/adoptionApplicationTypes";
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
-import { Low } from "lowdb";
-import { JSONFile } from "lowdb/node";
-
-type AdoptionStore = {
-  applications: AdoptionApplication[];
-  nextId: number;
-};
+import { prisma } from "@/lib/prisma";
 
 function createApplicationId(usedIds: Set<string>) {
   let value = "";
@@ -18,139 +10,6 @@ function createApplicationId(usedIds: Set<string>) {
 
   usedIds.add(value);
   return value;
-}
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const DB_PATH = path.join(DATA_DIR, "adoptions.json");
-
-let dbPromise: Promise<Low<AdoptionStore>> | null = null;
-
-async function getDb() {
-  if (!dbPromise) {
-    dbPromise = (async () => {
-      await mkdir(DATA_DIR, { recursive: true });
-
-      const adapter = new JSONFile<AdoptionStore>(DB_PATH);
-      const db = new Low<AdoptionStore>(adapter, {
-        applications: [],
-        nextId: 1,
-      });
-
-      await db.read();
-      db.data ||= {
-        applications: [],
-        nextId: 1,
-      };
-
-      db.data.nextId = Math.max(
-        db.data.nextId,
-        db.data.applications.reduce((maxId, application) => Math.max(maxId, application.id), 0) + 1,
-      );
-
-      const usedIds = new Set(db.data.applications.map((application) => application.applicationId).filter(Boolean));
-      let hasBackfill = false;
-
-      db.data.applications = db.data.applications.map((application) => {
-        const updates: Partial<AdoptionApplication> = {};
-
-        if (!application.applicationId) {
-          updates.applicationId = createApplicationId(usedIds);
-        }
-
-        if (!application.animalName) {
-          updates.animalName = `Animal #${application.animalId}`;
-        }
-
-        if (Object.keys(updates).length === 0) {
-          return application;
-        }
-
-        hasBackfill = true;
-        return {
-          ...application,
-          ...updates,
-        };
-      });
-
-      if (hasBackfill) {
-        await db.write();
-      }
-
-      return db;
-    })();
-  }
-
-  return dbPromise;
-}
-
-export async function listAdoptions() {
-  const db = await getDb();
-  await db.read();
-
-  return [...db.data.applications].sort((a, b) => {
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
-}
-
-export async function findAdoptionById(id: number) {
-  const db = await getDb();
-  await db.read();
-
-  return db.data.applications.find((application) => application.id === id) ?? null;
-}
-
-export async function createAdoption(
-  input: Omit<AdoptionApplication, "id" | "applicationId" | "createdAt" | "timeline" | "status">,
-) {
-  const db = await getDb();
-  await db.read();
-  const usedIds = new Set(db.data.applications.map((application) => application.applicationId));
-
-  const nowIso = new Date().toISOString();
-
-  const application: AdoptionApplication = {
-    ...input,
-    id: db.data.nextId++,
-    applicationId: createApplicationId(usedIds),
-    createdAt: nowIso,
-    status: "applied",
-    timeline: [
-      {
-        type: "Application submitted",
-        time: nowIso,
-      },
-    ],
-  };
-
-  db.data.applications.unshift(application);
-  await db.write();
-
-  return application;
-}
-
-export async function updateAdoption(id: number, updates: Partial<Omit<AdoptionApplication, "id" | "createdAt">>) {
-  const db = await getDb();
-  await db.read();
-
-  const index = db.data.applications.findIndex((application) => application.id === id);
-
-  if (index < 0) {
-    return null;
-  }
-
-  const existing = db.data.applications[index];
-  const next: AdoptionApplication = {
-    ...existing,
-    ...updates,
-    id: existing.id,
-    createdAt: existing.createdAt,
-    timeline: Array.isArray(updates.timeline) ? updates.timeline : existing.timeline,
-  };
-
-  db.data.applications[index] = next;
-  await db.write();
-
-  return next;
 }
 
 function statusEventLabel(status: AdoptionStatus) {
@@ -170,31 +29,126 @@ function statusEventLabel(status: AdoptionStatus) {
   }
 }
 
-export async function updateAdoptionStatus(id: number, status: AdoptionStatus) {
-  const db = await getDb();
-  await db.read();
+export async function listAdoptions() {
+  const items = await prisma.adoptionApplication.findMany({ orderBy: { createdAt: "desc" } });
 
-  const index = db.data.applications.findIndex((application) => application.id === id);
-
-  if (index < 0) {
-    return null;
-  }
-
-  const existing = db.data.applications[index];
-  const next: AdoptionApplication = {
-    ...existing,
-    status,
-    timeline: [
-      ...existing.timeline,
-      {
-        type: statusEventLabel(status),
-        time: new Date().toISOString(),
-      },
+  return items.map((row) => ({
+    id: row.id,
+    applicationId: row.applicationId || `AD-${row.id}`,
+    applicantName: row.applicantName,
+    email: row.email,
+    phone: row.phone || "",
+    city: row.city || "",
+    housing: row.housing || "",
+    petExperience: row.petExperience || "",
+    whyAdopt: row.whyAdopt || "",
+    animalId: row.animalId ?? 0,
+    animalName: row.animalName || "",
+    animalCode: row.animalCode || undefined,
+    status: (row.status as AdoptionStatus) || "applied",
+    adminNotes: row.adminNotes || "",
+    timeline: (row.timeline as any) || [
+      { type: "Application submitted", time: row.createdAt?.toISOString() || new Date().toISOString() },
     ],
-  };
+    createdAt: row.createdAt ? row.createdAt.toISOString() : new Date().toISOString(),
+  })) as AdoptionApplication[];
+}
 
-  db.data.applications[index] = next;
-  await db.write();
+export async function findAdoptionById(id: number) {
+  const row = await prisma.adoptionApplication.findUnique({ where: { id } });
 
-  return next;
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    applicationId: row.applicationId || `AD-${row.id}`,
+    applicantName: row.applicantName,
+    email: row.email,
+    phone: row.phone || "",
+    city: row.city || "",
+    housing: row.housing || "",
+    petExperience: row.petExperience || "",
+    whyAdopt: row.whyAdopt || "",
+    animalId: row.animalId ?? 0,
+    animalName: row.animalName || "",
+    animalCode: row.animalCode || undefined,
+    status: (row.status as AdoptionStatus) || "applied",
+    adminNotes: row.adminNotes || "",
+    timeline: (row.timeline as any) || [
+      { type: "Application submitted", time: row.createdAt?.toISOString() || new Date().toISOString() },
+    ],
+    createdAt: row.createdAt ? row.createdAt.toISOString() : new Date().toISOString(),
+  } as AdoptionApplication;
+}
+
+export async function createAdoption(
+  input: Omit<AdoptionApplication, "id" | "applicationId" | "createdAt" | "timeline" | "status">,
+) {
+  const usedIds = new Set<string>();
+
+  const applicationId = createApplicationId(usedIds);
+  const now = new Date();
+
+  const row = await prisma.adoptionApplication.create({
+    data: {
+      applicationId,
+      applicantName: input.applicantName,
+      email: input.email,
+      phone: input.phone || null,
+      city: input.city || null,
+      housing: input.housing || null,
+      petExperience: input.petExperience || null,
+      whyAdopt: input.whyAdopt || null,
+      animalId: input.animalId,
+      animalName: input.animalName,
+      animalCode: input.animalCode || null,
+      adminNotes: input.adminNotes || null,
+      status: "applied",
+      timeline: [
+        {
+          type: "Application submitted",
+          time: now.toISOString(),
+        },
+      ],
+      createdAt: now,
+    },
+  });
+
+  return findAdoptionById(row.id);
+}
+
+export async function updateAdoption(id: number, updates: Partial<Omit<AdoptionApplication, "id" | "createdAt">>) {
+  const existing = await prisma.adoptionApplication.findUnique({ where: { id } });
+  if (!existing) return null;
+
+  const data: any = {};
+  if (updates.applicantName !== undefined) data.applicantName = updates.applicantName;
+  if (updates.email !== undefined) data.email = updates.email;
+  if (updates.phone !== undefined) data.phone = updates.phone || null;
+  if (updates.city !== undefined) data.city = updates.city || null;
+  if (updates.housing !== undefined) data.housing = updates.housing || null;
+  if (updates.petExperience !== undefined) data.petExperience = updates.petExperience || null;
+  if (updates.whyAdopt !== undefined) data.whyAdopt = updates.whyAdopt || null;
+  if (updates.animalId !== undefined) data.animalId = updates.animalId;
+  if (updates.animalName !== undefined) data.animalName = updates.animalName || null;
+  if (updates.animalCode !== undefined) data.animalCode = updates.animalCode || null;
+  if (updates.adminNotes !== undefined) data.adminNotes = updates.adminNotes || null;
+  if (updates.status !== undefined) data.status = updates.status;
+  if (Array.isArray(updates.timeline)) data.timeline = updates.timeline;
+
+  await prisma.adoptionApplication.update({ where: { id }, data });
+
+  return findAdoptionById(id);
+}
+
+export async function updateAdoptionStatus(id: number, status: AdoptionStatus) {
+  const existing = await prisma.adoptionApplication.findUnique({ where: { id } });
+  if (!existing) return null;
+
+  const timeline = Array.isArray(existing.timeline) ? [...existing.timeline] : [];
+  timeline.push({ type: statusEventLabel(status), time: new Date().toISOString() } as any);
+
+  await prisma.adoptionApplication.update({ where: { id }, data: { status, timeline } });
+
+  return findAdoptionById(id);
 }

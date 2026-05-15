@@ -1,8 +1,9 @@
-import { cookies } from "next/headers";
-import { AUTH_EMAIL_COOKIE, AUTH_ROLE_COOKIE, type AuthRole } from "@/lib/auth";
+import { getCurrentUser, type AuthRole } from "@/lib/auth";
 import { AuthenticationError, AuthorizationError } from "@/lib/apiErrors";
 
 export interface AuthContext {
+  userId: number;
+  fullName: string;
   email: string;
   role: AuthRole;
 }
@@ -12,22 +13,17 @@ export interface AuthContext {
  * @throws AuthenticationError if user is not authenticated
  */
 export async function getAuthContext(): Promise<AuthContext> {
-  const cookieStore = await cookies();
-  const email = cookieStore.get(AUTH_EMAIL_COOKIE)?.value;
-  const role = cookieStore.get(AUTH_ROLE_COOKIE)?.value;
+  const user = await getCurrentUser();
 
-  if (!email || !role) {
+  if (!user) {
     throw new AuthenticationError("Not authenticated. Please login first.");
   }
 
-  // Validate role
-  if (!["admin", "donor", "volunteer"].includes(role)) {
-    throw new AuthenticationError("Invalid authentication state.");
-  }
-
   return {
-    email,
-    role: role as AuthRole,
+    userId: user.userId,
+    fullName: user.fullName,
+    email: user.email,
+    role: user.role,
   };
 }
 

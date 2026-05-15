@@ -2,9 +2,9 @@ import { z } from "zod";
 
 // Auth Schemas
 export const LoginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["admin", "donor", "volunteer"]).optional().default("donor"),
+  email: z.string().trim().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  role: z.enum(["admin", "donor", "volunteer"]).optional().default("admin"),
   rememberMe: z.boolean().optional().default(false),
 });
 
@@ -19,8 +19,30 @@ export const SignupSchema = z.object({
 });
 
 export const AdminLoginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().trim().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+// OTP Verification Schemas
+export const VerifyOtpSchema = z.object({
+  email: z.string().trim().email("Invalid email address"),
+  otp: z.string().regex(/^\d{4}$/, "OTP must be a 4-digit code"),
+});
+
+export const ResendOtpSchema = z.object({
+  email: z.string().trim().email("Invalid email address"),
+});
+
+export const AdminCreateUserSchema = z.object({
+  fullName: z.string().trim().min(2, "Full name is required"),
+  email: z.string().trim().email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/\d/, "Password must contain at least one number"),
+  role: z.enum(["admin", "staff"]).optional().default("admin"),
 });
 
 // Animal Schemas
@@ -39,13 +61,16 @@ export const AnimalUpdateSchema = AnimalCreateSchema.partial();
 
 // Adoption Schemas
 export const AdoptionRequestSchema = z.object({
-  animalId: z.string().min(1, "Animal ID is required"),
-  applicantName: z.string().min(2, "Full name is required"),
-  applicantEmail: z.string().email("Invalid email"),
-  housing: z.string().min(10, "Housing information is required"),
-  experience: z.string().optional(),
-  family: z.string().optional(),
-  timeline: z.string().optional(),
+  animalSlug: z.string().min(1, "Animal slug is required"),
+  animalName: z.string().min(1, "Animal name is required"),
+  animalSpecies: z.string().min(1, "Animal species is required"),
+  animalImage: z.string().optional(),
+  applicantName: z.string().min(2, "Please enter your full name"),
+  applicantEmail: z.string().email("Please enter a valid email address"),
+  applicantPhone: z.string().min(7, "Please enter a valid phone number"),
+  city: z.string().min(1, "Please enter your city"),
+  homeType: z.enum(["apartment", "house", "farm", "other"], { errorMap: () => ({ message: "Please select your home type" }) }),
+  message: z.string().min(10, "Please share a short note about your adoption interest"),
 });
 
 export const AdoptionUpdateSchema = z.object({
@@ -55,16 +80,20 @@ export const AdoptionUpdateSchema = z.object({
 
 // Rescue Schemas
 export const RescueReportSchema = z.object({
-  species: z.string().min(1, "Species is required"),
+  fullName: z.string().min(2, "Please provide your full name"),
+  email: z.string().email("Please provide a valid email address"),
+  phone: z.string().min(7, "Please provide a valid phone number"),
+  species: z.string().refine((s) => ["Dog", "Cat", "Bird", "Other"].includes(s), { message: "Please select a valid species" }),
+  breed: z.string().optional(),
+  healthConditions: z.array(z.string()).optional(),
+  notes: z.string().optional(),
+  lastSeenAddress: z.string().min(1, "Please provide the last seen address"),
+  urgency: z.enum(["critical", "urgent", "standard"], { errorMap: () => ({ message: "Please select a valid urgency level" }) }),
   location: z.object({
-    latitude: z.number().min(-90).max(90),
-    longitude: z.number().min(-180).max(180),
+    latitude: z.number().min(-90).max(90, "Invalid latitude"),
+    longitude: z.number().min(-180).max(180, "Invalid longitude"),
   }),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  urgency: z.enum(["critical", "high", "medium", "low"]),
-  image: z.string().optional(), // base64
-  reporterName: z.string().optional(),
-  reporterPhone: z.string().optional(),
+  animalImageDataUrl: z.string().optional(),
 });
 
 export const RescueUpdateSchema = z.object({
@@ -81,16 +110,16 @@ export const RescueUpdateSchema = z.object({
 
 // Volunteer Schemas
 export const VolunteerApplicationSchema = z.object({
-  fullName: z.string().min(2, "Full name is required"),
-  email: z.string().email("Invalid email"),
-  phone: z.string().optional(),
-  interestArea: z.enum(["rescue", "shelter_care", "adoption_support", "fundraising", "other"]),
-  experience: z.string().optional(),
-  availability: z.string().optional(),
+  fullName: z.string().min(2, "Please provide your full name"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().min(7, "Please provide a valid phone number"),
+  city: z.string().min(1, "Please provide your city"),
+  interestArea: z.enum(["Shelter Assistant", "Rescue Dispatcher", "Event Support"], { errorMap: () => ({ message: "Please select a valid interest area" }) }),
+  availability: z.string().min(10, "Please share your availability details"),
 });
 
 export const VolunteerUpdateSchema = z.object({
-  status: z.enum(["pending", "approved", "rejected"]).optional(),
+  status: z.enum(["pending", "reviewing", "approved", "declined"]).optional(),
   role: z.enum(["rescue_dispatcher", "shelter_assistant", "event_support"]).optional(),
   adminNotes: z.string().optional(),
 });
@@ -129,7 +158,7 @@ export const UserUpdateSchema = z.object({
 
 // Newsletter Schemas
 export const NewsletterSignupSchema = z.object({
-  email: z.string().email("Invalid email"),
+  email: z.string().trim().email("Please enter a valid email address"),
   name: z.string().optional(),
 });
 
@@ -144,6 +173,9 @@ export const InquiryUpdateSchema = z.object({
 export type LoginInput = z.infer<typeof LoginSchema>;
 export type SignupInput = z.infer<typeof SignupSchema>;
 export type AdminLoginInput = z.infer<typeof AdminLoginSchema>;
+export type VerifyOtpInput = z.infer<typeof VerifyOtpSchema>;
+export type ResendOtpInput = z.infer<typeof ResendOtpSchema>;
+export type AdminCreateUserInput = z.infer<typeof AdminCreateUserSchema>;
 export type AnimalCreate = z.infer<typeof AnimalCreateSchema>;
 export type AnimalUpdate = z.infer<typeof AnimalUpdateSchema>;
 export type AdoptionRequest = z.infer<typeof AdoptionRequestSchema>;

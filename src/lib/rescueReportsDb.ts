@@ -1,7 +1,4 @@
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
-import { Low } from "lowdb";
-import { JSONFile } from "lowdb/node";
+import { prisma } from "./prisma";
 
 export type RescueCaseStatus = "reported" | "in_progress" | "monitored" | "rescued" | "closed";
 
@@ -15,152 +12,97 @@ export type RescueAdminChecklist = {
 
 export type StoredRescueReport = {
   id: number;
-  reportId: string;
+  reportId: string | null;
   fullName: string;
   email: string;
   phone: string;
-  species: string;
-  breed: string;
-  healthConditions: string[];
-  notes: string;
-  lastSeenAddress: string;
-  urgency: "critical" | "urgent" | "standard";
-  location: {
+  species?: string;
+  breed?: string;
+  healthConditions?: string[];
+  notes?: string;
+  lastSeenAddress?: string;
+  urgency?: "critical" | "urgent" | "standard";
+  location?: {
     latitude: number;
     longitude: number;
   };
   animalImageDataUrl?: string;
   caseStatus: RescueCaseStatus;
   adminChecklist: RescueAdminChecklist;
-  lastAdminUpdateAt?: string;
-  reporterNotifiedAt?: string;
+  lastAdminUpdateAt?: string | null;
+  reporterNotifiedAt?: string | null;
   createdAt: string;
 };
 
-type RescueDbSchema = {
-  rescueReports: StoredRescueReport[];
-  nextId: number;
-};
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const DB_PATH = path.join(DATA_DIR, "rescue-reports.json");
-
-let dbPromise: Promise<Low<RescueDbSchema>> | null = null;
-
-async function getDb() {
-  if (!dbPromise) {
-    dbPromise = (async () => {
-      await mkdir(DATA_DIR, { recursive: true });
-
-      const adapter = new JSONFile<RescueDbSchema>(DB_PATH);
-      const db = new Low<RescueDbSchema>(adapter, { rescueReports: [], nextId: 1 });
-
-      await db.read();
-      db.data ||= { rescueReports: [], nextId: 1 };
-
-      db.data.nextId = Math.max(
-        db.data.nextId,
-        db.data.rescueReports.reduce((maxId, report) => Math.max(maxId, report.id ?? 0), 0) + 1,
-      );
-
-      let shouldWrite = false;
-      const usedIds = new Set(
-        db.data.rescueReports
-          .map((report) => report.id)
-          .filter((value): value is number => Number.isInteger(value) && value >= 0),
-      );
-
-      db.data.rescueReports = db.data.rescueReports.map((report) => {
-        if (typeof report.id === "number") {
-          return {
-            ...report,
-            caseStatus: report.caseStatus ?? "reported",
-            adminChecklist: {
-              rescued: report.adminChecklist?.rescued ?? false,
-              monitored: report.adminChecklist?.monitored ?? false,
-              medicalCompleted: report.adminChecklist?.medicalCompleted ?? false,
-              shelterAssigned: report.adminChecklist?.shelterAssigned ?? false,
-              reporterNotified: report.adminChecklist?.reporterNotified ?? false,
-            },
-          };
-        }
-
-        let nextId = 1;
-
-        while (usedIds.has(nextId)) {
-          nextId += 1;
-        }
-
-        usedIds.add(nextId);
-        shouldWrite = true;
-
-        return {
-          ...report,
-          id: nextId,
-          caseStatus: report.caseStatus ?? "reported",
-          adminChecklist: {
-            rescued: report.adminChecklist?.rescued ?? false,
-            monitored: report.adminChecklist?.monitored ?? false,
-            medicalCompleted: report.adminChecklist?.medicalCompleted ?? false,
-            shelterAssigned: report.adminChecklist?.shelterAssigned ?? false,
-            reporterNotified: report.adminChecklist?.reporterNotified ?? false,
-          },
-        };
-      });
-
-      if (shouldWrite) {
-        try {
-          await db.write();
-        } catch (error) {
-          const code =
-            typeof error === "object" && error !== null && "code" in error
-              ? String((error as { code?: unknown }).code)
-              : "";
-
-          if (code !== "EROFS" && code !== "EPERM" && code !== "EACCES") {
-            throw error;
-          }
-        }
-      }
-
-      return db;
-    })();
+function parseDescription(desc: string | null) {
+  if (!desc) return {} as any;
+  try {
+    return JSON.parse(desc);
+  } catch {
+    return { raw: desc };
   }
+}
 
-  return dbPromise;
+function buildDescriptionFromReport(report: Omit<StoredRescueReport, "id" | "createdAt">) {
+  return JSON.stringify({
+    fullName: report.fullName,
+    email: report.email,
+    species: report.species,
+    breed: report.breed,
+    healthConditions: report.healthConditions,
+    notes: report.notes,
+    animalImageDataUrl: report.animalImageDataUrl,
+    location: report.location,
+    adminChecklist: report.adminChecklist,
+    lastAdminUpdateAt: report.lastAdminUpdateAt,
+    reporterNotifiedAt: report.reporterNotifiedAt,
+  });
+}
+
+function mapRowToStored(row: any): StoredRescueReport {
+  const extra = parseDescription(row.description ?? null);
+
+  return {
+    id: row.id,
+    reportId: row.reportId ?? null,
+    fullName: extra.fullName ?? row.reporterName ?? "",
+    email: extra.email ?? null,
+    phone: row.reporterPhone ?? extra.phone ?? "",
+    species: extra.species ?? undefined,
+    breed: extra.breed ?? undefined,
+    healthConditions: extra.healthConditions ?? undefined,
+    notes: extra.notes ?? undefined,
+    lastSeenAddress: row.location ?? undefined,
+    urgency: row.priority as any,
+    location: extra.location ?? undefined,
+    animalImageDataUrl: extra.animalImageDataUrl ?? undefined,
+    caseStatus: (row.status as RescueCaseStatus) ?? "reported",
+    adminChecklist: extra.adminChecklist ?? { rescued: false, monitored: false, medicalCompleted: false, shelterAssigned: false, reporterNotified: false },
+    lastAdminUpdateAt: extra.lastAdminUpdateAt ?? null,
+    reporterNotifiedAt: extra.reporterNotifiedAt ?? null,
+    createdAt: row.createdAt ? new Date(row.createdAt).toISOString() : new Date().toISOString(),
+  };
 }
 
 export async function saveRescueReport(report: Omit<StoredRescueReport, "id">) {
-  const db = await getDb();
-  await db.read();
+  const created = await prisma.rescueRequest.create({
+    data: {
+      reportId: report.reportId ?? undefined,
+      location: report.lastSeenAddress ?? report.location?.address ?? "",
+      description: buildDescriptionFromReport(report as any),
+      status: report.caseStatus ?? "reported",
+      priority: report.urgency ?? "standard",
+      reporterName: report.fullName,
+      reporterPhone: report.phone,
+    },
+  });
 
-  const saved: StoredRescueReport = {
-    ...report,
-    id: db.data.nextId++,
-  };
-
-  db.data.rescueReports.unshift(saved);
-  await db.write();
-
-  return saved;
+  return mapRowToStored(created as any);
 }
 
 export async function listRescueReports() {
-  const db = await getDb();
-  await db.read();
-
-  return db.data.rescueReports.map((report) => ({
-    ...report,
-    id: report.id ?? 0,
-    caseStatus: report.caseStatus ?? "reported",
-    adminChecklist: {
-      rescued: report.adminChecklist?.rescued ?? false,
-      monitored: report.adminChecklist?.monitored ?? false,
-      medicalCompleted: report.adminChecklist?.medicalCompleted ?? false,
-      shelterAssigned: report.adminChecklist?.shelterAssigned ?? false,
-      reporterNotified: report.adminChecklist?.reporterNotified ?? false,
-    },
-  }));
+  const rows = await prisma.rescueRequest.findMany({ orderBy: { createdAt: "desc" } });
+  return rows.map(mapRowToStored);
 }
 
 export async function updateRescueReportAdmin(
@@ -170,25 +112,23 @@ export async function updateRescueReportAdmin(
     adminChecklist: RescueAdminChecklist;
   },
 ) {
-  const db = await getDb();
-  await db.read();
+  const existingRow = await prisma.rescueRequest.findUnique({ where: { reportId } });
+  if (!existingRow) return null;
 
-  const index = db.data.rescueReports.findIndex((report) => report.reportId === reportId);
+  const prev = mapRowToStored(existingRow as any);
 
-  if (index < 0) {
-    return null;
-  }
+  const extra = parseDescription(existingRow.description ?? null);
+  extra.adminChecklist = updates.adminChecklist;
+  extra.lastAdminUpdateAt = new Date().toISOString();
 
-  const existing = db.data.rescueReports[index];
-  const next: StoredRescueReport = {
-    ...existing,
-    caseStatus: updates.caseStatus,
-    adminChecklist: updates.adminChecklist,
-    lastAdminUpdateAt: new Date().toISOString(),
-  };
+  const updatedRow = await prisma.rescueRequest.update({
+    where: { reportId },
+    data: {
+      status: updates.caseStatus,
+      description: JSON.stringify(extra),
+      updatedAt: new Date(),
+    },
+  });
 
-  db.data.rescueReports[index] = next;
-  await db.write();
-
-  return { previous: existing, updated: next };
+  return { previous: prev, updated: mapRowToStored(updatedRow as any) };
 }

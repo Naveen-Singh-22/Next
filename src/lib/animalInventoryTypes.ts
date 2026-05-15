@@ -2,22 +2,24 @@ export type AnimalSpecies = "dog" | "cat" | "bird";
 export type AnimalGender = "male" | "female";
 export type AnimalHealthStatus = "healthy" | "injured" | "recovering" | "critical";
 export type AnimalStatus = "rescued" | "admitted" | "available" | "adopted";
-export type AnimalVaccinationStatus = "up_to_date" | "due_soon" | "overdue";
+export type AnimalVaccinationState = "up-to-date" | "due_soon" | "overdue";
 
 export type Animal = {
-  id: number;
+  id: string; // External slug (e.g., "buddy-dog")
+  intId?: number | null; // Internal integer ID for relationships
   animalCode: string;
   name: string;
   species: AnimalSpecies;
-  breed?: string;
-  age?: number;
-  gender?: AnimalGender;
+  breed?: string | null;
+  age?: number | null;
+  gender?: AnimalGender | null;
   healthStatus: AnimalHealthStatus;
   status: AnimalStatus;
-  notes?: string;
+  notes?: string | null;
   photoUrls: string[];
   createdAt: string;
-  vaccinationStatus: AnimalVaccinationStatus;
+  vaccinationState: AnimalVaccinationState;
+  adopted: boolean;
 };
 
 export type AnimalFilters = {
@@ -30,11 +32,12 @@ export type AnimalFilters = {
   limit?: number;
 };
 
-export type AnimalCreateInput = Omit<Animal, "id" | "animalCode" | "createdAt"> & {
+export type AnimalCreateInput = Omit<Animal, "id" | "intId" | "createdAt" | "adopted"> & {
+  animalCode?: string;
   status?: AnimalStatus;
 };
 
-export type AnimalUpdateInput = Partial<Omit<Animal, "id" | "animalCode" | "createdAt">>;
+export type AnimalUpdateInput = Partial<Omit<Animal, "id" | "intId" | "animalCode" | "createdAt">>;
 
 const allowedStatusTransitions: Record<AnimalStatus, AnimalStatus[]> = {
   rescued: ["admitted"],

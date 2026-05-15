@@ -13,7 +13,7 @@ import type {
   AnimalSpecies,
   AnimalStatus,
   AnimalUpdateInput,
-  AnimalVaccinationStatus,
+  AnimalVaccinationState,
 } from "@/lib/animalInventoryTypes";
 
 type AnimalDbSchema = {
@@ -95,8 +95,8 @@ function inferHealthStatus(adoptStatus: string, rescueStory: string): AnimalHeal
   return "healthy";
 }
 
-function inferVaccinationStatus(vaccinated: boolean): AnimalVaccinationStatus {
-  return vaccinated ? "up_to_date" : "due_soon";
+function inferVaccinationStatus(vaccinated: boolean): AnimalVaccinationState {
+  return vaccinated ? "up-to-date" : "due_soon";
 }
 
 function createUniqueCode(prefix: string, usedCodes: Set<string>) {
@@ -116,9 +116,12 @@ function buildSeedAnimals() {
 
   return adoptAnimals.map((animal, index) => {
     const createdAt = new Date(now - index * 86400000).toISOString();
+    const intId = index + 1;
+    const id = `${animal.name.toLowerCase().replace(/\s+/g, "-")}-${animal.species.toLowerCase()}`;
 
     return {
-      id: index + 1,
+      id,
+      intId,
       animalCode: createUniqueCode("AN", usedCodes),
       name: animal.name,
       species: mapSpecies(animal.species),
@@ -130,7 +133,8 @@ function buildSeedAnimals() {
       notes: `${animal.profileSummary} ${animal.rescueStory}`.trim(),
       photoUrls: animal.image ? [animal.image] : [],
       createdAt,
-      vaccinationStatus: inferVaccinationStatus(animal.vaccinated),
+      vaccinationState: inferVaccinationStatus(animal.vaccinated),
+      adopted: inferStatus(animal.status) === "adopted",
     } satisfies Animal;
   });
 }
@@ -192,7 +196,7 @@ function createSearchBlob(animal: Animal) {
 }
 
 function getNextId(animals: Animal[]) {
-  return animals.reduce((highestId, animal) => Math.max(highestId, animal.id), 0) + 1;
+  return animals.reduce((highestId, animal) => Math.max(highestId, animal.intId ?? 0), 0) + 1;
 }
 
 function sortAnimals(animals: Animal[], sort: AnimalFilters["sort"]) {
@@ -270,7 +274,7 @@ export async function getAnimalById(id: number) {
   const db = await getDb();
   await db.read();
 
-  return db.data.animals.find((animal) => animal.id === id) ?? null;
+  return db.data.animals.find((animal) => animal.intId === id) ?? null;
 }
 
 export async function createAnimal(input: AnimalCreateInput) {
@@ -279,7 +283,8 @@ export async function createAnimal(input: AnimalCreateInput) {
   const usedCodes = new Set(db.data.animals.map((animal) => animal.animalCode));
 
   const animal: Animal = {
-    id: getNextId(db.data.animals),
+    id: createUniqueCode("animal", new Set(db.data.animals.map((item) => item.id))),
+    intId: getNextId(db.data.animals),
     animalCode: createUniqueCode("AN", usedCodes),
     name: input.name.trim(),
     species: input.species,
@@ -291,7 +296,8 @@ export async function createAnimal(input: AnimalCreateInput) {
     notes: input.notes?.trim() || undefined,
     photoUrls: input.photoUrls.filter(Boolean),
     createdAt: new Date().toISOString(),
-    vaccinationStatus: input.vaccinationStatus,
+    vaccinationState: input.vaccinationState,
+    adopted: (input.status ?? "admitted") === "adopted",
   };
 
   db.data.animals.unshift(animal);
@@ -304,7 +310,7 @@ export async function updateAnimal(id: number, updates: AnimalUpdateInput) {
   const db = await getDb();
   await db.read();
 
-  const animal = db.data.animals.find((item) => item.id === id);
+  const animal = db.data.animals.find((item) => item.intId === id);
 
   if (!animal) {
     return null;
@@ -323,7 +329,7 @@ export async function updateAnimal(id: number, updates: AnimalUpdateInput) {
   }
 
   if (updates.breed !== undefined) {
-    animal.breed = updates.breed.trim() || undefined;
+    animal.breed = updates.breed?.trim() || undefined;
   }
 
   if (updates.age !== undefined) {
@@ -343,15 +349,15 @@ export async function updateAnimal(id: number, updates: AnimalUpdateInput) {
   }
 
   if (updates.notes !== undefined) {
-    animal.notes = updates.notes.trim() || undefined;
+    animal.notes = updates.notes?.trim() || undefined;
   }
 
   if (updates.photoUrls) {
     animal.photoUrls = updates.photoUrls.filter(Boolean);
   }
 
-  if (updates.vaccinationStatus) {
-    animal.vaccinationStatus = updates.vaccinationStatus;
+  if (updates.vaccinationState) {
+    animal.vaccinationState = updates.vaccinationState;
   }
 
   await db.write();
@@ -363,7 +369,7 @@ export async function deleteAnimal(id: number) {
   const db = await getDb();
   await db.read();
 
-  const index = db.data.animals.findIndex((animal) => animal.id === id);
+  const index = db.data.animals.findIndex((animal) => animal.intId === id);
 
   if (index === -1) {
     return false;
