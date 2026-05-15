@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { listVaccinationsForAnimal } from "@/lib/vaccinationDb";
+import { requireAdmin } from "@/lib/authContext";
 
 function toNumber(value: string) {
   const parsed = Number(value);
@@ -7,6 +8,8 @@ function toNumber(value: string) {
 }
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
+  await requireAdmin();
+
   const { id } = await context.params;
   const animalId = toNumber(id);
 
