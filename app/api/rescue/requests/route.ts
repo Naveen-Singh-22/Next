@@ -8,36 +8,15 @@ import {
   type RescueAdminChecklist,
   type RescueCaseStatus,
 } from "@/lib/rescueReportsDb";
-
-type RescueRequestBody = {
-  fullName?: string;
-  email?: string;
-  phone?: string;
-  species?: string;
-  breed?: string;
-  healthConditions?: string[];
-  notes?: string;
-  lastSeenAddress?: string;
-  urgency?: "critical" | "urgent" | "standard";
-  location?: {
-    latitude?: number;
-    longitude?: number;
-  };
-  animalImageDataUrl?: string;
-};
+import { requireAdmin } from "@/lib/authContext";
+import { RescueReportSchema } from "@/lib/validation";
+import { handleError } from "@/lib/apiErrors";
 
 type RescueAdminUpdateBody = {
   reportId?: string;
   caseStatus?: RescueCaseStatus;
   adminChecklist?: Partial<RescueAdminChecklist>;
 };
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const IMAGE_DATA_URL_REGEX = /^data:image\/[a-zA-Z0-9+.-]+;base64,[A-Za-z0-9+/=]+$/;
-const MAX_IMAGE_DATA_URL_LENGTH = 4_000_000;
-const VALID_URGENCY = new Set(["critical", "urgent", "standard"]);
-const VALID_SPECIES = new Set(["Dog", "Cat", "Bird", "Other"]);
-const VALID_CASE_STATUS = new Set<RescueCaseStatus>(["reported", "in_progress", "monitored", "rescued", "closed"]);
 
 function isChecklistComplete(checklist: RescueAdminChecklist) {
   return checklist.rescued && checklist.monitored && checklist.medicalCompleted && checklist.shelterAssigned && checklist.reporterNotified;
@@ -51,6 +30,7 @@ function toMessage(error: unknown, fallback: string) {
 
 export async function GET() {
   try {
+    await requireAdmin();
     const reports = await listRescueReports();
     return NextResponse.json({ ok: true, count: reports.length, reports });
   } catch (error) {
@@ -62,90 +42,61 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  let body: RescueRequestBody;
-
   try {
-    body = (await request.json()) as RescueRequestBody;
-  } catch {
-    return NextResponse.json({ ok: false, message: "Invalid request payload." }, { status: 400 });
-  }
+    const body = await request.json();
+    
+    // Validate request body against schema
+    const validated = RescueReportSchema.parse(body);
 
-  const fullName = body.fullName?.trim() ?? "";
-  const email = body.email?.trim() ?? "";
-  const phone = body.phone?.trim() ?? "";
-  const species = body.species?.trim() ?? "";
-  const lastSeenAddress = body.lastSeenAddress?.trim() ?? "";
-  const urgency = body.urgency;
-  const latitude = Number(body.location?.latitude);
-  const longitude = Number(body.location?.longitude);
-  const animalImageDataUrl = body.animalImageDataUrl?.trim() ?? "";
+    const reportId = `RR-${Math.floor(Date.now() / 1000).toString(36).toUpperCase()}`;
 
-  if (fullName.length < 2) {
-    return NextResponse.json({ ok: false, message: "Please provide your full name." }, { status: 400 });
-  }
+    try {
+      const report = await saveRescueReport({
+        reportId,
+        fullName: validated.fullName,
+        email: validated.email,
+        phone: validated.phone,
+        species: validated.species,
+        breed: validated.breed ?? "",
+        healthConditions: validated.healthConditions ?? [],
+        notes: validated.notes ?? "",
+        lastSeenAddress: validated.lastSeenAddress,
+        urgency: validated.urgency,
+        location: validated.location,
+        animalImageDataUrl: validated.animalImageDataUrl,
+        caseStatus: "reported",
+        adminChecklist: {
+          rescued: false,
+          monitored: false,
+          medicalCompleted: false,
+          shelterAssigned: false,
+          reporterNotified: false,
+        },
+        createdAt: new Date().toISOString(),
+      });
 
-  if (!EMAIL_REGEX.test(email)) {
-    return NextResponse.json({ ok: false, message: "Please provide a valid email address." }, { status: 400 });
-  }
+      await createInquiry({
+        type: "rescue",
+        referenceId: report.id,
+        title: `Rescue report for ${report.species} from ${report.fullName}`,
+        preview: `${report.species} • ${report.lastSeenAddress} • Urgency: ${report.urgency}`,
+      });
 
-  if (phone.length < 7) {
-    return NextResponse.json({ ok: false, message: "Please provide a valid phone number." }, { status: 400 });
-  }
-
-  if (!VALID_SPECIES.has(species)) {
-    return NextResponse.json({ ok: false, message: "Please select a valid species." }, { status: 400 });
-  }
-
-  if (!lastSeenAddress) {
-    return NextResponse.json({ ok: false, message: "Please provide the last seen address." }, { status: 400 });
-  }
-
-  if (!urgency || !VALID_URGENCY.has(urgency)) {
-    return NextResponse.json({ ok: false, message: "Please select a valid urgency level." }, { status: 400 });
-  }
-
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-    return NextResponse.json({ ok: false, message: "Please pin a valid location on the map." }, { status: 400 });
-  }
-
-  if (animalImageDataUrl) {
-    if (animalImageDataUrl.length > MAX_IMAGE_DATA_URL_LENGTH || !IMAGE_DATA_URL_REGEX.test(animalImageDataUrl)) {
-      return NextResponse.json({ ok: false, message: "Please upload a valid image under 4MB." }, { status: 400 });
+      return NextResponse.json({
+        ok: true,
+        reportId,
+        message: `Thank you for reporting. Your report ID is ${reportId}. Our rescue team will contact you shortly.`,
+      }, { status: 201 });
+    } catch (error) {
+      return NextResponse.json(
+        { ok: false, message: toMessage(error, "Failed to save rescue report.") },
+        { status: 500 },
+      );
     }
+  } catch (error) {
+    return handleError(error);
   }
-
-  const reportId = `RR-${Math.floor(Date.now() / 1000).toString(36).toUpperCase()}`;
-
-  try {
-    const report = await saveRescueReport({
-      reportId,
-      fullName,
-      email,
-      phone,
-      species,
-      breed: body.breed?.trim() ?? "",
-      healthConditions: Array.isArray(body.healthConditions) ? body.healthConditions : [],
-      notes: body.notes?.trim() ?? "",
-      lastSeenAddress,
-      urgency,
-      location: {
-        latitude,
-        longitude,
-      },
-      animalImageDataUrl: animalImageDataUrl || undefined,
-      caseStatus: "reported",
-      adminChecklist: {
-        rescued: false,
-        monitored: false,
-        medicalCompleted: false,
-        shelterAssigned: false,
-        reporterNotified: false,
-      },
-      createdAt: new Date().toISOString(),
-    });
-
-    await createInquiry({
-      type: "rescue",
+}
       referenceId: report.id,
       title: `Rescue report from ${fullName}`,
       preview: `${species} at ${lastSeenAddress}`,
@@ -165,6 +116,8 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  await requireAdmin();
+
   let body: RescueAdminUpdateBody;
 
   try {
