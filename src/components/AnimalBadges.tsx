@@ -1,7 +1,7 @@
 import type {
   AnimalHealthStatus,
   AnimalStatus,
-  AnimalVaccinationStatus,
+  AnimalVaccinationState,
 } from "@/lib/animalInventoryTypes";
 
 const badgeBase = "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold tracking-wide";
@@ -32,7 +32,7 @@ export const ANIMAL_STATUS_OPTIONS = [
 ] as const;
 
 export const ANIMAL_VACCINATION_OPTIONS = [
-  { value: "up_to_date", label: "Up to date" },
+  { value: "up-to-date", label: "Up to date" },
   { value: "due_soon", label: "Due soon" },
   { value: "overdue", label: "Overdue" },
 ] as const;
@@ -59,8 +59,8 @@ const statusClasses: Record<AnimalStatus, string> = {
   adopted: "bg-violet-100 text-violet-800 ring-1 ring-violet-200",
 };
 
-const vaccinationClasses: Record<AnimalVaccinationStatus, string> = {
-  up_to_date: "bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200",
+const vaccinationClasses: Record<AnimalVaccinationState, string> = {
+  "up-to-date": "bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200",
   due_soon: "bg-amber-100 text-amber-800 ring-1 ring-amber-200",
   overdue: "bg-red-100 text-red-800 ring-1 ring-red-200",
 };
@@ -73,7 +73,7 @@ export function StatusBadge({ status }: { status: AnimalStatus }) {
   return <span className={`${badgeBase} ${statusClasses[status]}`}>{formatEnumLabel(status)}</span>;
 }
 
-export function VaccinationBadge({ vaccinationStatus }: { vaccinationStatus: AnimalVaccinationStatus }) {
+export function VaccinationBadge({ vaccinationStatus }: { vaccinationStatus: AnimalVaccinationState }) {
   return (
     <span className={`${badgeBase} ${vaccinationClasses[vaccinationStatus]}`}>
       {formatEnumLabel(vaccinationStatus)}

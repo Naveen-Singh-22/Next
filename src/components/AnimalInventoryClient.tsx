@@ -22,7 +22,7 @@ import type {
   AnimalHealthStatus,
   AnimalSpecies,
   AnimalStatus,
-  AnimalVaccinationStatus,
+  AnimalVaccinationState,
 } from "@/lib/animalInventoryTypes";
 
 type AnimalListResponse = {
@@ -57,7 +57,7 @@ type AnimalFormState = {
   status: AnimalStatus;
   notes: string;
   photoUrls: string[];
-  vaccinationStatus: AnimalVaccinationStatus;
+  vaccinationState: AnimalVaccinationState;
   addVaccinationEntry: boolean;
   vaccineName: string;
   vaccineDose: string;
@@ -90,7 +90,7 @@ function createEmptyFormState(): AnimalFormState {
     status: "admitted",
     notes: "",
     photoUrls: [],
-    vaccinationStatus: "up_to_date",
+    vaccinationState: "up-to-date",
     addVaccinationEntry: true,
     vaccineName: "Rabies Booster",
     vaccineDose: "Primary Course",
@@ -115,7 +115,7 @@ function buildFormState(animal: Animal | null): AnimalFormState {
     status: animal.status,
     notes: animal.notes ?? "",
     photoUrls: animal.photoUrls,
-    vaccinationStatus: animal.vaccinationStatus,
+    vaccinationState: animal.vaccinationState,
     addVaccinationEntry: false,
     vaccineName: "Rabies Booster",
     vaccineDose: "Primary Course",
@@ -416,11 +416,11 @@ export default function AnimalInventoryClient() {
 
       const vaccinationPayload = (await vaccinationResponse.json()) as VaccinationListResponse;
       const records = Array.isArray(vaccinationPayload.vaccinations) ? vaccinationPayload.vaccinations : [];
-      const animalIds = new Set(currentAnimals.map((animal) => animal.id));
+      const animalIntIds = new Set(currentAnimals.map((animal) => animal.intId).filter((id) => id !== null && id !== undefined));
       const latestByAnimalId: Record<number, VaccinationRecord> = {};
 
       records.forEach((record) => {
-        if (!animalIds.has(record.animalId)) {
+        if (!animalIntIds.has(record.animalId)) {
           return;
         }
 
@@ -511,7 +511,7 @@ export default function AnimalInventoryClient() {
       status: formState.status,
       notes: formState.notes.trim() || undefined,
       photoUrls: formState.photoUrls,
-      vaccinationStatus: formState.vaccinationStatus,
+      vaccinationState: formState.vaccinationState,
     };
 
     try {
@@ -751,7 +751,7 @@ export default function AnimalInventoryClient() {
                   <AnimalCard
                     key={animal.id}
                     animal={animal}
-                    vaccinationDetail={vaccinationDetailByAnimalId[animal.id]}
+                    vaccinationDetail={vaccinationDetailByAnimalId[animal.intId ?? -1]}
                     onEdit={openEditModal}
                     onDelete={setDeleteTarget}
                     onStatusChange={updateStatus}
@@ -806,10 +806,10 @@ export default function AnimalInventoryClient() {
                         <div className="space-y-1">
                           <dt className="font-medium text-slate-500">Vaccination</dt>
                           <dd className="space-y-1">
-                            <VaccinationBadge vaccinationStatus={animal.vaccinationStatus} />
-                            {vaccinationDetailByAnimalId[animal.id] ? (
+                            <VaccinationBadge vaccinationStatus={animal.vaccinationState} />
+                              {vaccinationDetailByAnimalId[animal.intId ?? -1] ? (
                               <p className="text-xs text-slate-500">
-                                {vaccinationDetailByAnimalId[animal.id].vaccineName} • Due {formatDate(vaccinationDetailByAnimalId[animal.id].nextDueDate)}
+                                  {vaccinationDetailByAnimalId[animal.intId ?? -1].vaccineName} • Due {formatDate(vaccinationDetailByAnimalId[animal.intId ?? -1].nextDueDate)}
                               </p>
                             ) : (
                               <p className="text-xs text-slate-400">No record</p>
@@ -902,10 +902,10 @@ export default function AnimalInventoryClient() {
                             <HealthBadge healthStatus={animal.healthStatus} />
                           </td>
                           <td className="px-3 py-3 sm:px-4 sm:py-4">
-                            <VaccinationBadge vaccinationStatus={animal.vaccinationStatus} />
-                            {vaccinationDetailByAnimalId[animal.id] ? (
+                            <VaccinationBadge vaccinationStatus={animal.vaccinationState} />
+                              {vaccinationDetailByAnimalId[animal.intId ?? -1] ? (
                               <p className="mt-2 text-[0.72rem] leading-5 text-slate-500 sm:text-xs">
-                                {vaccinationDetailByAnimalId[animal.id].vaccineName} • Due {formatDate(vaccinationDetailByAnimalId[animal.id].nextDueDate)}
+                                  {vaccinationDetailByAnimalId[animal.intId ?? -1].vaccineName} • Due {formatDate(vaccinationDetailByAnimalId[animal.intId ?? -1].nextDueDate)}
                               </p>
                             ) : (
                               <p className="mt-2 text-[0.72rem] text-slate-400 sm:text-xs">No record</p>

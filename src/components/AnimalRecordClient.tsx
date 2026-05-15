@@ -157,7 +157,7 @@ export default function AnimalRecordClient() {
 
                   <div className="flex flex-wrap gap-2">
                     <HealthBadge healthStatus={animal.healthStatus} />
-                    <VaccinationBadge vaccinationStatus={animal.vaccinationStatus} />
+                    <VaccinationBadge vaccinationStatus={animal.vaccinationState} />
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -205,7 +205,7 @@ export default function AnimalRecordClient() {
                     <span className="font-semibold text-slate-900">Health:</span> {formatEnumLabel(animal.healthStatus)}
                   </p>
                   <p>
-                    <span className="font-semibold text-slate-900">Vaccination:</span> {formatEnumLabel(animal.vaccinationStatus)}
+                    <span className="font-semibold text-slate-900">Vaccination:</span> {formatEnumLabel(animal.vaccinationState)}
                   </p>
                 </div>
 
