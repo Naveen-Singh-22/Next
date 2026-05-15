@@ -1,48 +1,53 @@
 {
   "users": [
     {
-      "id": "user_1777662811181",
-      "name": "Aman Singh",
-      "email": "imailductilework@gmail.com",
-      "password": "Aman@123",
-      "role": "donor",
-      "createdAt": "2026-05-01T19:13:31.181Z",
-      "isActive": true
-    },
-    {
-      "id": "user_1777696277708",
-      "name": "Ductile",
-      "email": "singhaman@gmail.com",
-      "password": "Aman123",
-      "role": "adopter",
-      "createdAt": "2026-05-02T04:31:17.708Z",
-      "isActive": true
-    },
-    {
-      "id": "user_1777701834849",
-      "name": "Sakshi Singh",
-      "email": "Sakshi@gmail.com",
-      "password": "Sakshi123",
-      "role": "volunteer",
-      "createdAt": "2026-05-02T06:03:54.849Z",
-      "isActive": true
-    },
-    {
-      "id": "user_admin_001",
-      "name": "Administrator",
-      "email": "admin@thecaninehelp.org",
-      "password": "admin123",
+      "id": "usr_admin_1",
+      "name": "Naveen Singh",
+      "email": "admin@thecaninehelp.local",
+      "password": "$2b$10$Jr00mAvYqT4wdZsJZEMQGupYAK1FZBe9eDqP7NaUl3MvWywBa/.J6",
       "role": "admin",
-      "createdAt": "2026-05-01T00:00:00.000Z",
+      "createdAt": "2026-04-10T20:11:58.955Z",
+      "lastLogin": "2026-05-09T20:11:58.955Z",
       "isActive": true
     },
     {
-      "id": "user_1777861893203",
-      "name": "Kartik singh",
-      "email": "kartiksingh@gmail.com",
-      "password": "Kartik123",
+      "id": "usr_staff_1",
+      "name": "Asha Khan",
+      "email": "staff@thecaninehelp.local",
+      "password": "$2b$10$Jr00mAvYqT4wdZsJZEMQGupYAK1FZBe9eDqP7NaUl3MvWywBa/.J6",
+      "role": "staff",
+      "createdAt": "2026-04-12T20:11:58.955Z",
+      "lastLogin": "2026-05-08T20:11:58.955Z",
+      "isActive": true
+    },
+    {
+      "id": "usr_donor_1",
+      "name": "Rohit Verma",
+      "email": "donor1@example.com",
+      "password": "$2b$10$Jr00mAvYqT4wdZsJZEMQGupYAK1FZBe9eDqP7NaUl3MvWywBa/.J6",
+      "role": "donor",
+      "createdAt": "2026-04-20T20:11:58.955Z",
+      "lastLogin": "2026-05-05T20:11:58.955Z",
+      "isActive": true
+    },
+    {
+      "id": "usr_volunteer_1",
+      "name": "Sara Ahmed",
+      "email": "volunteer1@example.com",
+      "password": "$2b$10$Jr00mAvYqT4wdZsJZEMQGupYAK1FZBe9eDqP7NaUl3MvWywBa/.J6",
       "role": "volunteer",
-      "createdAt": "2026-05-04T02:31:33.203Z",
+      "createdAt": "2026-04-22T20:11:58.955Z",
+      "lastLogin": "2026-05-07T20:11:58.955Z",
+      "isActive": true
+    },
+    {
+      "id": "usr_adopter_1",
+      "name": "Priya Das",
+      "email": "adopter1@example.com",
+      "password": "$2b$10$Jr00mAvYqT4wdZsJZEMQGupYAK1FZBe9eDqP7NaUl3MvWywBa/.J6",
+      "role": "adopter",
+      "createdAt": "2026-04-28T20:11:58.955Z",
+      "lastLogin": "2026-05-06T20:11:58.955Z",
       "isActive": true
     }
   ]

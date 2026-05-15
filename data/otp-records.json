@@ -1,0 +1,20 @@
+{
+  "otps": [
+    {
+      "email": "test_user_20260516005032@example.com",
+      "otp": "1619",
+      "createdAt": 1778872842339,
+      "expiresAt": 1778873442339,
+      "attempts": 0,
+      "maxAttempts": 3
+    },
+    {
+      "email": "test_user_20260516005047@example.com",
+      "otp": "1026",
+      "createdAt": 1778872850160,
+      "expiresAt": 1778873450160,
+      "attempts": 0,
+      "maxAttempts": 3
+    }
+  ]
+}
