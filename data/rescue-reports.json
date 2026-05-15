@@ -1,120 +1,66 @@
 {
   "rescueReports": [
     {
-      "reportId": "RR-TE4FBJ",
-      "fullName": "Anshu",
-      "email": "anshu@gmail.com",
-      "phone": "8959562680",
-      "species": "Cat",
-      "breed": "street",
+      "id": 1,
+      "reportId": "RS-0001",
+      "fullName": "Kavita Rao",
+      "email": "kavita@example.com",
+      "phone": "9000011111",
+      "species": "dog",
+      "breed": "street mix",
       "healthConditions": [
-        "Healthy Stray"
+        "limping",
+        "dehydration"
       ],
-      "notes": "i found near a park",
-      "lastSeenAddress": "Babariya, Dewas, Dewas Nagar Tahsil, Dewas, Madhya Pradesh, 455001, India",
-      "urgency": "standard",
-      "location": {
-        "latitude": 22.94104207976889,
-        "longitude": 76.02578051381651
-      },
-      "caseStatus": "reported",
-      "adminChecklist": {
-        "rescued": false,
-        "monitored": false,
-        "medicalCompleted": false,
-        "shelterAssigned": false,
-        "reporterNotified": false
-      },
-      "createdAt": "2026-04-26T21:50:07.812Z",
-      "id": 0
-    },
-    {
-      "reportId": "RR-TE39ZU",
-      "fullName": "Aman",
-      "email": "aman@gmail.com",
-      "phone": "7415505727",
-      "species": "Cat",
-      "breed": "Street cat",
-      "healthConditions": [
-        "Healthy Stray"
-      ],
-      "notes": "i  found this cat on sideway street",
-      "lastSeenAddress": "Yaswant Club Road, Indore City, Indore, Juni Indore Tahsil, Indore, Madhya Pradesh, 452001, India",
-      "urgency": "standard",
-      "location": {
-        "latitude": 22.72303088196703,
-        "longitude": 75.87580214900994
-      },
-      "createdAt": "2026-04-26T06:57:30.910Z",
-      "caseStatus": "closed",
-      "adminChecklist": {
-        "rescued": false,
-        "monitored": false,
-        "medicalCompleted": false,
-        "shelterAssigned": false,
-        "reporterNotified": true
-      },
-      "lastAdminUpdateAt": "2026-04-26T16:08:27.571Z",
-      "id": 1
-    },
-    {
-      "reportId": "RR-TE0BYS",
-      "fullName": "Arpit",
-      "email": "arpit@gmail.com",
-      "phone": "9630614107",
-      "species": "Cat",
-      "breed": "Street cat",
-      "healthConditions": [
-        "Injured"
-      ],
-      "notes": "Accident with bike",
-      "lastSeenAddress": "Indore City, Indore, Juni Indore Tahsil, Indore, Madhya Pradesh, 452001, India",
-      "urgency": "critical",
-      "location": {
-        "latitude": 22.76473507808752,
-        "longitude": 75.89989882679312
-      },
-      "createdAt": "2026-04-24T16:47:16.965Z",
-      "caseStatus": "reported",
-      "adminChecklist": {
-        "rescued": false,
-        "monitored": false,
-        "medicalCompleted": false,
-        "shelterAssigned": false,
-        "reporterNotified": true
-      },
-      "lastAdminUpdateAt": "2026-04-26T18:53:10.639Z",
-      "id": 2
-    },
-    {
-      "reportId": "RR-TDZZD7",
-      "fullName": "Ductile",
-      "email": "imailductilework@gmail.com",
-      "phone": "7509609532",
-      "species": "Dog",
-      "breed": "Street dog",
-      "healthConditions": [
-        "Injured",
-        "Malnourished"
-      ],
-      "notes": "Road accident by Car",
-      "lastSeenAddress": "Piplya Kumar, Indore, Juni Indore Tahsil, Indore, Madhya Pradesh, 452001, India",
+      "notes": "Seen near the market entrance and avoiding movement.",
+      "lastSeenAddress": "Central Market Road, Bengaluru",
       "urgency": "urgent",
       "location": {
-        "latitude": 22.770164790070364,
-        "longitude": 75.91056610384192
+        "latitude": 12.9716,
+        "longitude": 77.5946
       },
-      "createdAt": "2026-04-24T12:15:07.008Z",
-      "id": 3,
-      "caseStatus": "reported",
+      "caseStatus": "in_progress",
       "adminChecklist": {
         "rescued": false,
-        "monitored": false,
+        "monitored": true,
         "medicalCompleted": false,
         "shelterAssigned": false,
-        "reporterNotified": false
-      }
+        "reporterNotified": true
+      },
+      "lastAdminUpdateAt": "2026-05-09T20:11:58.956Z",
+      "reporterNotifiedAt": "2026-05-09T20:11:58.956Z",
+      "createdAt": "2026-05-08T20:11:58.956Z"
+    },
+    {
+      "id": 2,
+      "reportId": "RS-0002",
+      "fullName": "Imran Sheikh",
+      "email": "imran@example.com",
+      "phone": "9000022222",
+      "species": "cat",
+      "breed": "tabby",
+      "healthConditions": [
+        "skin irritation"
+      ],
+      "notes": "The cat is now under shelter care.",
+      "lastSeenAddress": "Sector 12, Noida",
+      "urgency": "standard",
+      "location": {
+        "latitude": 28.5355,
+        "longitude": 77.391
+      },
+      "caseStatus": "rescued",
+      "adminChecklist": {
+        "rescued": true,
+        "monitored": true,
+        "medicalCompleted": true,
+        "shelterAssigned": true,
+        "reporterNotified": true
+      },
+      "lastAdminUpdateAt": "2026-05-07T20:11:58.956Z",
+      "reporterNotifiedAt": "2026-05-07T20:11:58.956Z",
+      "createdAt": "2026-05-04T20:11:58.956Z"
     }
   ],
-  "nextId": 1
+  "nextId": 3
 }

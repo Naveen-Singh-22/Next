@@ -1,45 +1,25 @@
 {
   "donations": [
     {
-      "donorName": "Sakshi Singh",
-      "email": "Sakshi@gmail.com",
-      "phone": "7697889471",
-      "amount": 100,
-      "coverFees": true,
-      "id": 4,
-      "donationId": "DN-TEKSB9",
-      "createdAt": "2026-05-05T17:52:21.467Z"
-    },
-    {
-      "donorName": "Aman",
-      "email": "imailductilework@gmail.com",
-      "phone": "7415505727",
-      "amount": 499,
-      "coverFees": true,
-      "id": 3,
-      "donationId": "DN-TEEV72",
-      "createdAt": "2026-05-02T13:09:02.095Z"
-    },
-    {
-      "donorName": "Aman Singh",
-      "email": "imailductilework@gmail.com",
-      "phone": "7415505727",
-      "amount": 999,
-      "coverFees": true,
-      "id": 2,
-      "donationId": "DN-TEDLH1",
-      "createdAt": "2026-05-01T20:41:25.520Z"
-    },
-    {
-      "donorName": "wew435234r4325",
-      "email": "qwetreq@gmail.com9999999",
-      "phone": "9999999999999999999",
-      "amount": 999,
-      "coverFees": true,
       "id": 1,
-      "donationId": "DN-TE5MXQ",
-      "createdAt": "2026-04-27T13:32:14.151Z"
+      "donationId": "DN-0001",
+      "donorName": "Rohit Verma",
+      "email": "donor1@example.com",
+      "phone": "9898989898",
+      "amount": 5000,
+      "coverFees": true,
+      "createdAt": "2026-05-06T20:11:58.956Z"
+    },
+    {
+      "id": 2,
+      "donationId": "DN-0002",
+      "donorName": "Ananya Sharma",
+      "email": "ananya@example.com",
+      "phone": "9777766666",
+      "amount": 2500,
+      "coverFees": false,
+      "createdAt": "2026-05-09T20:11:58.956Z"
     }
   ],
-  "nextId": 5
+  "nextId": 3
 }
