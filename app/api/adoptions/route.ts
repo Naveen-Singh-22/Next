@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdoption, listAdoptions } from "@/lib/adoptionsStore";
 import { createInquiry } from "@/lib/inquiryStore";
+import { requireAdmin } from "@/lib/authContext";
 
 type CreateAdoptionBody = {
   applicantName?: string;
@@ -20,6 +21,7 @@ export const runtime = "nodejs";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function GET() {
+  await requireAdmin();
   return NextResponse.json({ applications: await listAdoptions() });
 }
 
@@ -72,6 +74,9 @@ export async function POST(request: Request) {
     animalCode: animalCode || undefined,
     adminNotes: "",
   });
+  if (!application) {
+    return NextResponse.json({ message: "Failed to create application." }, { status: 500 });
+  }
 
   await createInquiry({
     type: "adoption",
