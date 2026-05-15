@@ -1,121 +1,86 @@
 {
   "applications": [
     {
-      "applicantName": "asdfffffffffff",
-      "email": "imailductilework@gmail.com",
-      "phone": "555555555555555555555",
-      "city": "wefqerfwefwedfe",
-      "housing": "house",
-      "petExperience": "wefergwergewffwe",
-      "whyAdopt": "werfwerfwe",
-      "animalId": 36,
-      "animalName": "Hancock",
-      "adminNotes": "",
-      "id": 4,
-      "applicationId": "AD-TE5N5LT0K",
-      "createdAt": "2026-04-27T13:36:57.079Z",
-      "status": "applied",
-      "timeline": [
-        {
-          "type": "Application submitted",
-          "time": "2026-04-27T13:36:57.079Z"
-        }
-      ]
-    },
-    {
-      "applicantName": "Anshu Singh",
-      "email": "anshu@gmail.com",
-      "phone": "8959562680",
-      "city": "Dewas",
-      "housing": "house",
-      "petExperience": "my neighbor have pet was my favorite",
-      "whyAdopt": "i have good bonding with pets",
-      "animalId": 4,
-      "animalName": "Balthazar",
-      "adminNotes": "",
-      "id": 3,
-      "applicationId": "AD-TE4FGHFQ9",
-      "createdAt": "2026-04-26T21:53:05.766Z",
-      "status": "applied",
-      "timeline": [
-        {
-          "type": "Application submitted",
-          "time": "2026-04-26T21:53:05.766Z"
-        }
-      ]
-    },
-    {
-      "applicantName": "Alok Singh",
-      "email": "alok@gmail.com",
-      "phone": "7415585620",
-      "city": "Indore",
-      "housing": "farm",
-      "petExperience": "I have a dog in my home",
-      "whyAdopt": "I used to play with dog in my childhood",
-      "animalId": 37,
-      "animalName": "Stiger",
-      "adminNotes": "Need to review\n",
-      "id": 2,
-      "applicationId": "AD-TE3G9EODP",
-      "createdAt": "2026-04-26T09:12:50.430Z",
-      "status": "shortlisted",
-      "timeline": [
-        {
-          "type": "Application submitted",
-          "time": "2026-04-26T09:12:50.430Z"
-        },
-        {
-          "type": "Application shortlisted",
-          "time": "2026-04-26T09:15:58.705Z"
-        },
-        {
-          "type": "Status updated",
-          "time": "2026-04-26T21:55:06.333Z"
-        },
-        {
-          "type": "Application shortlisted",
-          "time": "2026-04-26T21:55:09.950Z"
-        }
-      ]
-    },
-    {
-      "applicantName": "Arpit Singh",
-      "email": "Arpit@gmail.com",
-      "phone": "8956236584",
-      "city": "Indore",
-      "housing": "apartment",
-      "petExperience": "I have a pet in my hometown",
-      "whyAdopt": "Playing around pets keep me calm",
-      "animalId": 9,
-      "adminNotes": "",
       "id": 1,
-      "createdAt": "2026-04-26T06:15:54.061Z",
+      "applicationId": "ADP-0001",
+      "applicantName": "Priya Das",
+      "email": "adopter1@example.com",
+      "phone": "9876543210",
+      "city": "Bengaluru",
+      "housing": "apartment",
+      "petExperience": "Previously adopted a rescue cat and currently fosters another animal.",
+      "whyAdopt": "Want a calm companion for a family home.",
+      "animalId": 1,
+      "animalName": "Buddy",
+      "animalCode": "AN-0001",
       "status": "applied",
+      "adminNotes": "Initial screening complete.",
       "timeline": [
         {
-          "type": "Application submitted",
-          "time": "2026-04-26T06:15:54.061Z"
-        },
-        {
-          "type": "Application shortlisted",
-          "time": "2026-04-26T06:22:44.114Z"
-        },
-        {
-          "type": "Home visit scheduled",
-          "time": "2026-04-26T06:22:45.349Z"
-        },
-        {
-          "type": "Approved",
-          "time": "2026-04-26T06:22:48.524Z"
-        },
-        {
-          "type": "Status updated",
-          "time": "2026-04-26T06:22:53.008Z"
+          "type": "Applied",
+          "time": "2026-05-05T20:11:58.956Z"
         }
       ],
-      "applicationId": "AD-TE3DVTVJR",
-      "animalName": "Animal #9"
+      "createdAt": "2026-05-05T20:11:58.956Z"
+    },
+    {
+      "id": 2,
+      "applicationId": "ADP-0002",
+      "applicantName": "Farhan Ali",
+      "email": "farhan@example.com",
+      "phone": "9123456780",
+      "city": "Hyderabad",
+      "housing": "house",
+      "petExperience": "Family has raised two dogs before.",
+      "whyAdopt": "Looking to adopt a young rescue cat for companionship.",
+      "animalId": 4,
+      "animalName": "Coco",
+      "animalCode": "AN-0004",
+      "status": "shortlisted",
+      "adminNotes": "Candidate shortlisted for home visit.",
+      "timeline": [
+        {
+          "type": "Applied",
+          "time": "2026-05-02T20:11:58.956Z"
+        },
+        {
+          "type": "Shortlisted",
+          "time": "2026-05-04T20:11:58.956Z"
+        }
+      ],
+      "createdAt": "2026-05-02T20:11:58.956Z"
+    },
+    {
+      "id": 3,
+      "applicationId": "ADP-0003",
+      "applicantName": "Meera Iyer",
+      "email": "meera@example.com",
+      "phone": "9988776655",
+      "city": "Chennai",
+      "housing": "house",
+      "petExperience": "Volunteer with the shelter and has fostered twice.",
+      "whyAdopt": "Interested in adopting a cat that is recovering but stable.",
+      "animalId": 2,
+      "animalName": "Milo",
+      "animalCode": "AN-0002",
+      "status": "home_visit",
+      "adminNotes": "Home visit scheduled for next week.",
+      "timeline": [
+        {
+          "type": "Applied",
+          "time": "2026-04-28T20:11:58.956Z"
+        },
+        {
+          "type": "Shortlisted",
+          "time": "2026-04-30T20:11:58.956Z"
+        },
+        {
+          "type": "Home Visit",
+          "time": "2026-05-06T20:11:58.956Z"
+        }
+      ],
+      "createdAt": "2026-04-28T20:11:58.956Z"
     }
   ],
-  "nextId": 5
+  "nextId": 4
 }
