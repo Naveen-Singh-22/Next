@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Basic starter models for your project. Adjust fields as needed.
+model User {
+  id                Int      @id @default(autoincrement())
+  email             String   @unique
+  password          String
+  fullName          String
+  role              String   @default("admin")
+  createdAt         DateTime @default(now())
+  emailVerified     Boolean  @default(false)
+  emailVerifiedAt   DateTime?
+
+  @@map("AdminUser")
+}
+
+model LegacyUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  @@map("User")
+}
+
+model Animal {
+  id               String   @id
+  intId            Int      @unique
+  animalCode       String   @unique
+  name             String
+  species          String
+  age              Int?
+  adopted          Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  breed            String
+  gender           String
+  healthStatus     String
+  notes            String
+  photoUrls        String[] @default([])
+  status           String
+  vaccinationState String
+}
+
+
+model Donation {
+  id         Int      @id @default(autoincrement())
+  donationId String?  @unique
+  donorName  String
+  email      String?
+  phone      String?
+  amount     Int
+  coverFees  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model Vaccination {
+  id          Int      @id @default(autoincrement())
+  animalId    Int
+  animalName  String
+  vaccineName String
+  dose        String?
+  dateGiven   DateTime
+  nextDueDate DateTime?
+  notes       String?
+}
+
+model AdoptionApplication {
+  id            Int     @id @default(autoincrement())
+  applicationId String? @unique
+  applicantName String
+  email         String
+  phone         String?
+  city          String?
+  housing       String?
+  petExperience String?
+  whyAdopt      String?
+  animalId      Int?
+  animalName    String?
+  animalCode    String?
+  status        String?
+  adminNotes    String?
+  timeline      Json?
+  createdAt     DateTime?
+}
+
+model VolunteerApplication {
+  id            Int     @id @default(autoincrement())
+  applicationId String? @unique
+  fullName      String
+  email         String
+  phone         String?
+  city          String?
+  interestArea  String?
+  availability  String?
+  status        String?
+  createdAt     DateTime?
+}
+
+model Inquiry {
+  id          Int      @id @default(autoincrement())
+  type        String
+  referenceId Int?
+  title       String
+  preview     String?
+  status      String?
+  createdAt   DateTime?
+  updatedAt   DateTime?
+}
+
+model RescueRequest {
+  id        Int      @id @default(autoincrement())
+  reportId  String?  @unique
+  location  String
+  description String?
+  status    String?  @default("new")
+  priority  String?  @default("medium")
+  reporterName String?
+  reporterPhone String?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime?
+}
