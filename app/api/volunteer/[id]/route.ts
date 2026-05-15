@@ -4,6 +4,8 @@ import path from "node:path";
 import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
 import type { StoredVolunteerApplication } from "@/lib/volunteerApplicationsStore";
+import { requireAdmin } from "@/lib/authContext";
+import { handleError } from "@/lib/apiErrors";
 
 type VolunteerDb = {
   applications: StoredVolunteerApplication[];
@@ -43,56 +45,62 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id: applicationId } = await params;
-
-  let body: { status?: string };
-
   try {
-    body = (await request.json()) as { status?: string };
-  } catch {
-    return NextResponse.json(
-      { ok: false, message: "Invalid request payload." },
-      { status: 400 },
-    );
-  }
+    await requireAdmin();
+    
+    const { id: applicationId } = await params;
 
-  const { status } = body;
+    let body: { status?: string };
 
-  if (!status || !["pending", "reviewing", "approved", "declined"].includes(status)) {
-    return NextResponse.json(
-      { ok: false, message: "Invalid status." },
-      { status: 400 },
-    );
-  }
-
-  try {
-    const db = await getDb();
-    await db.read();
-
-    const application = db.data.applications.find(
-      (app) => app.applicationId === applicationId,
-    );
-
-    if (!application) {
+    try {
+      body = (await request.json()) as { status?: string };
+    } catch {
       return NextResponse.json(
-        { ok: false, message: "Application not found." },
-        { status: 404 },
+        { ok: false, message: "Invalid request payload." },
+        { status: 400 },
       );
     }
 
-    application.status = status as StoredVolunteerApplication["status"];
-    await db.write();
+    const { status } = body;
 
-    return NextResponse.json({
-      ok: true,
-      message: "Application status updated successfully.",
-      application,
-    });
+    if (!status || !["pending", "reviewing", "approved", "declined"].includes(status)) {
+      return NextResponse.json(
+        { ok: false, message: "Invalid status." },
+        { status: 400 },
+      );
+    }
+
+    try {
+      const db = await getDb();
+      await db.read();
+
+      const application = db.data.applications.find(
+        (app) => app.applicationId === applicationId,
+      );
+
+      if (!application) {
+        return NextResponse.json(
+          { ok: false, message: "Application not found." },
+          { status: 404 },
+        );
+      }
+
+      application.status = status as StoredVolunteerApplication["status"];
+      await db.write();
+
+      return NextResponse.json({
+        ok: true,
+        message: "Application status updated successfully.",
+        application,
+      });
+    } catch (error) {
+      console.error("Failed to update application status:", error);
+      return NextResponse.json(
+        { ok: false, message: "Failed to update application status." },
+        { status: 500 },
+      );
+    }
   } catch (error) {
-    console.error("Failed to update application status:", error);
-    return NextResponse.json(
-      { ok: false, message: "Failed to update application status." },
-      { status: 500 },
-    );
+    return handleError(error);
   }
 }
