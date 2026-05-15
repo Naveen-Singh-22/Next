@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { findAdoptionById, updateAdoption } from "@/lib/adoptionsStore";
 import type { AdoptionApplication } from "@/lib/adoptionApplicationTypes";
+import { requireAdmin } from "@/lib/authContext";
 
 type RouteParams = {
   params: Promise<{
@@ -18,6 +19,8 @@ function parseId(rawId: string) {
 export const runtime = "nodejs";
 
 export async function GET(_: Request, { params }: RouteParams) {
+  await requireAdmin();
+
   const { id } = await params;
   const parsedId = parseId(id);
 
@@ -35,6 +38,8 @@ export async function GET(_: Request, { params }: RouteParams) {
 }
 
 export async function PUT(request: Request, { params }: RouteParams) {
+  await requireAdmin();
+
   const { id } = await params;
   const parsedId = parseId(id);
 

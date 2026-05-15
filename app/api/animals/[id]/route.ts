@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { deleteAnimal, getAnimalById, updateAnimal } from "@/lib/animalInventoryDb";
+import { prisma } from "@/lib/prisma";
 import type {
   AnimalGender,
   AnimalHealthStatus,
   AnimalSpecies,
   AnimalStatus,
-  AnimalVaccinationStatus,
+  AnimalVaccinationState,
 } from "@/lib/animalInventoryTypes";
 import { requireAdmin } from "@/lib/authContext";
 import { handleError, NotFoundError } from "@/lib/apiErrors";
@@ -14,23 +14,11 @@ const speciesValues: AnimalSpecies[] = ["dog", "cat", "bird"];
 const genderValues: AnimalGender[] = ["male", "female"];
 const healthValues: AnimalHealthStatus[] = ["healthy", "injured", "recovering", "critical"];
 const statusValues: AnimalStatus[] = ["rescued", "admitted", "available", "adopted"];
-const vaccinationValues: AnimalVaccinationStatus[] = ["up_to_date", "due_soon", "overdue"];
+const vaccinationValues: AnimalVaccinationState[] = ["up-to-date", "due_soon", "overdue"];
 
 function parseId(value: string) {
-  const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
-}
-
-function parsePhotoUrls(value: unknown) {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (!Array.isArray(value)) {
-    return [] as string[];
-  }
-
-  return value.filter((item): item is string => typeof item === "string" && item.length > 0);
+  const trimmed = value?.toString().trim();
+  return trimmed && trimmed.length > 0 ? trimmed : null;
 }
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
@@ -42,7 +30,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       return NextResponse.json({ ok: false, message: "Invalid animal id." }, { status: 400 });
     }
 
-    const animal = await getAnimalById(animalId);
+    const animal = await prisma.animal.findUnique({ where: { id: animalId } });
 
     if (!animal) {
       throw new NotFoundError("Animal not found");
@@ -84,26 +72,27 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
       return NextResponse.json({ ok: false, message: "Invalid status." }, { status: 400 });
     }
 
-    if (body.vaccinationStatus && !vaccinationValues.includes(body.vaccinationStatus as AnimalVaccinationStatus)) {
+    if (body.vaccinationState && !vaccinationValues.includes(body.vaccinationState as AnimalVaccinationState)) {
       return NextResponse.json({ ok: false, message: "Invalid vaccination status." }, { status: 400 });
     }
 
-    const updated = await updateAnimal(animalId, {
-      name: typeof body.name === "string" ? body.name : undefined,
-      species: body.species as AnimalSpecies | undefined,
-      breed: typeof body.breed === "string" ? body.breed : body.breed === null ? "" : undefined,
-      age: typeof body.age === "number" ? body.age : undefined,
-      gender: body.gender as AnimalGender | undefined,
-      healthStatus: body.healthStatus as AnimalHealthStatus | undefined,
-      status: body.status as AnimalStatus | undefined,
-      notes: typeof body.notes === "string" ? body.notes : body.notes === null ? "" : undefined,
-      photoUrls: parsePhotoUrls(body.photoUrls),
-      vaccinationStatus: body.vaccinationStatus as AnimalVaccinationStatus | undefined,
-    });
+    const updates: any = {};
 
-    if (!updated) {
-      throw new NotFoundError("Animal not found");
-    }
+    if (body.name !== undefined) updates.name = typeof body.name === "string" ? body.name.trim() : undefined;
+    if (body.species) updates.species = body.species;
+    if (body.age !== undefined) updates.age = typeof body.age === "number" ? body.age : undefined;
+    if (body.animalCode !== undefined) updates.animalCode = typeof body.animalCode === "string" ? body.animalCode.trim() : undefined;
+    if (body.breed !== undefined) updates.breed = typeof body.breed === "string" ? body.breed.trim() : undefined;
+    if (body.gender !== undefined) updates.gender = body.gender;
+    if (body.healthStatus !== undefined) updates.healthStatus = body.healthStatus;
+    if (body.notes !== undefined) updates.notes = typeof body.notes === "string" ? body.notes.trim() : undefined;
+    if (body.photoUrls !== undefined) updates.photoUrls = Array.isArray(body.photoUrls) ? body.photoUrls.filter((value): value is string => typeof value === "string" && value.trim().length > 0) : undefined;
+    if (body.status === "adopted") updates.adopted = true;
+    if (body.status === "available" || body.status === "admitted" || body.status === "rescued") updates.adopted = false;
+    if (body.status !== undefined) updates.status = body.status;
+    if (body.vaccinationState !== undefined) updates.vaccinationState = body.vaccinationState;
+
+    const updated = await prisma.animal.update({ where: { id: animalId }, data: updates });
 
     return NextResponse.json({ ok: true, animal: updated }, { status: 200 });
   } catch (error) {
@@ -123,11 +112,13 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
       return NextResponse.json({ ok: false, message: "Invalid animal id." }, { status: 400 });
     }
 
-    const deleted = await deleteAnimal(animalId);
+    const existing = await prisma.animal.findUnique({ where: { id: animalId } });
 
-    if (!deleted) {
+    if (!existing) {
       throw new NotFoundError("Animal not found");
     }
+
+    await prisma.animal.delete({ where: { id: animalId } });
 
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {

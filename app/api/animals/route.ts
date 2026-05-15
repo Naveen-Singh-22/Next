@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createAnimal, listAnimals } from "@/lib/animalInventoryDb";
+import { prisma } from "@/lib/prisma";
 import type {
   AnimalCreateInput,
   AnimalFilters,
@@ -7,7 +7,7 @@ import type {
   AnimalHealthStatus,
   AnimalSpecies,
   AnimalStatus,
-  AnimalVaccinationStatus,
+  AnimalVaccinationState,
 } from "@/lib/animalInventoryTypes";
 import { requireAdmin } from "@/lib/authContext";
 import { handleError } from "@/lib/apiErrors";
@@ -16,7 +16,7 @@ const speciesValues: AnimalSpecies[] = ["dog", "cat", "bird"];
 const genderValues: AnimalGender[] = ["male", "female"];
 const healthValues: AnimalHealthStatus[] = ["healthy", "injured", "recovering", "critical"];
 const statusValues: AnimalStatus[] = ["rescued", "admitted", "available", "adopted"];
-const vaccinationValues: AnimalVaccinationStatus[] = ["up_to_date", "due_soon", "overdue"];
+const vaccinationValues: AnimalVaccinationState[] = ["up-to-date", "due_soon", "overdue"];
 const sortValues: NonNullable<AnimalFilters["sort"]>[] = ["newest", "health", "alphabetical"];
 
 function parseNumber(value: string | null) {
@@ -44,20 +44,44 @@ function parseAnimalsQuery(searchParams: URLSearchParams): AnimalFilters {
   };
 }
 
-function parsePhotoUrls(value: unknown) {
-  if (!Array.isArray(value)) {
-    return [] as string[];
-  }
-
-  return value.filter((item): item is string => typeof item === "string" && item.length > 0);
-}
-
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
-    const result = await listAnimals(parseAnimalsQuery(url.searchParams));
+    const filters = parseAnimalsQuery(url.searchParams);
 
-    return NextResponse.json(result, { status: 200 });
+    const where: any = {};
+
+    if (filters.search) {
+      where.OR = [
+        { name: { contains: filters.search, mode: "insensitive" } },
+        { species: { contains: filters.search, mode: "insensitive" } },
+      ];
+    }
+
+    if (filters.species) where.species = filters.species;
+    if (filters.status === "adopted") where.adopted = true;
+    if (filters.status === "available") where.adopted = false;
+
+    const page = Math.max(1, filters.page ?? 1);
+    const limit = Math.max(1, filters.limit ?? 12);
+
+    const orderBy: any = [];
+    switch (filters.sort) {
+      case "alphabetical":
+        orderBy.push({ name: "asc" });
+        break;
+      case "newest":
+      default:
+        orderBy.push({ createdAt: "desc" });
+        break;
+    }
+
+    const [total, animals] = await Promise.all([
+      prisma.animal.count({ where }),
+      prisma.animal.findMany({ where, orderBy, skip: (page - 1) * limit, take: limit }),
+    ]);
+
+    return NextResponse.json({ animals, total, page, limit }, { status: 200 });
   } catch (error) {
     return handleError(error);
   }
@@ -91,21 +115,34 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, message: "Invalid animal status." }, { status: 400 });
     }
 
-    if (!vaccinationValues.includes(body.vaccinationStatus as AnimalVaccinationStatus)) {
+    if (!vaccinationValues.includes(body.vaccinationState as AnimalVaccinationState)) {
       return NextResponse.json({ ok: false, message: "Valid vaccination status is required." }, { status: 400 });
     }
 
-    const created = await createAnimal({
-      name: body.name,
-      species: body.species as AnimalSpecies,
-      breed: body.breed,
-      age: body.age,
-      gender: body.gender as AnimalGender | undefined,
-      healthStatus: body.healthStatus as AnimalHealthStatus,
-      status: (body.status as AnimalStatus) ?? "admitted",
-      notes: body.notes,
-      photoUrls: parsePhotoUrls(body.photoUrls),
-      vaccinationStatus: body.vaccinationStatus as AnimalVaccinationStatus,
+    const animalCode =
+      typeof body.animalCode === "string" && body.animalCode.trim().length > 0
+        ? body.animalCode.trim()
+        : `${body.name!.trim().toLowerCase().replace(/\s+/g, "-")}-${body.species}`;
+
+    const nextIntId = (await prisma.animal.aggregate({ _max: { intId: true } }))._max.intId ?? 0;
+
+    const created = await prisma.animal.create({
+      data: {
+        id: `${body.name!.trim().toLowerCase().replace(/\s+/g, "-")}-${body.species}`,
+        intId: nextIntId + 1,
+        animalCode,
+        name: body.name!.trim(),
+        species: body.species as AnimalSpecies,
+        age: body.age ?? null,
+        adopted: body.status === "adopted",
+        breed: typeof body.breed === "string" && body.breed.trim().length > 0 ? body.breed.trim() : "",
+        gender: body.gender ?? "male",
+        healthStatus: body.healthStatus as AnimalHealthStatus,
+        notes: typeof body.notes === "string" ? body.notes.trim() : "",
+        photoUrls: Array.isArray(body.photoUrls) ? body.photoUrls.filter((value): value is string => typeof value === "string" && value.trim().length > 0) : [],
+        status: body.status ?? "admitted",
+        vaccinationState: body.vaccinationState as AnimalVaccinationState,
+      },
     });
 
     return NextResponse.json({ ok: true, animal: created }, { status: 201 });
