@@ -59,39 +59,8 @@ function LoginContent() {
         email,
         password,
         rememberMe,
+        role: "admin",
       };
-
-      if (requestedRole === "admin") {
-        const adminResponse = await fetch("/api/admin/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(credentials),
-        });
-
-        const adminPayload = (await adminResponse.json().catch(() => null)) as LoginResponse | null;
-        if (!adminResponse.ok || !adminPayload?.ok) {
-          setErrorMessage(adminPayload?.message ?? "Invalid email or password.");
-          return;
-        }
-
-        const nextPath = sanitizeAuthNextPath(searchParams.get("next"), "/admin");
-        router.replace(nextPath.startsWith("/admin") ? nextPath : "/admin");
-        router.refresh();
-        return;
-      }
-
-      const adminResponse = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
-      });
-
-      const adminPayload = (await adminResponse.json().catch(() => null)) as LoginResponse | null;
-      if (adminResponse.ok && adminPayload?.ok) {
-        router.replace("/admin");
-        router.refresh();
-        return;
-      }
 
       const userResponse = await fetch("/api/auth/login", {
         method: "POST",
@@ -105,8 +74,9 @@ function LoginContent() {
         return;
       }
 
-      const nextPath = sanitizeAuthNextPath(searchParams.get("next"), "/profile");
-      router.replace(nextPath.startsWith("/admin") ? "/" : nextPath);
+      const defaultPath = requestedRole === "admin" ? "/admin" : "/admin";
+      const nextPath = sanitizeAuthNextPath(searchParams.get("next"), defaultPath);
+      router.replace(nextPath.startsWith("/admin") ? nextPath : "/admin");
       router.refresh();
     } catch {
       setErrorMessage("Something went wrong while signing in. Please try again.");
@@ -141,7 +111,7 @@ function LoginContent() {
               id="login-email"
               type="email"
               autoComplete="email"
-              placeholder="name@example.com"
+              placeholder="Enter your Email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required

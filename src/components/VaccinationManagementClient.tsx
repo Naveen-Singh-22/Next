@@ -8,6 +8,7 @@ import AdminTopbar from "@/components/AdminTopbar";
 import VaccinationCalendar from "@/components/VaccinationCalendar";
 import { VaccinationBadge } from "@/components/AnimalBadges";
 import { getVaccinationStatus } from "@/lib/vaccinationTypes";
+import type { AnimalVaccinationState } from "@/lib/animalInventoryTypes";
 import type { Vaccination, VaccinationStatus } from "@/lib/vaccinationTypes";
 
 type AnimalOption = {
@@ -76,6 +77,18 @@ function statusToDate(status: VaccinationStatus) {
   const upToDate = new Date(today);
   upToDate.setDate(upToDate.getDate() + 60);
   return toDateInputValue(upToDate);
+}
+
+function toAnimalVaccinationState(status: VaccinationStatus): AnimalVaccinationState {
+  if (status === "overdue") {
+    return "overdue";
+  }
+
+  if (status === "today" || status === "upcoming") {
+    return "due_soon";
+  }
+
+  return "up-to-date";
 }
 
 function formatDate(value: string) {
@@ -509,7 +522,7 @@ export default function VaccinationManagementClient() {
               <option value="overdue">Overdue</option>
               <option value="today">Today</option>
               <option value="upcoming">Upcoming</option>
-              <option value="up_to_date">Up to date</option>
+              <option value="up-to-date">Up to date</option>
             </select>
           </label>
 
@@ -598,13 +611,7 @@ export default function VaccinationManagementClient() {
 
                     <div className="mt-3">
                       <VaccinationBadge
-                        vaccinationStatus={
-                          record.status === "overdue"
-                            ? "overdue"
-                            : record.status === "today" || record.status === "upcoming"
-                              ? "due_soon"
-                              : "up_to_date"
-                        }
+                        vaccinationStatus={toAnimalVaccinationState(record.status)}
                       />
                       <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">{record.status.replaceAll("_", " ")}</p>
                     </div>
@@ -700,13 +707,7 @@ export default function VaccinationManagementClient() {
                         </td>
                         <td className="px-6 py-4 align-middle">
                           <VaccinationBadge
-                            vaccinationStatus={
-                              record.status === "overdue"
-                                ? "overdue"
-                                : record.status === "today" || record.status === "upcoming"
-                                  ? "due_soon"
-                                  : "up_to_date"
-                            }
+                              vaccinationStatus={toAnimalVaccinationState(record.status)}
                           />
                           <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">
                             {record.status.replaceAll("_", " ")}
@@ -877,7 +878,7 @@ export default function VaccinationManagementClient() {
                       <option value="overdue">Overdue</option>
                       <option value="today">Today</option>
                       <option value="upcoming">Upcoming</option>
-                      <option value="up_to_date">Up to date</option>
+                      <option value="up-to-date">Up to date</option>
                     </select>
                   </label>
                   <label className="grid gap-2">

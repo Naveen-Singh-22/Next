@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, Suspense, useState } from "react";
 import SiteNav from "@/components/SiteNav";
+import OtpVerification from "@/components/OtpVerification";
 
 function EyeIcon() {
   return (
@@ -32,6 +33,8 @@ function SignupContent() {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [signupEmail, setSignupEmail] = useState(""); // For OTP verification
+  const [showOtpVerification, setShowOtpVerification] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -52,17 +55,19 @@ function SignupContent() {
           name: fullName,
           email,
           password,
+          confirmPassword: password,
         }),
       });
 
-      const payload = (await response.json().catch(() => null)) as { ok?: boolean; message?: string } | null;
+      const payload = (await response.json().catch(() => null)) as { ok?: boolean; message?: string; email?: string } | null;
       if (!response.ok || !payload?.ok) {
         setErrorMessage(payload?.message ?? "Failed to create account. Please try again.");
         return;
       }
 
-      router.replace("/profile");
-      router.refresh();
+      // Show OTP verification screen
+      setSignupEmail(email);
+      setShowOtpVerification(true);
     } catch {
       setErrorMessage("Something went wrong while creating your account. Please try again.");
     } finally {
@@ -70,9 +75,37 @@ function SignupContent() {
     }
   };
 
+  const handleOtpSuccess = () => {
+    router.replace("/profile");
+    router.refresh();
+  };
+
+  const handleBackToSignup = () => {
+    setShowOtpVerification(false);
+    setEmail("");
+    setPassword("");
+    setFullName("");
+    setErrorMessage("");
+  };
+
   const handleGoogleSignUp = () => {
     setErrorMessage("Google sign-up is not configured yet. Please use email/password.");
   };
+
+  if (showOtpVerification) {
+    return (
+      <div className="login-page-reference">
+        <SiteNav className="login-nav" />
+        <main className="login-reference-main" aria-label="Email verification page">
+          <OtpVerification 
+            email={signupEmail} 
+            onSuccess={handleOtpSuccess}
+            onBack={handleBackToSignup}
+          />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="login-page-reference">
@@ -106,7 +139,7 @@ function SignupContent() {
               id="signup-email"
               type="email"
               autoComplete="email"
-              placeholder="name@example.com"
+              placeholder="Enter your Email "
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
