@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { deleteVaccination, updateVaccination } from "@/lib/vaccinationDb";
 import type { VaccinationStatus } from "@/lib/vaccinationTypes";
+import { requireAdmin } from "@/lib/authContext";
 
 function toNumber(value: string) {
   const parsed = Number(value);
@@ -39,6 +40,8 @@ function dueDateFromStatus(status: VaccinationStatus) {
 }
 
 export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
+  await requireAdmin();
+
   const { id } = await context.params;
   const vaccinationId = toNumber(id);
 
@@ -72,6 +75,8 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
 }
 
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
+  await requireAdmin();
+
   const { id } = await context.params;
   const vaccinationId = toNumber(id);
 

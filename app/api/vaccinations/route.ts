@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { bulkCreateVaccinations, listVaccinations } from "@/lib/vaccinationDb";
 import type { VaccinationCreateInput } from "@/lib/vaccinationTypes";
+import { requireAdmin } from "@/lib/authContext";
 
 function toNumber(value: unknown) {
   const parsed = Number(value);
@@ -98,6 +99,8 @@ function normalizeCreateBody(body: unknown): VaccinationCreateInput[] | null {
 }
 
 export async function GET(request: Request) {
+  await requireAdmin();
+
   const url = new URL(request.url);
   const animalId = url.searchParams.get("animalId");
 
@@ -107,6 +110,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  await requireAdmin();
+
   const body = await request.json().catch(() => null);
   const payload = normalizeCreateBody(body);
 
