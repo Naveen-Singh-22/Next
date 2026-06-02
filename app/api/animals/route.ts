@@ -10,6 +10,7 @@ import type {
   AnimalVaccinationState,
 } from "@/lib/animalInventoryTypes";
 import { requireAdmin } from "@/lib/authContext";
+import { recordAdminAuditEvent } from "@/lib/adminAudit";
 import { handleError } from "@/lib/apiErrors";
 
 const speciesValues: AnimalSpecies[] = ["dog", "cat", "bird"];
@@ -90,7 +91,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     // Check admin authorization
-    await requireAdmin();
+    const actor = await requireAdmin();
 
     const body = (await request.json()) as Partial<AnimalCreateInput>;
 
@@ -142,6 +143,20 @@ export async function POST(request: Request) {
         photoUrls: Array.isArray(body.photoUrls) ? body.photoUrls.filter((value): value is string => typeof value === "string" && value.trim().length > 0) : [],
         status: body.status ?? "admitted",
         vaccinationState: body.vaccinationState as AnimalVaccinationState,
+      },
+    });
+
+    await recordAdminAuditEvent({
+      actor,
+      action: "create",
+      resource: "animal",
+      request,
+      subjectId: created.id,
+      details: {
+        animalCode: created.animalCode,
+        name: created.name,
+        species: created.species,
+        status: created.status,
       },
     });
 

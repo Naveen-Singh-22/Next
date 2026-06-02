@@ -8,6 +8,7 @@ import type {
   AnimalVaccinationState,
 } from "@/lib/animalInventoryTypes";
 import { requireAdmin } from "@/lib/authContext";
+import { recordAdminAuditEvent } from "@/lib/adminAudit";
 import { handleError, NotFoundError } from "@/lib/apiErrors";
 
 const speciesValues: AnimalSpecies[] = ["dog", "cat", "bird"];
@@ -45,7 +46,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
 export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     // Check admin authorization
-    await requireAdmin();
+    const actor = await requireAdmin();
 
     const { id } = await context.params;
     const animalId = parseId(id);
@@ -94,6 +95,20 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
 
     const updated = await prisma.animal.update({ where: { id: animalId }, data: updates });
 
+    await recordAdminAuditEvent({
+      actor,
+      action: "update",
+      resource: "animal",
+      request,
+      subjectId: animalId,
+      details: {
+        changes: Object.keys(updates),
+        name: updated.name,
+        species: updated.species,
+        status: updated.status,
+      },
+    });
+
     return NextResponse.json({ ok: true, animal: updated }, { status: 200 });
   } catch (error) {
     return handleError(error);
@@ -103,7 +118,7 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     // Check admin authorization
-    await requireAdmin();
+    const actor = await requireAdmin();
 
     const { id } = await context.params;
     const animalId = parseId(id);
@@ -119,6 +134,18 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
     }
 
     await prisma.animal.delete({ where: { id: animalId } });
+
+    await recordAdminAuditEvent({
+      actor,
+      action: "delete",
+      resource: "animal",
+      request: _request,
+      subjectId: animalId,
+      details: {
+        name: existing.name,
+        species: existing.species,
+      },
+    });
 
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {
