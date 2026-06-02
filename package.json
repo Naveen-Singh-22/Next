@@ -11,9 +11,12 @@
     "prisma:migrate": "prisma migrate dev --name init",
     "prisma:studio": "prisma studio",
     "prisma:seed": "node prisma/seed.js",
+    "db:import-json": "node scripts/migrate-json-to-postgres.mjs",
+    "db:backfill-passwords": "node scripts/backfill-plaintext-passwords.mjs",
     "auth:seed-admin": "node scripts/seed-admin-user.mjs"
   },
   "dependencies": {
+    "@prisma/client": "^5.0.0",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.2",
@@ -22,24 +25,24 @@
     "lucide-react": "^1.14.0",
     "next": "16.2.1",
     "nodemailer": "^8.0.6",
+    "razorpay": "^2.9.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-leaflet": "^5.0.0",
-    "@prisma/client": "^5.0.0"
+    "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^20",
-    "@types/jsonwebtoken": "^9.0.10",
     "@types/nodemailer": "^8.0.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
+    "prisma": "^5.0.0",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "prisma": "^5.0.0"
+    "typescript": "^5"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
