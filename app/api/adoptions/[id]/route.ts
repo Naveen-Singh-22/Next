@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { findAdoptionById, updateAdoption } from "@/lib/adoptionsStore";
 import type { AdoptionApplication } from "@/lib/adoptionApplicationTypes";
 import { requireAdmin } from "@/lib/authContext";
+import { recordAdminAuditEvent } from "@/lib/adminAudit";
 
 type RouteParams = {
   params: Promise<{
@@ -38,7 +39,7 @@ export async function GET(_: Request, { params }: RouteParams) {
 }
 
 export async function PUT(request: Request, { params }: RouteParams) {
-  await requireAdmin();
+  const actor = await requireAdmin();
 
   const { id } = await params;
   const parsedId = parseId(id);
@@ -60,6 +61,18 @@ export async function PUT(request: Request, { params }: RouteParams) {
   if (!application) {
     return NextResponse.json({ message: "Adoption application not found." }, { status: 404 });
   }
+
+  await recordAdminAuditEvent({
+    actor,
+    action: "update",
+    resource: "adoption_application",
+    request,
+    subjectId: parsedId,
+    details: {
+      changes: Object.keys(body),
+      status: application.status,
+    },
+  });
 
   return NextResponse.json({ application });
 }
