@@ -1,9 +1,9 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import Script from "next/script";
 import SiteNav from "@/components/SiteNav";
 import ScrollReveal from "@/components/ScrollReveal";
-import { ensureLoggedIn } from "@/lib/authClient";
 
 const reasons = [
   {
@@ -29,6 +29,23 @@ const formatInr = (amount: number) =>
     maximumFractionDigits: 0,
   }).format(amount);
 
+type CreateOrderResponse = {
+  ok: boolean;
+  order_id?: string;
+  amount?: number;
+  currency?: string;
+  razorpay_key_id?: string;
+  message?: string;
+};
+
+type VerifyPaymentResponse = {
+  ok: boolean;
+  message?: string;
+  donation?: {
+    donationId?: string;
+  };
+};
+
 export default function DonatePage() {
   const [selectedAmount, setSelectedAmount] = useState<number>(suggestedAmounts[1]);
   const [customAmount, setCustomAmount] = useState("");
@@ -37,6 +54,7 @@ export default function DonatePage() {
   const [phone, setPhone] = useState("");
   const [coverFees, setCoverFees] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCheckoutReady, setIsCheckoutReady] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
   const finalAmount = useMemo(() => {
@@ -54,20 +72,24 @@ export default function DonatePage() {
   async function handleDonate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!(await ensureLoggedIn("/donate", "donor"))) {
+    if (!Number.isFinite(finalAmount) || finalAmount <= 0) {
+      setStatusMessage("Please select a valid donation amount in rupees.");
       return;
     }
 
-    if (!Number.isFinite(finalAmount) || finalAmount <= 0) {
-      setStatusMessage("Please select a valid donation amount in rupees.");
+    if (!isCheckoutReady || typeof window === "undefined" || !window.Razorpay) {
+      setStatusMessage("Payment gateway is still loading. Please try again in a moment.");
       return;
     }
 
     setIsSubmitting(true);
     setStatusMessage("");
 
+    const amountPaise = Math.round(finalAmount * 100);
+    const receipt = `donation-${Date.now()}`;
+
     try {
-      const response = await fetch("/api/donations", {
+      const orderResponse = await fetch("/api/create-order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,35 +98,120 @@ export default function DonatePage() {
           donorName,
           email,
           phone,
-          amount: finalAmount,
+          amount: amountPaise,
+          currency: "INR",
+          receipt,
           coverFees,
         }),
       });
 
-      const result = (await response.json()) as { message?: string; donation?: { donationId?: string } };
+      const orderResult = (await orderResponse.json()) as CreateOrderResponse;
 
-      if (!response.ok || !result.donation) {
-        setStatusMessage(result.message ?? "We could not process your donation right now. Please try again.");
+      if (!orderResponse.ok || !orderResult.order_id) {
+        setStatusMessage(orderResult.message ?? "We could not create a payment order right now. Please try again.");
+        setIsSubmitting(false);
         return;
       }
 
-      setStatusMessage(
-        `Thank you for your donation of ${formatInr(finalAmount)}. Reference ${result.donation.donationId}.`,
-      );
-      setCustomAmount("");
-      setDonorName("");
-      setEmail("");
-      setPhone("");
-      setCoverFees(true);
+      const razorpayKeyId = orderResult.razorpay_key_id ?? process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? "";
+
+      const checkout = new window.Razorpay({
+        key: razorpayKeyId,
+        amount: orderResult.amount ?? amountPaise,
+        currency: orderResult.currency ?? "INR",
+        name: "The Canine Help",
+        description: "Donation for rescue, medical care, and shelter support",
+        order_id: orderResult.order_id,
+        prefill: {
+          name: donorName,
+          email,
+          contact: phone,
+        },
+        notes: {
+          receipt,
+          coverFees: String(coverFees),
+        },
+        method: {
+          netbanking: true,
+          card: true,
+          upi: true,
+          wallet: true,
+        },
+        theme: {
+          color: "#0f766e",
+        },
+        modal: {
+          ondismiss: () => {
+            setIsSubmitting(false);
+            setStatusMessage("Payment window was closed before completion.");
+          },
+        },
+        handler: async (paymentResponse) => {
+          try {
+            const verifyResponse = await fetch("/api/verify-payment", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                donorName,
+                email,
+                phone,
+                amount: amountPaise,
+                currency: "INR",
+                receipt,
+                coverFees,
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+              }),
+            });
+
+            const verifyResult = (await verifyResponse.json()) as VerifyPaymentResponse;
+
+            if (!verifyResponse.ok || !verifyResult.ok) {
+              setStatusMessage(verifyResult.message ?? "Payment was received but could not be verified.");
+              return;
+            }
+
+            setStatusMessage(
+              `Payment successful. Reference ${verifyResult.donation?.donationId ?? receipt}.`,
+            );
+            setCustomAmount("");
+            setDonorName("");
+            setEmail("");
+            setPhone("");
+            setCoverFees(true);
+          } catch {
+            setStatusMessage("Payment was received but could not be verified. Please contact support.");
+          } finally {
+            setIsSubmitting(false);
+          }
+        },
+      });
+
+      checkout.on("payment.failed", (failureResponse) => {
+        setIsSubmitting(false);
+        setStatusMessage(
+          failureResponse.error?.description ?? "Payment failed. Please try again.",
+        );
+      });
+
+      checkout.open();
     } catch {
-      setStatusMessage("We could not process your donation right now. Please try again.");
-    } finally {
       setIsSubmitting(false);
+      setStatusMessage("We could not start the payment flow right now. Please check the Razorpay keys in Next/.env and restart the dev server.");
     }
   }
 
   return (
     <div className="donate-page">
+      <Script
+        id="razorpay-checkout-script"
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="afterInteractive"
+        onLoad={() => setIsCheckoutReady(true)}
+      />
       <SiteNav />
 
       <main className="section-wrap donate-main">
@@ -222,7 +329,7 @@ export default function DonatePage() {
               </label>
 
               <button className="donate-submit" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Processing..." : `Donate ${formatInr(finalAmount)}`}
+                {isSubmitting ? "Processing..." : `Pay ${formatInr(finalAmount)}`}
               </button>
 
               {statusMessage ? (

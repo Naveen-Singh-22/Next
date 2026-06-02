@@ -118,6 +118,9 @@ export default function AdoptPage() {
             Our curated selection of rescues waiting for forever homes. Every
             animal here has completed health checks and behavior assessment.
           </p>
+          <Link href="/signup?role=adopter" className="adopt-btn reveal-item" style={{ width: "fit-content" }}>
+            Create Adopter Account
+          </Link>
         </ScrollReveal>
 
         <ScrollReveal

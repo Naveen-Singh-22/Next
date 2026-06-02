@@ -1,3 +1,4 @@
+import Link from "next/link";
 import SiteNav from "@/components/SiteNav";
 import ScrollReveal from "@/components/ScrollReveal";
 import VolunteerApplicationForm from "@/components/VolunteerApplicationForm";
@@ -56,6 +57,9 @@ export default function VolunteerPage() {
               Join Kindred Hearth. Your time is not just a contribution; it is a
               lifeline for animals waiting for their second chance at happiness.
             </p>
+            <Link href="/signup?role=volunteer" className="adopt-btn reveal-item" style={{ width: "fit-content", textDecoration: "none" }}>
+              Create Volunteer Account
+            </Link>
             <div className="volunteer-avatars reveal-item" aria-label="Active volunteers in your area">
               <span className="avatar-dot one" />
               <span className="avatar-dot two" />
