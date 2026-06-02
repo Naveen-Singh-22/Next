@@ -14,6 +14,8 @@ const API_ACCESS_RULES: ApiAccessRule[] = [
   { prefix: "/api/vaccinations", publicMethods: [], roles: ["admin", "staff"] },
   { prefix: "/api/dashboard", publicMethods: [], roles: ["admin", "staff"] },
   { prefix: "/api/donations", publicMethods: ["POST"], roles: ["admin", "staff"] },
+  { prefix: "/api/create-order", publicMethods: ["POST"], roles: ["admin", "staff", "donor", "volunteer", "adopter"] },
+  { prefix: "/api/verify-payment", publicMethods: ["POST"], roles: ["admin", "staff", "donor", "volunteer", "adopter"] },
   { prefix: "/api/users", publicMethods: [], roles: ["admin"] },
   { prefix: "/api/inquiries", publicMethods: [], roles: ["admin", "staff"] },
   { prefix: "/api/rescue/requests", publicMethods: ["POST"], roles: ["admin", "staff"] },
@@ -27,9 +29,11 @@ type ProxyUser = {
 };
 
 async function readUserFromRequest(request: NextRequest): Promise<ProxyUser | null> {
+  const authHeader = request.headers.get("authorization") ?? request.headers.get("Authorization") ?? "";
+  const hasBearerToken = authHeader.startsWith("Bearer ");
   const token = request.cookies.get(AUTH_TOKEN_COOKIE)?.value;
 
-  if (!token) {
+  if (!hasBearerToken && !token) {
     return null;
   }
 
@@ -39,6 +43,7 @@ async function readUserFromRequest(request: NextRequest): Promise<ProxyUser | nu
     const response = await fetch(sessionUrl, {
       headers: {
         cookie: cookieHeader,
+        ...(hasBearerToken ? { authorization: authHeader } : {}),
       },
       cache: "no-store",
     });
@@ -90,10 +95,30 @@ function unauthorizedApiResponse() {
 }
 
 export async function proxy(request: NextRequest) {
+  const enforceHttps = process.env.ENFORCE_HTTPS === "true" || process.env.NODE_ENV === "production";
+
+  function maybeSetHsts(response: NextResponse) {
+    if (enforceHttps) {
+      response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+    }
+
+    return response;
+  }
+
+  if (enforceHttps) {
+    const protoHeader = request.headers.get("x-forwarded-proto") || request.headers.get("x-forwarded-protocol") || "";
+    const proto = protoHeader || (request.nextUrl?.protocol ? request.nextUrl.protocol.replace(":", "") : "");
+
+    if (proto && proto !== "https") {
+      const url = request.nextUrl.clone();
+      url.protocol = "https";
+      return NextResponse.redirect(url);
+    }
+  }
   const { pathname, searchParams } = request.nextUrl;
 
   if (isPublicAuthPath(pathname)) {
-    return NextResponse.next();
+    return maybeSetHsts(NextResponse.next());
   }
 
   // Middleware protection: verify JWT before reaching admin pages or protected APIs.
@@ -121,11 +146,11 @@ export async function proxy(request: NextRequest) {
   }
 
   if (rule.publicMethods.includes(request.method.toUpperCase())) {
-    return NextResponse.next();
+    return maybeSetHsts(NextResponse.next());
   }
 
   if (!user) {
-    return unauthorizedApiResponse();
+    return maybeSetHsts(unauthorizedApiResponse());
   }
 
   if (!rule.roles.includes(user.role)) {
