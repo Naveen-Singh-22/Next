@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { AUTH_EMAIL_COOKIE, AUTH_ROLE_COOKIE, AUTH_TOKEN_COOKIE } from "@/lib/auth";
+import { AUTH_TOKEN_COOKIE } from "@/lib/auth";
 
 function clearAuthCookies(response: NextResponse) {
   response.cookies.set({
@@ -7,27 +7,7 @@ function clearAuthCookies(response: NextResponse) {
     value: "",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
-  });
-
-  response.cookies.set({
-    name: AUTH_EMAIL_COOKIE,
-    value: "",
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
-  });
-
-  response.cookies.set({
-    name: AUTH_ROLE_COOKIE,
-    value: "",
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
     maxAge: 0,
   });
