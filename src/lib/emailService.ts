@@ -9,6 +9,8 @@ type EmailResult = {
   reason?: string;
 };
 
+type NodemailerModule = typeof import("nodemailer");
+
 /**
  * Check if email configuration is available
  */
@@ -36,11 +38,11 @@ export async function sendOtpEmail(email: string, otp: string): Promise<EmailRes
     };
   }
 
-  let createTransportFn: any;
+  let createTransportFn: NodemailerModule["createTransport"] | undefined;
 
   try {
-    const mailerModule = (await import("nodemailer")) as any;
-    createTransportFn = mailerModule.createTransport ?? mailerModule.default?.createTransport;
+    const mailerModule: NodemailerModule = await import("nodemailer");
+    createTransportFn = mailerModule.createTransport;
   } catch {
     return {
       sent: false,
@@ -78,6 +80,142 @@ export async function sendOtpEmail(email: string, otp: string): Promise<EmailRes
       subject: "Your TheCanineHelp Email Verification Code",
       html: generateOtpEmailHtml(otp),
       text: generateOtpEmailText(otp),
+    });
+
+    return {
+      sent: true,
+      messageId: info.messageId,
+    };
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "Unknown email error";
+    return {
+      sent: false,
+      reason,
+    };
+  }
+}
+
+/**
+ * Send password reset email
+ */
+export async function sendPasswordResetEmail(email: string, resetUrl: string): Promise<EmailResult> {
+  if (!isEmailConfigured()) {
+    return {
+      sent: false,
+      reason: "Email SMTP is not configured. Set EMAIL_SMTP_HOST, EMAIL_SMTP_PORT, EMAIL_SMTP_USER, EMAIL_SMTP_PASS, and EMAIL_FROM.",
+    };
+  }
+
+  let createTransportFn: NodemailerModule["createTransport"] | undefined;
+
+  try {
+    const mailerModule: NodemailerModule = await import("nodemailer");
+    createTransportFn = mailerModule.createTransport;
+  } catch {
+    return {
+      sent: false,
+      reason: "Nodemailer module could not be loaded in this runtime.",
+    };
+  }
+
+  if (!createTransportFn) {
+    return {
+      sent: false,
+      reason: "Email transport factory is unavailable.",
+    };
+  }
+
+  const host = process.env.EMAIL_SMTP_HOST as string;
+  const port = Number(process.env.EMAIL_SMTP_PORT);
+  const user = process.env.EMAIL_SMTP_USER as string;
+  const pass = process.env.EMAIL_SMTP_PASS as string;
+  const from = process.env.EMAIL_FROM as string;
+
+  const transporter = createTransportFn({
+    host,
+    port,
+    secure: port === 465,
+    auth: {
+      user,
+      pass,
+    },
+  });
+
+  try {
+    const info = await transporter.sendMail({
+      from,
+      to: email,
+      subject: "Reset your TheCanineHelp password",
+      html: generatePasswordResetHtml(resetUrl),
+      text: generatePasswordResetText(resetUrl),
+    });
+
+    return {
+      sent: true,
+      messageId: info.messageId,
+    };
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "Unknown email error";
+    return {
+      sent: false,
+      reason,
+    };
+  }
+}
+
+/**
+ * Send newsletter confirmation email
+ */
+export async function sendNewsletterWelcomeEmail(email: string): Promise<EmailResult> {
+  if (!isEmailConfigured()) {
+    return {
+      sent: false,
+      reason: "Email SMTP is not configured. Set EMAIL_SMTP_HOST, EMAIL_SMTP_PORT, EMAIL_SMTP_USER, EMAIL_SMTP_PASS, and EMAIL_FROM.",
+    };
+  }
+
+  let createTransportFn: NodemailerModule["createTransport"] | undefined;
+
+  try {
+    const mailerModule: NodemailerModule = await import("nodemailer");
+    createTransportFn = mailerModule.createTransport;
+  } catch {
+    return {
+      sent: false,
+      reason: "Nodemailer module could not be loaded in this runtime.",
+    };
+  }
+
+  if (!createTransportFn) {
+    return {
+      sent: false,
+      reason: "Email transport factory is unavailable.",
+    };
+  }
+
+  const host = process.env.EMAIL_SMTP_HOST as string;
+  const port = Number(process.env.EMAIL_SMTP_PORT);
+  const user = process.env.EMAIL_SMTP_USER as string;
+  const pass = process.env.EMAIL_SMTP_PASS as string;
+  const from = process.env.EMAIL_FROM as string;
+
+  const transporter = createTransportFn({
+    host,
+    port,
+    secure: port === 465,
+    auth: {
+      user,
+      pass,
+    },
+  });
+
+  try {
+    const info = await transporter.sendMail({
+      from,
+      to: email,
+      subject: "Welcome to TheCanineHelp updates",
+      html: generateNewsletterWelcomeHtml(),
+      text: generateNewsletterWelcomeText(),
     });
 
     return {
@@ -193,5 +331,84 @@ If you didn't request this verification, please ignore this email.
 
 ---
 TheCanineHelp - Supporting the journey of every canine friend.
+  `;
+}
+
+function generatePasswordResetHtml(resetUrl: string): string {
+  return `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #333; }
+      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+      .content { background-color: #f9fafb; padding: 30px; border-radius: 8px; }
+      .button { display: inline-block; padding: 12px 18px; background: #8B5CF6; color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: 600; }
+      .note { font-size: 14px; color: #666; margin-top: 18px; }
+      .url { word-break: break-all; font-family: 'Courier New', monospace; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <h2>Password Reset</h2>
+        <p>We received a request to reset your TheCanineHelp password. Use the button below to continue:</p>
+        <p><a class="button" href="${resetUrl}">Reset Password</a></p>
+        <p class="note">If the button does not work, paste this link into your browser:</p>
+        <p class="url">${resetUrl}</p>
+        <p class="note">This link expires in 15 minutes. If you did not request a password reset, you can ignore this email.</p>
+      </div>
+    </div>
+  </body>
+</html>
+  `;
+}
+
+function generatePasswordResetText(resetUrl: string): string {
+  return `
+TheCanineHelp Password Reset
+
+Reset your password using this link:
+
+${resetUrl}
+
+This link expires in 15 minutes.
+
+If you did not request a password reset, ignore this email.
+  `;
+}
+
+function generateNewsletterWelcomeHtml(): string {
+  return `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #333; }
+      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+      .content { background-color: #f9fafb; padding: 30px; border-radius: 8px; }
+      .accent { color: #8B5CF6; font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <h2>Thanks for subscribing</h2>
+        <p>You're now on the <span class="accent">TheCanineHelp</span> newsletter list.</p>
+        <p>We’ll send rescue updates, adoption stories, and shelter news straight to your inbox.</p>
+      </div>
+    </div>
+  </body>
+</html>
+  `;
+}
+
+function generateNewsletterWelcomeText(): string {
+  return `
+Thanks for subscribing to TheCanineHelp updates.
+
+You'll receive rescue updates, adoption stories, and shelter news straight to your inbox.
   `;
 }

@@ -16,7 +16,26 @@ export interface User {
   emailVerifiedAt?: string | null;
 }
 
-function adminRowToUser(row: any): User {
+type AdminUserRow = {
+  id: number;
+  fullName?: string | null;
+  email: string;
+  password?: string | null;
+  role?: string | null;
+  createdAt?: Date | string | null;
+  emailVerified?: boolean | null;
+  emailVerifiedAt?: Date | string | null;
+};
+
+type LegacyUserRow = {
+  id: string;
+  name?: string | null;
+  fullName?: string | null;
+  email: string;
+  createdAt?: Date | string | null;
+};
+
+function adminRowToUser(row: AdminUserRow): User {
   return {
     id: String(row.id),
     name: row.fullName ?? "",
@@ -31,7 +50,7 @@ function adminRowToUser(row: any): User {
   };
 }
 
-function legacyRowToUser(row: any): User {
+function legacyRowToUser(row: LegacyUserRow): User {
   return {
     id: String(row.id),
     name: row.name ?? row.fullName ?? "",
@@ -89,7 +108,10 @@ export async function createUser(input: Omit<User, "createdAt" | "lastLogin" | "
         email: input.email,
         password: hashed,
         fullName: input.name || input.email,
-        role: (input.role as string) || "admin",
+        role: (input.role as string) || "donor",
+        // Preserve email verification state when provided (set by verification flow)
+        emailVerified: input.emailVerified ?? false,
+        emailVerifiedAt: input.emailVerifiedAt ? new Date(input.emailVerifiedAt) : undefined,
       },
     });
 
@@ -108,7 +130,7 @@ export async function updateUser(id: string, updates: Partial<Omit<User, "id" | 
   const asInt = Number(id);
 
   if (Number.isInteger(asInt) && asInt > 0) {
-    const data: any = {};
+    const data: Record<string, unknown> = {};
     if (updates.name) data.fullName = updates.name;
     if (updates.email) data.email = updates.email;
     if (updates.role) data.role = updates.role;
@@ -119,7 +141,7 @@ export async function updateUser(id: string, updates: Partial<Omit<User, "id" | 
     return adminRowToUser(updated);
   }
 
-  const legacyData: any = {};
+  const legacyData: Record<string, unknown> = {};
   if (updates.name) legacyData.name = updates.name;
   if (updates.email) legacyData.email = updates.email;
 
@@ -131,9 +153,10 @@ export async function updateUserRole(id: string, role: UserRole) {
   return updateUser(id, { role });
 }
 
-export async function updateUserStatus(id: string, isActive: boolean) {
+export async function updateUserStatus(id: string, _isActive: boolean) {
   // AdminUser has no explicit isActive column in schema; noop for admin
-  return updateUser(id, {} as any);
+  void _isActive;
+  return updateUser(id, {} as Record<string, unknown>);
 }
 
 export async function deleteUser(id: string) {
@@ -147,7 +170,7 @@ export async function deleteUser(id: string) {
 
     await prisma.legacyUser.delete({ where: { id } });
     return true;
-  } catch (e) {
+  } catch {
     return null;
   }
 }

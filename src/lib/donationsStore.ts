@@ -1,7 +1,4 @@
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
-import { Low } from "lowdb";
-import { JSONFile } from "lowdb/node";
+import { prisma } from "@/lib/prisma";
 
 export type StoredDonation = {
   id: number;
@@ -14,71 +11,51 @@ export type StoredDonation = {
   createdAt: string;
 };
 
-type DonationDb = {
-  donations: StoredDonation[];
-  nextId: number;
-};
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const DB_PATH = path.join(DATA_DIR, "donations.json");
-
-let dbPromise: Promise<Low<DonationDb>> | null = null;
-
 function createDonationId() {
   return `DN-${Math.floor(Date.now() / 1000).toString(36).toUpperCase()}`;
 }
 
-async function getDb() {
-  if (!dbPromise) {
-    dbPromise = (async () => {
-      await mkdir(DATA_DIR, { recursive: true });
-
-      const adapter = new JSONFile<DonationDb>(DB_PATH);
-      const db = new Low<DonationDb>(adapter, {
-        donations: [],
-        nextId: 1,
-      });
-
-      await db.read();
-      db.data ||= {
-        donations: [],
-        nextId: 1,
-      };
-
-      db.data.nextId = Math.max(
-        db.data.nextId,
-        db.data.donations.reduce((maxId, donation) => Math.max(maxId, donation.id), 0) + 1,
-      );
-
-      return db;
-    })();
-  }
-
-  return dbPromise;
-}
-
 export async function listDonations() {
-  const db = await getDb();
-  await db.read();
+  const rows = await prisma.donation.findMany({ orderBy: { createdAt: "desc" } });
 
-  return [...db.data.donations].sort((a, b) => {
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
+  return rows.map((row) => ({
+    id: row.id,
+    donationId: row.donationId || `DN-${row.id}`,
+    donorName: row.donorName,
+    email: row.email || "",
+    phone: row.phone || "",
+    amount: row.amount,
+    coverFees: row.coverFees,
+    createdAt: row.createdAt.toISOString(),
+  }));
 }
 
 export async function createDonation(input: Omit<StoredDonation, "id" | "donationId" | "createdAt">) {
-  const db = await getDb();
-  await db.read();
+  const nextId = (await prisma.donation.aggregate({ _max: { id: true } }))._max.id ?? 0;
+  const createdAt = new Date();
+  const donationId = createDonationId();
 
-  const donation: StoredDonation = {
-    ...input,
-    id: db.data.nextId++,
-    donationId: createDonationId(),
-    createdAt: new Date().toISOString(),
+  const row = await prisma.donation.create({
+    data: {
+      id: nextId + 1,
+      donationId,
+      donorName: input.donorName,
+      email: input.email || null,
+      phone: input.phone || null,
+      amount: input.amount,
+      coverFees: input.coverFees,
+      createdAt,
+    },
+  });
+
+  return {
+    id: row.id,
+    donationId: row.donationId || donationId,
+    donorName: row.donorName,
+    email: row.email || "",
+    phone: row.phone || "",
+    amount: row.amount,
+    coverFees: row.coverFees,
+    createdAt: row.createdAt.toISOString(),
   };
-
-  db.data.donations.unshift(donation);
-  await db.write();
-
-  return donation;
 }

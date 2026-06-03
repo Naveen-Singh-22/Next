@@ -1,7 +1,4 @@
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
-import { Low } from "lowdb";
-import { JSONFile } from "lowdb/node";
+import { prisma } from "@/lib/prisma";
 
 export type StoredVolunteerApplication = {
   id: number;
@@ -16,73 +13,92 @@ export type StoredVolunteerApplication = {
   createdAt: string;
 };
 
-type VolunteerDb = {
-  applications: StoredVolunteerApplication[];
-  nextId: number;
-};
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const DB_PATH = path.join(DATA_DIR, "volunteer-applications.json");
-
-let dbPromise: Promise<Low<VolunteerDb>> | null = null;
-
 function createApplicationId() {
   return `VL-${Math.floor(Date.now() / 1000).toString(36).toUpperCase()}`;
 }
 
-async function getDb() {
-  if (!dbPromise) {
-    dbPromise = (async () => {
-      await mkdir(DATA_DIR, { recursive: true });
-
-      const adapter = new JSONFile<VolunteerDb>(DB_PATH);
-      const db = new Low<VolunteerDb>(adapter, {
-        applications: [],
-        nextId: 1,
-      });
-
-      await db.read();
-      db.data ||= {
-        applications: [],
-        nextId: 1,
-      };
-
-      db.data.nextId = Math.max(
-        db.data.nextId,
-        db.data.applications.reduce((maxId, application) => Math.max(maxId, application.id), 0) + 1,
-      );
-
-      return db;
-    })();
-  }
-
-  return dbPromise;
-}
-
 export async function listVolunteerApplications() {
-  const db = await getDb();
-  await db.read();
+  const rows = await prisma.volunteerApplication.findMany({ orderBy: { createdAt: "desc" } });
 
-  return [...db.data.applications].sort((a, b) => {
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
+  return rows.map((row) => ({
+    id: row.id,
+    applicationId: row.applicationId || `VL-${row.id}`,
+    fullName: row.fullName,
+    email: row.email,
+    phone: row.phone || "",
+    city: row.city || "",
+    interestArea: row.interestArea || "",
+    availability: row.availability || "",
+    status: (row.status as StoredVolunteerApplication["status"]) || "pending",
+    createdAt: row.createdAt.toISOString(),
+  }));
 }
 
 export async function createVolunteerApplication(
   input: Omit<StoredVolunteerApplication, "id" | "applicationId" | "createdAt">,
 ) {
-  const db = await getDb();
-  await db.read();
+  const nextId = (await prisma.volunteerApplication.aggregate({ _max: { id: true } }))._max.id ?? 0;
+  const applicationId = createApplicationId();
+  const createdAt = new Date();
 
-  const application: StoredVolunteerApplication = {
-    ...input,
-    id: db.data.nextId++,
-    applicationId: createApplicationId(),
-    createdAt: new Date().toISOString(),
+  const row = await prisma.volunteerApplication.create({
+    data: {
+      id: nextId + 1,
+      applicationId,
+      fullName: input.fullName,
+      email: input.email,
+      phone: input.phone || null,
+      city: input.city || null,
+      interestArea: input.interestArea || null,
+      availability: input.availability || null,
+      status: input.status,
+      createdAt,
+    },
+  });
+
+  return {
+    id: row.id,
+    applicationId: row.applicationId || applicationId,
+    fullName: row.fullName,
+    email: row.email,
+    phone: row.phone || "",
+    city: row.city || "",
+    interestArea: row.interestArea || "",
+    availability: row.availability || "",
+    status: (row.status as StoredVolunteerApplication["status"]) || "pending",
+    createdAt: row.createdAt.toISOString(),
   };
+}
 
-  db.data.applications.unshift(application);
-  await db.write();
+export async function updateVolunteerApplicationStatus(
+  applicationId: string,
+  status: StoredVolunteerApplication["status"],
+) {
+  const row = await prisma.volunteerApplication.update({
+    where: { applicationId },
+    data: { status },
+  }).catch((error: { code?: string }) => {
+    if (error.code === "P2025") {
+      return null;
+    }
 
-  return application;
+    throw error;
+  });
+
+  if (!row) {
+    return null;
+  }
+
+  return {
+    id: row.id,
+    applicationId: row.applicationId || applicationId,
+    fullName: row.fullName,
+    email: row.email,
+    phone: row.phone || "",
+    city: row.city || "",
+    interestArea: row.interestArea || "",
+    availability: row.availability || "",
+    status: (row.status as StoredVolunteerApplication["status"]) || "pending",
+    createdAt: row.createdAt.toISOString(),
+  };
 }

@@ -1,5 +1,4 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { prisma } from "@/lib/prisma";
 import { listAdoptionRequests, type StoredAdoptionRequest } from "@/lib/adoptionRequestsDb";
 import { listDonations, type StoredDonation } from "@/lib/donationsStore";
 import { listVolunteerApplications, type StoredVolunteerApplication } from "@/lib/volunteerApplicationsStore";
@@ -19,22 +18,18 @@ export type ProfileSnapshot = {
   volunteerApplications: StoredVolunteerApplication[];
 };
 
-const USERS_FILE = join(process.cwd(), "data", "users.json");
-
-function readUsers(): ProfileUser[] {
-  try {
-    const contents = readFileSync(USERS_FILE, "utf-8");
-    const parsed = JSON.parse(contents) as { users: ProfileUser[] };
-    return Array.isArray(parsed.users) ? parsed.users : [];
-  } catch {
-    return [];
-  }
-}
-
 export async function getProfileSnapshot(email: string): Promise<ProfileSnapshot> {
   const normalizedEmail = email.trim().toLowerCase();
-  const users = readUsers();
-  const user = users.find((entry) => entry.email.trim().toLowerCase() === normalizedEmail) ?? null;
+  const userRow = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+  const user = userRow
+    ? {
+        id: String(userRow.id),
+        name: userRow.fullName,
+        email: userRow.email,
+        role: userRow.role,
+        createdAt: userRow.createdAt.toISOString(),
+      }
+    : null;
 
   const [donations, adoptionRequests, volunteerApplications] = await Promise.all([
     listDonations(),

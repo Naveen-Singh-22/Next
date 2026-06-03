@@ -1,7 +1,4 @@
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
-import { Low } from "lowdb";
-import { JSONFile } from "lowdb/node";
+import { prisma } from "@/lib/prisma";
 
 export type StoredAdoptionRequest = {
   id: number;
@@ -25,79 +22,51 @@ type AdoptionDbSchema = {
   nextId: number;
 };
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const DB_PATH = path.join(DATA_DIR, "adoption-requests.json");
-
-let dbPromise: Promise<Low<AdoptionDbSchema>> | null = null;
-
-async function getDb() {
-  if (!dbPromise) {
-    dbPromise = (async () => {
-      await mkdir(DATA_DIR, { recursive: true });
-
-      const adapter = new JSONFile<AdoptionDbSchema>(DB_PATH);
-      const db = new Low<AdoptionDbSchema>(adapter, { adoptionRequests: [], nextId: 1 });
-
-      await db.read();
-      db.data ||= { adoptionRequests: [], nextId: 1 };
-
-      db.data.nextId = Math.max(
-        db.data.nextId,
-        db.data.adoptionRequests.reduce((maxId, request) => Math.max(maxId, request.id ?? 0), 0) + 1,
-      );
-
-      let shouldWrite = false;
-      const usedIds = new Set(db.data.adoptionRequests.map((request) => request.id).filter(Boolean));
-
-      db.data.adoptionRequests = db.data.adoptionRequests.map((request) => {
-        if (request.id) {
-          return request;
-        }
-
-        let nextId = 1;
-
-        while (usedIds.has(nextId)) {
-          nextId += 1;
-        }
-
-        usedIds.add(nextId);
-        shouldWrite = true;
-
-        return {
-          ...request,
-          id: nextId,
-        };
-      });
-
-      if (shouldWrite) {
-        await db.write();
-      }
-
-      return db;
-    })();
-  }
-
-  return dbPromise;
-}
-
 export async function saveAdoptionRequest(request: Omit<StoredAdoptionRequest, "id">) {
-  const db = await getDb();
-  await db.read();
+  const nextId = (await prisma.adoptionRequest.aggregate({ _max: { id: true } }))._max.id ?? 0;
 
-  const saved: StoredAdoptionRequest = {
+  const saved = await prisma.adoptionRequest.create({
+    data: {
+      id: nextId + 1,
+      requestId: request.requestId,
+      animalSlug: request.animalSlug,
+      animalName: request.animalName,
+      animalSpecies: request.animalSpecies,
+      animalImage: request.animalImage,
+      applicantName: request.applicantName,
+      applicantEmail: request.applicantEmail,
+      applicantPhone: request.applicantPhone,
+      city: request.city,
+      homeType: request.homeType,
+      message: request.message,
+      status: request.status,
+      createdAt: request.createdAt ? new Date(request.createdAt) : new Date(),
+    },
+  });
+
+  return {
     ...request,
-    id: db.data.nextId++,
+    id: saved.id,
   };
-
-  db.data.adoptionRequests.unshift(saved);
-  await db.write();
-
-  return saved;
 }
 
 export async function listAdoptionRequests() {
-  const db = await getDb();
-  await db.read();
+  const rows = await prisma.adoptionRequest.findMany({ orderBy: { createdAt: "desc" } });
 
-  return db.data.adoptionRequests;
+  return rows.map((row) => ({
+    id: row.id,
+    requestId: row.requestId || `AR-${row.id}`,
+    animalSlug: row.animalSlug,
+    animalName: row.animalName,
+    animalSpecies: row.animalSpecies,
+    animalImage: row.animalImage,
+    applicantName: row.applicantName,
+    applicantEmail: row.applicantEmail,
+    applicantPhone: row.applicantPhone,
+    city: row.city,
+    homeType: row.homeType as StoredAdoptionRequest["homeType"],
+    message: row.message,
+    status: row.status as StoredAdoptionRequest["status"],
+    createdAt: row.createdAt ? row.createdAt.toISOString() : new Date().toISOString(),
+  }));
 }

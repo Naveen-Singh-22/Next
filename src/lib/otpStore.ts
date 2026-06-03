@@ -1,36 +1,8 @@
-import { writeFile, readFile, mkdir } from "node:fs/promises";
-import path from "node:path";
-import { Low } from "lowdb";
-import { JSONFile } from "lowdb/node";
+import { prisma } from "@/lib/prisma";
 import type { OtpRecord } from "./otp";
 
-interface OtpDatabase {
-  otps: OtpRecord[];
-}
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const DB_PATH = path.join(DATA_DIR, "otp-records.json");
-
-let dbPromise: Promise<Low<OtpDatabase>> | null = null;
-
-async function getDb(): Promise<Low<OtpDatabase>> {
-  if (!dbPromise) {
-    dbPromise = (async () => {
-      await mkdir(DATA_DIR, { recursive: true });
-
-      const adapter = new JSONFile<OtpDatabase>(DB_PATH);
-      const db = new Low<OtpDatabase>(adapter, {
-        otps: [],
-      });
-
-      await db.read();
-      db.data ||= { otps: [] };
-
-      return db;
-    })();
-  }
-
-  return dbPromise;
+function toDate(value: number) {
+  return new Date(value);
 }
 
 /**
@@ -38,67 +10,75 @@ async function getDb(): Promise<Low<OtpDatabase>> {
  * Replaces any existing OTP for the same email
  */
 export async function saveOtpRecord(record: OtpRecord): Promise<OtpRecord> {
-  const db = await getDb();
-  await db.read();
+  const row = await prisma.otpRecord.upsert({
+    where: { email: record.email },
+    update: {
+      otp: record.otp,
+      createdAt: toDate(record.createdAt),
+      expiresAt: toDate(record.expiresAt),
+      attempts: record.attempts,
+      maxAttempts: record.maxAttempts,
+    },
+    create: {
+      email: record.email,
+      otp: record.otp,
+      createdAt: toDate(record.createdAt),
+      expiresAt: toDate(record.expiresAt),
+      attempts: record.attempts,
+      maxAttempts: record.maxAttempts,
+    },
+  });
 
-  // Remove any existing OTP for this email
-  if (db.data.otps) {
-    db.data.otps = db.data.otps.filter((r) => r.email !== record.email);
-  } else {
-    db.data.otps = [];
-  }
-
-  // Add new OTP
-  db.data.otps.push(record);
-  await db.write();
-
-  return record;
+  return {
+    email: row.email,
+    otp: row.otp,
+    createdAt: row.createdAt.getTime(),
+    expiresAt: row.expiresAt.getTime(),
+    attempts: row.attempts,
+    maxAttempts: row.maxAttempts,
+  };
 }
 
 /**
  * Get OTP record by email
  */
 export async function getOtpRecord(email: string): Promise<OtpRecord | null> {
-  const db = await getDb();
-  await db.read();
+  const row = await prisma.otpRecord.findUnique({ where: { email } });
 
-  const record = db.data.otps?.find((r) => r.email === email);
-  return record || null;
+  if (!row) {
+    return null;
+  }
+
+  return {
+    email: row.email,
+    otp: row.otp,
+    createdAt: row.createdAt.getTime(),
+    expiresAt: row.expiresAt.getTime(),
+    attempts: row.attempts,
+    maxAttempts: row.maxAttempts,
+  };
 }
 
 /**
  * Delete OTP record after verification
  */
 export async function deleteOtpRecord(email: string): Promise<void> {
-  const db = await getDb();
-  await db.read();
+  await prisma.otpRecord.delete({ where: { email } }).catch((error: { code?: string }) => {
+    if (error.code === "P2025") {
+      return null;
+    }
 
-  if (db.data.otps) {
-    db.data.otps = db.data.otps.filter((r) => r.email !== email);
-    await db.write();
-  }
+    throw error;
+  });
 }
 
 /**
  * Clean up expired OTP records (runs periodically)
  */
 export async function cleanupExpiredOtps(): Promise<number> {
-  const db = await getDb();
-  await db.read();
+  const deleted = await prisma.otpRecord.deleteMany({
+    where: { expiresAt: { lte: new Date() } },
+  });
 
-  if (!db.data.otps) {
-    return 0;
-  }
-
-  const now = Date.now();
-  const initialLength = db.data.otps.length;
-
-  // Remove expired records
-  db.data.otps = db.data.otps.filter((r) => r.expiresAt > now);
-
-  if (db.data.otps.length < initialLength) {
-    await db.write();
-  }
-
-  return initialLength - db.data.otps.length;
+  return deleted.count;
 }

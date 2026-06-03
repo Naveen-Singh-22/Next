@@ -3,7 +3,7 @@ import { z } from "zod";
 // Auth Schemas
 export const LoginSchema = z.object({
   email: z.string().trim().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
   role: z.enum(["admin", "donor", "volunteer"]).optional().default("admin"),
   rememberMe: z.boolean().optional().default(false),
 });
@@ -13,6 +13,7 @@ export const SignupSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
   name: z.string().min(2, "Name must be at least 2 characters"),
+  role: z.enum(["donor", "volunteer", "adopter"]).optional().default("donor"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -31,6 +32,20 @@ export const VerifyOtpSchema = z.object({
 
 export const ResendOtpSchema = z.object({
   email: z.string().trim().email("Invalid email address"),
+});
+
+export const ForgotPasswordSchema = z.object({
+  email: z.string().trim().email("Invalid email address"),
+});
+
+export const ResetPasswordSchema = z.object({
+  email: z.string().trim().email("Invalid email address"),
+  token: z.string().min(16, "Password reset token is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 export const AdminCreateUserSchema = z.object({
@@ -136,6 +151,29 @@ export const DonationSchema = z.object({
   paymentMethod: z.string().optional(),
 });
 
+export const RazorpayCreateOrderSchema = z.object({
+  donorName: z.string().min(2, "Donor name is required"),
+  email: z.string().email("Invalid email"),
+  phone: z.string().optional(),
+  amount: z.number().int().min(100, "Amount must be at least 100 paise"),
+  currency: z.string().trim().default("INR"),
+  receipt: z.string().min(1, "Receipt is required"),
+  coverFees: z.boolean().optional().default(false),
+});
+
+export const RazorpayVerifyPaymentSchema = z.object({
+  donorName: z.string().min(2, "Donor name is required"),
+  email: z.string().email("Invalid email"),
+  phone: z.string().optional(),
+  amount: z.number().int().min(100, "Amount must be at least 100 paise"),
+  currency: z.string().trim().default("INR"),
+  receipt: z.string().min(1, "Receipt is required"),
+  coverFees: z.boolean().optional().default(false),
+  razorpay_order_id: z.string().min(1, "Order ID is required"),
+  razorpay_payment_id: z.string().min(1, "Payment ID is required"),
+  razorpay_signature: z.string().min(1, "Signature is required"),
+});
+
 // Vaccination Schemas
 export const VaccinationSchema = z.object({
   animalId: z.string().min(1, "Animal ID is required"),
@@ -175,6 +213,8 @@ export type SignupInput = z.infer<typeof SignupSchema>;
 export type AdminLoginInput = z.infer<typeof AdminLoginSchema>;
 export type VerifyOtpInput = z.infer<typeof VerifyOtpSchema>;
 export type ResendOtpInput = z.infer<typeof ResendOtpSchema>;
+export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
 export type AdminCreateUserInput = z.infer<typeof AdminCreateUserSchema>;
 export type AnimalCreate = z.infer<typeof AnimalCreateSchema>;
 export type AnimalUpdate = z.infer<typeof AnimalUpdateSchema>;
