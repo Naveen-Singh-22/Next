@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
           role: finalRole,
         }), {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: (process.env.NODE_ENV as string) === "production",
           sameSite: "strict",
           maxAge: 10 * 60,
         });
