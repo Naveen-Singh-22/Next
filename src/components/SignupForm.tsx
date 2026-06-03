@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { FormEvent, Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { FormEvent, useEffect, useState } from "react";
 import SiteNav from "@/components/SiteNav";
-import OtpVerification from "@/components/OtpVerification";
 
 function EyeIcon() {
   return (
@@ -26,15 +25,56 @@ function EyeOffIcon() {
 
 function SignupContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // default to general account. Prefer explicit ?role=... param, otherwise infer from referrer path
+  const [role, setRole] = useState(() => {
+    const q = searchParams.get("role");
+    if (q === "volunteer" || q === "adopter" || q === "donor") return q;
+    return "general";
+  });
+
+  useEffect(() => {
+    // If role provided explicitly in query params, respect it
+    const q = searchParams.get("role");
+    if (q === "volunteer" || q === "adopter" || q === "donor") {
+      setRole(q);
+      return;
+    }
+
+    // Infer role from referring page path (client-only)
+    try {
+      const ref = typeof document !== "undefined" ? document.referrer : "";
+      if (ref) {
+        const url = new URL(ref);
+        const path = url.pathname.toLowerCase();
+        if (path.includes("/volunteer")) {
+          setRole("volunteer");
+          return;
+        }
+        if (path.includes("/adopt") || path.includes("/adoptions") || path.includes("/adopt/")) {
+          setRole("adopter");
+          return;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // fallback to general role
+    setRole((r) => r || "general");
+  }, [searchParams]);
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [signupEmail, setSignupEmail] = useState(""); // For OTP verification
-  const [showOtpVerification, setShowOtpVerification] = useState(false);
+  const [showOtpField, setShowOtpField] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [attemptsRemaining, setAttemptsRemaining] = useState(3);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -65,9 +105,9 @@ function SignupContent() {
         return;
       }
 
-      // Show OTP verification screen
+      // Show OTP field on the same form
       setSignupEmail(email);
-      setShowOtpVerification(true);
+      setShowOtpField(true);
     } catch {
       setErrorMessage("Something went wrong while creating your account. Please try again.");
     } finally {
@@ -75,33 +115,134 @@ function SignupContent() {
     }
   };
 
-  const handleOtpSuccess = () => {
-    router.replace("/profile");
-    router.refresh();
+  const handleOtpChange = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 4);
+    setOtp(digits);
   };
 
-  const handleBackToSignup = () => {
-    setShowOtpVerification(false);
-    setEmail("");
-    setPassword("");
-    setFullName("");
+  const handleOtpSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setErrorMessage("");
+    setIsVerifying(true);
+
+    if (otp.length !== 4) {
+      setErrorMessage("Please enter a 4-digit verification code.");
+      setIsVerifying(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: signupEmail, otp }),
+      });
+
+      const payload = (await response.json().catch(() => null)) as OtpResponse | null;
+
+      if (!response.ok || !payload?.ok) {
+        setErrorMessage(payload?.message ?? "Verification failed. Please try again.");
+        if (payload?.attemptsRemaining !== undefined) {
+          setAttemptsRemaining(payload.attemptsRemaining);
+        }
+        return;
+      }
+
+      // Success - redirect to profile
+      router.replace("/profile");
+      router.refresh();
+    } catch {
+      setErrorMessage("Something went wrong. Please try again.");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setErrorMessage("");
+
+    try {
+      const response = await fetch("/api/auth/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: signupEmail }),
+      });
+
+      const payload = (await response.json().catch(() => null)) as OtpResponse | null;
+
+      if (!response.ok || !payload?.ok) {
+        setErrorMessage(payload?.message ?? "Failed to resend code. Please try again.");
+        return;
+      }
+
+      setOtp("");
+      setErrorMessage("");
+    } catch {
+      setErrorMessage("Failed to resend code. Please try again.");
+    }
   };
 
   const handleGoogleSignUp = () => {
     setErrorMessage("Google sign-up is not configured yet. Please use email/password.");
   };
 
-  if (showOtpVerification) {
+  if (showOtpField) {
     return (
       <div className="login-page-reference">
         <SiteNav className="login-nav" />
+
         <main className="login-reference-main" aria-label="Email verification page">
-          <OtpVerification 
-            email={signupEmail} 
-            onSuccess={handleOtpSuccess}
-            onBack={handleBackToSignup}
-          />
+          <section className="login-reference-card" aria-label="Email verification form">
+            <h1>Verify Your Email</h1>
+            <p className="login-reference-subtitle">We&apos;ve sent a 4-digit code to <strong>{signupEmail}</strong></p>
+
+            <form className="login-reference-form" onSubmit={handleOtpSubmit}>
+              <label htmlFor="otp-input">Verification Code</label>
+              <input
+                id="otp-input"
+                type="text"
+                inputMode="numeric"
+                placeholder="0000"
+                value={otp}
+                onChange={(e) => handleOtpChange(e.target.value)}
+                maxLength={4}
+                disabled={isVerifying || attemptsRemaining <= 0}
+                required
+              />
+              <p style={{ fontSize: "12px", color: "#999", margin: "6px 0 0" }}>Enter the 4-digit code</p>
+
+              {errorMessage ? <p className="login-error" role="alert">{errorMessage}</p> : null}
+
+              {attemptsRemaining > 0 && attemptsRemaining < 3 && (
+                <p style={{ fontSize: "14px", color: "#666", margin: "8px 0" }}>
+                  Attempts remaining: {attemptsRemaining}
+                </p>
+              )}
+
+              <button 
+                type="submit" 
+                className="login-reference-submit" 
+                disabled={isVerifying || otp.length !== 4 || attemptsRemaining <= 0}
+              >
+                {isVerifying ? "Verifying..." : "Verify Code"}
+              </button>
+            </form>
+
+            <div style={{ marginTop: "20px", textAlign: "center" }}>
+              <button
+                type="button"
+                className="login-reference-signup"
+                onClick={handleResendOtp}
+                style={{ background: "none", border: "none", color: "#8B5CF6", cursor: "pointer", textDecoration: "underline" }}
+              >
+                Didn&apos;t receive the code? Resend
+              </button>
+            </div>
+
+            <p style={{ fontSize: "12px", color: "#999", marginTop: "20px", textAlign: "center" }}>
+              🔒 Your verification code is secure and expires in 10 minutes.
+            </p>
+          </section>
         </main>
       </div>
     );
@@ -144,6 +285,8 @@ function SignupContent() {
               onChange={(event) => setEmail(event.target.value)}
               required
             />
+
+            {/* Account type is inferred and hidden from the user */}
 
             <div className="login-reference-password-head">
               <label htmlFor="signup-password">Password</label>
@@ -197,9 +340,5 @@ function SignupContent() {
 }
 
 export default function SignupForm() {
-  return (
-    <Suspense fallback={null}>
-      <SignupContent />
-    </Suspense>
-  );
+  return <SignupContent />;
 }

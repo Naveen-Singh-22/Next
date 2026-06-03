@@ -55,11 +55,12 @@ function LoginContent() {
     setIsSubmitting(true);
 
     try {
+      const loginRole = requestedRole === "admin" ? "admin" : "donor";
       const credentials = {
         email,
         password,
         rememberMe,
-        role: "admin",
+        role: loginRole,
       };
 
       const userResponse = await fetch("/api/auth/login", {
@@ -74,9 +75,9 @@ function LoginContent() {
         return;
       }
 
-      const defaultPath = requestedRole === "admin" ? "/admin" : "/admin";
+      const defaultPath = userPayload?.role === "admin" ? "/admin" : "/profile";
       const nextPath = sanitizeAuthNextPath(searchParams.get("next"), defaultPath);
-      router.replace(nextPath.startsWith("/admin") ? nextPath : "/admin");
+      router.replace(nextPath);
       router.refresh();
     } catch {
       setErrorMessage("Something went wrong while signing in. Please try again.");
