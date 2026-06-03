@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/authContext';
+import { recordAdminAuditEvent } from '@/lib/adminAudit';
 
 export const runtime = 'nodejs';
 
@@ -13,7 +14,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAdmin();
+    const actor = await requireAdmin();
 
     const { id } = await params;
     const rescueId = parseInt(id, 10);
@@ -30,6 +31,19 @@ export async function PUT(
         ...(reporterName !== undefined && { reporterName }),
         ...(reporterPhone !== undefined && { reporterPhone }),
         updatedAt: new Date(),
+      },
+    });
+
+    await recordAdminAuditEvent({
+      actor,
+      action: 'update',
+      resource: 'rescue_request',
+      request,
+      subjectId: rescueId,
+      details: {
+        changes: Object.keys(body ?? {}),
+        status: rescue.status,
+        priority: rescue.priority,
       },
     });
 
@@ -57,13 +71,28 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAdmin();
+    const actor = await requireAdmin();
 
     const { id } = await params;
     const rescueId = parseInt(id, 10);
+    const existing = await prisma.rescueRequest.findUnique({ where: { id: rescueId } });
     await prisma.rescueRequest.delete({
       where: { id: rescueId },
     });
+
+    if (existing) {
+      await recordAdminAuditEvent({
+        actor,
+        action: 'delete',
+        resource: 'rescue_request',
+        request,
+        subjectId: rescueId,
+        details: {
+          status: existing.status,
+          priority: existing.priority,
+        },
+      });
+    }
 
     return NextResponse.json({ success: true, message: 'Rescue deleted' });
   } catch (error: any) {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/authContext';
+import { recordAdminAuditEvent } from '@/lib/adminAudit';
 
 export const runtime = 'nodejs';
 
@@ -56,7 +57,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin();
+    const actor = await requireAdmin();
 
     const body = await request.json();
     const { location, description, priority, reporterName, reporterPhone } = body;
@@ -78,6 +79,19 @@ export async function POST(request: NextRequest) {
         status: 'new',
         reporterName: reporterName || null,
         reporterPhone: reporterPhone || null,
+      },
+    });
+
+    await recordAdminAuditEvent({
+      actor,
+      action: 'create',
+      resource: 'rescue_request',
+      request,
+      subjectId: rescue.id,
+      details: {
+        reportId,
+        status: rescue.status,
+        priority: rescue.priority,
       },
     });
 
