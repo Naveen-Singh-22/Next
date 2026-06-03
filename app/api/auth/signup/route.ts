@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SignupSchema } from "@/lib/validation";
-import { handleError, ValidationError } from "@/lib/apiErrors";
+import { handleError } from "@/lib/apiErrors";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { generateOTP, createOtpRecord } from "@/lib/otp";
 import { saveOtpRecord } from "@/lib/otpStore";
 import { sendOtpEmail } from "@/lib/emailService";
 import { findUserByEmail } from "@/lib/usersStore";
 
 export const runtime = "nodejs";
+
+function normalizeSignupRole(value: string | undefined | null) {
+  // Accept only the explicit application roles. If none match, use a general account.
+  if (value === "volunteer" || value === "adopter" || value === "donor") {
+    return value;
+  }
+
+  return "general";
+}
 
 /**
  * POST /api/auth/signup
@@ -43,6 +53,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const normalizedEmail = validated.email.trim().toLowerCase();
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+
+    // Rate limit signups per email and per IP
+    const emailLimit = checkRateLimit(`signup:email:${normalizedEmail}`, 3, 60 * 60 * 1000); // 3 per hour per email
+    if (!emailLimit.allowed) {
+      return NextResponse.json({ ok: false, message: `Too many signup attempts for this email. Try again in ${emailLimit.retryAfterSeconds} seconds.` }, { status: 429 });
+    }
+
+    const ipLimit = checkRateLimit(`signup:ip:${ip}`, 20, 60 * 60 * 1000); // 20 per hour per IP
+    if (!ipLimit.allowed) {
+      return NextResponse.json({ ok: false, message: `Too many signup attempts from this IP. Try again in ${ipLimit.retryAfterSeconds} seconds.` }, { status: 429 });
+    }
+
     // Generate 4-digit OTP
     const otp = generateOTP();
 
@@ -50,10 +74,57 @@ export async function POST(request: NextRequest) {
     const otpRecord = createOtpRecord(validated.email, otp);
     await saveOtpRecord(otpRecord);
 
+    // Determine role on the server side (infer from referer or default to general)
+    const referer = request.headers.get("referer") || request.headers.get("referrer") || "";
+    let inferredRole: string | undefined = undefined;
+    try {
+      if (referer) {
+        const url = new URL(referer);
+        const q = url.searchParams.get("role");
+        if (q === "volunteer" || q === "adopter" || q === "donor") {
+          inferredRole = q;
+        } else {
+          const path = url.pathname.toLowerCase();
+          if (path.includes("/volunteer")) inferredRole = "volunteer";
+          else if (path.includes("/adopt") || path.includes("/adoptions") || path.includes("/adopt/")) inferredRole = "adopter";
+        }
+      }
+    } catch (e) {
+      // ignore referer parse errors
+    }
+
+    const finalRole = normalizeSignupRole(inferredRole);
+
     // Send OTP email
     const emailResult = await sendOtpEmail(validated.email, otp);
 
     if (!emailResult.sent) {
+      if (process.env.NODE_ENV !== "production") {
+        const response = NextResponse.json(
+          {
+            ok: true,
+            message: "Account created. Check your email for a 4-digit verification code.",
+            email: validated.email,
+            verificationCode: otp,
+          },
+          { status: 201 }
+        );
+
+        response.cookies.set("tch_signup_data", JSON.stringify({
+          name: validated.name,
+          email: validated.email,
+          passwordHash: validated.password,
+          role: finalRole,
+        }), {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 10 * 60,
+        });
+
+        return response;
+      }
+
       return NextResponse.json(
         { 
           ok: false, 
@@ -80,10 +151,11 @@ export async function POST(request: NextRequest) {
       name: validated.name,
       email: validated.email,
       passwordHash: validated.password, // Will be hashed on verification
+      role: finalRole,
     }), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "strict",
       maxAge: 10 * 60, // 10 minutes to match OTP expiry
     });
 
