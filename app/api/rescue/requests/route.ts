@@ -97,23 +97,6 @@ export async function POST(request: Request) {
     return handleError(error);
   }
 }
-      referenceId: report.id,
-      title: `Rescue report from ${fullName}`,
-      preview: `${species} at ${lastSeenAddress}`,
-    });
-
-    return NextResponse.json({
-      ok: true,
-      reportId,
-      message: `Report submitted successfully. Reference ID: ${reportId}`,
-    });
-  } catch (error) {
-    return NextResponse.json(
-      { ok: false, message: toMessage(error, "Failed to submit rescue report.") },
-      { status: 500 },
-    );
-  }
-}
 
 export async function PUT(request: Request) {
   await requireAdmin();
