@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/authContext';
+import { recordAdminAuditEvent } from '@/lib/adminAudit';
 
 export const runtime = 'nodejs';
 
@@ -13,7 +14,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAdmin();
+    const actor = await requireAdmin();
 
     const { id } = await params;
     const donationId = parseInt(id, 10);
@@ -46,7 +47,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAdmin();
+    const actor = await requireAdmin();
 
     const { id } = await params;
     const donationId = parseInt(id, 10);
@@ -61,6 +62,18 @@ export async function PUT(
         ...(phone && { phone }),
         ...(amount && { amount }),
         ...(coverFees !== undefined && { coverFees }),
+      },
+    });
+
+    await recordAdminAuditEvent({
+      actor,
+      action: 'update',
+      resource: 'donation',
+      request,
+      subjectId: donationId,
+      details: {
+        changes: Object.keys(body ?? {}),
+        amount: donation.amount,
       },
     });
 
@@ -88,13 +101,28 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAdmin();
+    const actor = await requireAdmin();
 
     const { id } = await params;
     const donationId = parseInt(id, 10);
+    const existing = await prisma.donation.findUnique({ where: { id: donationId } });
     await prisma.donation.delete({
       where: { id: donationId },
     });
+
+    if (existing) {
+      await recordAdminAuditEvent({
+        actor,
+        action: 'delete',
+        resource: 'donation',
+        request,
+        subjectId: donationId,
+        details: {
+          donorName: existing.donorName,
+          amount: existing.amount,
+        },
+      });
+    }
 
     return NextResponse.json({ success: true, message: 'Donation deleted' });
   } catch (error: any) {

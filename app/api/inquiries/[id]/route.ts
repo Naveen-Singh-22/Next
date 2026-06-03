@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { updateInquiryStatus, type InquiryStatus } from "@/lib/inquiryStore";
 import { requireAdmin } from "@/lib/authContext";
+import { recordAdminAuditEvent } from "@/lib/adminAudit";
 
 const VALID_STATUSES = new Set<InquiryStatus>(["new", "assigned", "resolved"]);
 
@@ -17,7 +18,7 @@ type RouteParams = {
 export const runtime = "nodejs";
 
 export async function PUT(request: Request, { params }: RouteParams) {
-  await requireAdmin();
+  const actor = await requireAdmin();
 
   let body: UpdateInquiryBody;
 
@@ -43,6 +44,17 @@ export async function PUT(request: Request, { params }: RouteParams) {
   if (!inquiry) {
     return NextResponse.json({ message: "Inquiry not found." }, { status: 404 });
   }
+
+  await recordAdminAuditEvent({
+    actor,
+    action: "update_status",
+    resource: "inquiry",
+    request,
+    subjectId: id,
+    details: {
+      status: body.status,
+    },
+  });
 
   return NextResponse.json({ inquiry });
 }
