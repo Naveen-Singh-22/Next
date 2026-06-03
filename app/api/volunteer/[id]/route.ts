@@ -1,52 +1,16 @@
 import { NextResponse } from "next/server";
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
-import { Low } from "lowdb";
-import { JSONFile } from "lowdb/node";
 import type { StoredVolunteerApplication } from "@/lib/volunteerApplicationsStore";
+import { updateVolunteerApplicationStatus } from "@/lib/volunteerApplicationsStore";
 import { requireAdmin } from "@/lib/authContext";
+import { recordAdminAuditEvent } from "@/lib/adminAudit";
 import { handleError } from "@/lib/apiErrors";
-
-type VolunteerDb = {
-  applications: StoredVolunteerApplication[];
-  nextId: number;
-};
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const DB_PATH = path.join(DATA_DIR, "volunteer-applications.json");
-
-let dbPromise: Promise<Low<VolunteerDb>> | null = null;
-
-async function getDb() {
-  if (!dbPromise) {
-    dbPromise = (async () => {
-      await mkdir(DATA_DIR, { recursive: true });
-
-      const adapter = new JSONFile<VolunteerDb>(DB_PATH);
-      const db = new Low<VolunteerDb>(adapter, {
-        applications: [],
-        nextId: 1,
-      });
-
-      await db.read();
-      db.data ||= {
-        applications: [],
-        nextId: 1,
-      };
-
-      return db;
-    })();
-  }
-
-  return dbPromise;
-}
 
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    await requireAdmin();
+    const actor = await requireAdmin();
     
     const { id: applicationId } = await params;
 
@@ -71,11 +35,9 @@ export async function PATCH(
     }
 
     try {
-      const db = await getDb();
-      await db.read();
-
-      const application = db.data.applications.find(
-        (app) => app.applicationId === applicationId,
+      const application = await updateVolunteerApplicationStatus(
+        applicationId,
+        status as StoredVolunteerApplication["status"],
       );
 
       if (!application) {
@@ -85,8 +47,16 @@ export async function PATCH(
         );
       }
 
-      application.status = status as StoredVolunteerApplication["status"];
-      await db.write();
+      await recordAdminAuditEvent({
+        actor,
+        action: "update_status",
+        resource: "volunteer_application",
+        request,
+        subjectId: applicationId,
+        details: {
+          status,
+        },
+      });
 
       return NextResponse.json({
         ok: true,
