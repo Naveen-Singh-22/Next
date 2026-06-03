@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { bulkCreateVaccinations, listVaccinations } from "@/lib/vaccinationDb";
 import type { VaccinationCreateInput } from "@/lib/vaccinationTypes";
 import { requireAdmin } from "@/lib/authContext";
+import { recordAdminAuditEvent } from "@/lib/adminAudit";
 
 function toNumber(value: unknown) {
   const parsed = Number(value);
@@ -110,7 +111,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  await requireAdmin();
+  const actor = await requireAdmin();
 
   const body = await request.json().catch(() => null);
   const payload = normalizeCreateBody(body);
@@ -120,5 +121,19 @@ export async function POST(request: Request) {
   }
 
   const created = await bulkCreateVaccinations(payload);
+
+  await recordAdminAuditEvent({
+    actor,
+    action: "create",
+    resource: "vaccination",
+    request,
+    subjectId: created.length > 0 ? created.map((item) => item.id).join(",") : undefined,
+    details: {
+      count: created.length,
+      animalIds: created.map((item) => item.animalId),
+      vaccineName: created[0]?.vaccineName ?? null,
+    },
+  });
+
   return NextResponse.json({ vaccinations: created }, { status: 201 });
 }

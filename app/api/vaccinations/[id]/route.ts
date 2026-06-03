@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { deleteVaccination, updateVaccination } from "@/lib/vaccinationDb";
 import type { VaccinationStatus } from "@/lib/vaccinationTypes";
 import { requireAdmin } from "@/lib/authContext";
+import { recordAdminAuditEvent } from "@/lib/adminAudit";
 
 function toNumber(value: string) {
   const parsed = Number(value);
@@ -40,7 +41,7 @@ function dueDateFromStatus(status: VaccinationStatus) {
 }
 
 export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
-  await requireAdmin();
+  const actor = await requireAdmin();
 
   const { id } = await context.params;
   const vaccinationId = toNumber(id);
@@ -71,11 +72,23 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
     return NextResponse.json({ error: "Vaccination not found." }, { status: 404 });
   }
 
+  await recordAdminAuditEvent({
+    actor,
+    action: "update",
+    resource: "vaccination",
+    request,
+    subjectId: vaccinationId,
+    details: {
+      vaccineName: updated.vaccineName,
+      animalId: updated.animalId,
+    },
+  });
+
   return NextResponse.json({ vaccination: updated });
 }
 
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
-  await requireAdmin();
+  const actor = await requireAdmin();
 
   const { id } = await context.params;
   const vaccinationId = toNumber(id);
@@ -89,6 +102,18 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
   if (!removed) {
     return NextResponse.json({ error: "Vaccination not found." }, { status: 404 });
   }
+
+  await recordAdminAuditEvent({
+    actor,
+    action: "delete",
+    resource: "vaccination",
+    request: _request,
+    subjectId: vaccinationId,
+    details: {
+      vaccineName: removed.vaccineName,
+      animalId: removed.animalId,
+    },
+  });
 
   return NextResponse.json({ vaccination: removed });
 }

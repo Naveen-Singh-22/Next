@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/authContext";
+import { recordAdminAuditEvent } from "@/lib/adminAudit";
 import { hashPassword } from "@/lib/auth";
 import { AdminCreateUserSchema } from "@/lib/validation";
 import { handleError, ConflictError, NotFoundError, ValidationError } from "@/lib/apiErrors";
@@ -58,7 +59,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    await requireAdmin();
+    const actor = await requireAdmin();
 
     const body = await request.json();
     const { fullName, email, password, role } = AdminCreateUserSchema.parse(body);
@@ -86,6 +87,18 @@ export async function POST(request: Request) {
       },
     });
 
+    await recordAdminAuditEvent({
+      actor,
+      action: "create",
+      resource: "user",
+      request,
+      subjectId: user.id,
+      details: {
+        email: user.email,
+        role: user.role,
+      },
+    });
+
     return NextResponse.json({ ok: true, user: serializeUser(user) }, { status: 201 });
   } catch (error) {
     return handleError(error);
@@ -94,7 +107,7 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    await requireAdmin();
+    const actor = await requireAdmin();
 
     const url = new URL(request.url);
     const userId = url.searchParams.get("id");
@@ -145,6 +158,19 @@ export async function PATCH(request: Request) {
     if (!user) {
       throw new NotFoundError("User not found");
     }
+
+    await recordAdminAuditEvent({
+      actor,
+      action: "update",
+      resource: "user",
+      request,
+      subjectId: parsedUserId,
+      details: {
+        changes: Object.keys(data),
+        email: user.email,
+        role: user.role,
+      },
+    });
 
     return NextResponse.json({ ok: true, user: serializeUser(user) });
   } catch (error) {
