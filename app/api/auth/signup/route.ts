@@ -99,6 +99,18 @@ export async function POST(request: NextRequest) {
     const emailResult = await sendOtpEmail(validated.email, otp);
 
     if (!emailResult.sent) {
+      console.error("OTP email delivery failed", {
+        email: normalizedEmail,
+        reason: emailResult.reason,
+        smtpConfigured: Boolean(
+          process.env.EMAIL_SMTP_HOST &&
+          process.env.EMAIL_SMTP_PORT &&
+          process.env.EMAIL_SMTP_USER &&
+          process.env.EMAIL_SMTP_PASS &&
+          process.env.EMAIL_FROM
+        ),
+      });
+
       if (process.env.NODE_ENV !== "production") {
         const response = NextResponse.json(
           {
