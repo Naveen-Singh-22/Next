@@ -84,7 +84,7 @@ export const AdoptionRequestSchema = z.object({
   applicantEmail: z.string().email("Please enter a valid email address"),
   applicantPhone: z.string().min(7, "Please enter a valid phone number"),
   city: z.string().min(1, "Please enter your city"),
-  homeType: z.enum(["apartment", "house", "farm", "other"], { errorMap: () => ({ message: "Please select your home type" }) }),
+  homeType: z.enum(["apartment", "house", "farm", "other"], { error: "Please select your home type" }),
   message: z.string().min(10, "Please share a short note about your adoption interest"),
 });
 
@@ -103,7 +103,7 @@ export const RescueReportSchema = z.object({
   healthConditions: z.array(z.string()).optional(),
   notes: z.string().optional(),
   lastSeenAddress: z.string().min(1, "Please provide the last seen address"),
-  urgency: z.enum(["critical", "urgent", "standard"], { errorMap: () => ({ message: "Please select a valid urgency level" }) }),
+  urgency: z.enum(["critical", "urgent", "standard"], { error: "Please select a valid urgency level" }),
   location: z.object({
     latitude: z.number().min(-90).max(90, "Invalid latitude"),
     longitude: z.number().min(-180).max(180, "Invalid longitude"),
@@ -129,7 +129,7 @@ export const VolunteerApplicationSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   phone: z.string().min(7, "Please provide a valid phone number"),
   city: z.string().min(1, "Please provide your city"),
-  interestArea: z.enum(["Shelter Assistant", "Rescue Dispatcher", "Event Support"], { errorMap: () => ({ message: "Please select a valid interest area" }) }),
+  interestArea: z.enum(["Shelter Assistant", "Rescue Dispatcher", "Event Support"], { error: "Please select a valid interest area" }),
   availability: z.string().min(10, "Please share your availability details"),
 });
 

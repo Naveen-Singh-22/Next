@@ -57,11 +57,11 @@ function formatRelativeTime(isoDate: string) {
   return formatter.format(-Math.round(secondsDiff / 86400), "day");
 }
 
-function getRoleColor(role: UserRole): string {
+function getRoleColor(role: UserRole | undefined): string {
   return ROLE_OPTIONS.find((r) => r.value === role)?.color ?? "gray";
 }
 
-function getRoleOption(role: UserRole) {
+function getRoleOption(role: UserRole | undefined) {
   return ROLE_OPTIONS.find((item) => item.value === role);
 }
 
@@ -377,7 +377,7 @@ export default function UserManagementClient() {
                       <div className="user-email">{user.email}</div>
                     </div>
                     <div className="col-role">
-                      <div className={`role-badge role-${getRoleColor(user.role)}`}>{ROLE_OPTIONS.find((r) => r.value === user.role)?.label}</div>
+                      <div className={`role-badge role-${getRoleColor(user.role)}`}>{getRoleOption(user.role)?.label ?? "Unassigned"}</div>
                     </div>
                     <div className="col-status">
                       <label className="status-toggle">
@@ -436,7 +436,7 @@ export default function UserManagementClient() {
                     <h3 className="user-card-name">{user.name}</h3>
                     <p className="user-card-email">{user.email}</p>
                     <div className="user-card-meta">
-                      <span className={`role-badge role-${getRoleColor(user.role)}`}>{ROLE_OPTIONS.find((r) => r.value === user.role)?.label}</span>
+                      <span className={`role-badge role-${getRoleColor(user.role)}`}>{getRoleOption(user.role)?.label ?? "Unassigned"}</span>
                       <span className="joined-badge">Joined {formatRelativeTime(user.createdAt)}</span>
                     </div>
                   </div>
@@ -513,7 +513,7 @@ export default function UserManagementClient() {
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">Current Role:</span>
-                    <span className={`role-badge role-${getRoleColor(selectedUser.role)}`}>{ROLE_OPTIONS.find((r) => r.value === selectedUser.role)?.label}</span>
+                    <span className={`role-badge role-${getRoleColor(selectedUser.role)}`}>{getRoleOption(selectedUser.role)?.label ?? "Unassigned"}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">Account Status:</span>

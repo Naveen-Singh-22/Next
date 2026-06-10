@@ -30,7 +30,7 @@ export async function listVolunteerApplications() {
     interestArea: row.interestArea || "",
     availability: row.availability || "",
     status: (row.status as StoredVolunteerApplication["status"]) || "pending",
-    createdAt: row.createdAt.toISOString(),
+    createdAt: row.createdAt ? row.createdAt.toISOString() : new Date().toISOString(),
   }));
 }
 
@@ -66,7 +66,7 @@ export async function createVolunteerApplication(
     interestArea: row.interestArea || "",
     availability: row.availability || "",
     status: (row.status as StoredVolunteerApplication["status"]) || "pending",
-    createdAt: row.createdAt.toISOString(),
+    createdAt: row.createdAt ? row.createdAt.toISOString() : new Date().toISOString(),
   };
 }
 
@@ -99,6 +99,6 @@ export async function updateVolunteerApplicationStatus(
     interestArea: row.interestArea || "",
     availability: row.availability || "",
     status: (row.status as StoredVolunteerApplication["status"]) || "pending",
-    createdAt: row.createdAt.toISOString(),
+    createdAt: row.createdAt ? row.createdAt.toISOString() : new Date().toISOString(),
   };
 }

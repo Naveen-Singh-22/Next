@@ -3,6 +3,7 @@ import { getOtpRecord, deleteOtpRecord } from "@/lib/otpStore";
 import { isOtpValid, verifyOtp, canAttemptVerification, incrementAttempts } from "@/lib/otp";
 import { handleError } from "@/lib/apiErrors";
 import { createUser } from "@/lib/usersStore";
+import type { UserRole } from "@/lib/usersStore";
 import { AUTH_SESSION_MAX_AGE, calculateSessionExpiresAt, normalizeAuthRole } from "@/lib/auth";
 import { saveOtpRecord } from "@/lib/otpStore";
 import { VerifyOtpSchema } from "@/lib/validation";
@@ -20,6 +21,14 @@ interface SignupSessionData {
   email: string;
   passwordHash: string;
   role?: "donor" | "volunteer" | "adopter" | "general";
+}
+
+function normalizeSignupUserRole(role: SignupSessionData["role"]): UserRole {
+  if (role === "donor" || role === "volunteer" || role === "adopter") {
+    return role;
+  }
+
+  return "adopter";
 }
 
 /**
@@ -144,7 +153,7 @@ export async function POST(request: NextRequest) {
         name: signupData.name,
         email: signupData.email,
         password: signupData.passwordHash,
-        role: signupData.role ?? "adopter",
+        role: normalizeSignupUserRole(signupData.role),
         // mark as verified since OTP matched
         emailVerified: true,
         emailVerifiedAt: new Date().toISOString(),
@@ -157,8 +166,13 @@ export async function POST(request: NextRequest) {
       const { generateToken } = await import("@/lib/auth");
       const maxAge = AUTH_SESSION_MAX_AGE;
       const expiresAt = calculateSessionExpiresAt(maxAge);
+      const userId = Number(newUser.id);
+      if (!Number.isInteger(userId) || userId <= 0) {
+        throw new Error("Created account has an invalid user id.");
+      }
+
       const tokenRole = normalizeAuthRole(newUser.role) ?? "general";
-      const token = generateToken({ userId: newUser.id, email: newUser.email, fullName: newUser.name, role: tokenRole }, maxAge);
+      const token = generateToken({ userId, email: newUser.email, fullName: newUser.name, role: tokenRole }, maxAge);
 
       const response = NextResponse.json(
         {

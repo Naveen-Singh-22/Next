@@ -2,8 +2,14 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, Suspense, useEffect, useState } from "react";
 import SiteNav from "@/components/SiteNav";
+
+type OtpResponse = {
+  ok?: boolean;
+  message?: string;
+  attemptsRemaining?: number;
+};
 
 function EyeIcon() {
   return (
@@ -340,5 +346,9 @@ function SignupContent() {
 }
 
 export default function SignupForm() {
-  return <SignupContent />;
+  return (
+    <Suspense fallback={null}>
+      <SignupContent />
+    </Suspense>
+  );
 }

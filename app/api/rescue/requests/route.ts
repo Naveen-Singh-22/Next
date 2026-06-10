@@ -18,6 +18,8 @@ type RescueAdminUpdateBody = {
   adminChecklist?: Partial<RescueAdminChecklist>;
 };
 
+const VALID_CASE_STATUS = new Set<RescueCaseStatus>(["reported", "in_progress", "monitored", "rescued", "closed"]);
+
 function isChecklistComplete(checklist: RescueAdminChecklist) {
   return checklist.rescued && checklist.monitored && checklist.medicalCompleted && checklist.shelterAssigned && checklist.reporterNotified;
 }

@@ -9,6 +9,7 @@ import { sanitizeAuthNextPath } from "@/lib/auth";
 type LoginResponse = {
   ok?: boolean;
   message?: string;
+  role?: string | null;
 };
 
 function ShieldIcon() {

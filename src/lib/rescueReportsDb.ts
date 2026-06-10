@@ -88,7 +88,7 @@ export async function saveRescueReport(report: Omit<StoredRescueReport, "id">) {
   const created = await prisma.rescueRequest.create({
     data: {
       reportId: report.reportId ?? undefined,
-      location: report.lastSeenAddress ?? report.location?.address ?? "",
+      location: report.lastSeenAddress ?? "",
       description: buildDescriptionFromReport(report as any),
       status: report.caseStatus ?? "reported",
       priority: report.urgency ?? "standard",
