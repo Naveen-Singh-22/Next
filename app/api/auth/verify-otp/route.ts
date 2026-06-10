@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
         name: signupData.name,
         email: signupData.email,
         password: signupData.passwordHash,
-        role: signupData.role ?? "general",
+        role: signupData.role ?? "adopter",
         // mark as verified since OTP matched
         emailVerified: true,
         emailVerifiedAt: new Date().toISOString(),
